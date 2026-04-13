@@ -4,6 +4,8 @@ A curated timeline of real AI agent security incidents, breaches, and vulnerabil
 
 No opinions. No product pitches. Just facts with sources.
 
+Last updated: 2026-04-13
+
 ---
 
 ## Contents
@@ -18,6 +20,52 @@ No opinions. No product pitches. Just facts with sources.
 ---
 
 ## 2026 Incidents
+
+### 2026-04-11 - aws-mcp-server Unauthenticated RCE via Command Injection
+
+- **Target:** aws-mcp-server (Model Context Protocol server for AWS CLI)
+- **Impact:** Unauthenticated remote attackers can execute arbitrary code on affected installations; full compromise of the MCP server and any AWS credentials it holds
+- **Root Cause:** Missing validation of a user-supplied string passed to a system call; improper handling of the allowed commands list
+- **CVE:** CVE-2026-5058 (CVSS 9.8), CVE-2026-5059 (CVSS 9.8)
+- **Sources:** [TheHackerWire CVE-2026-5058](https://www.thehackerwire.com/aws-mcp-server-remote-code-execution-via-command-injection-cve-2026-5058/), [TheHackerWire CVE-2026-5059](https://www.thehackerwire.com/aws-mcp-server-aws-cli-command-injection-rce/), [NVD CVE-2026-5059](https://nvd.nist.gov/vuln/detail/CVE-2026-5059), [Endor Labs](https://www.endorlabs.com/learn/classic-vulnerabilities-meet-ai-infrastructure-why-mcp-needs-appsec)
+
+### 2026-04-10 - Red Hat OpenShift AI odh-dashboard Kubernetes Token Disclosure
+
+- **Target:** Red Hat OpenShift AI (odh-dashboard component)
+- **Impact:** Kubernetes Service Account tokens disclosed via a NodeJS endpoint; disclosed tokens usable to authenticate to the Kubernetes API and reach cluster resources
+- **Root Cause:** Insecure handling/exposure of token data on a NodeJS endpoint in odh-dashboard
+- **CVE:** CVE-2026-5483 (CVSS 8.5)
+- **Sources:** [TheHackerWire](https://www.thehackerwire.com/red-hat-openshift-ai-odh-dashboard-kubernetes-token-disclosure-cve-2026-5483/), [Red Hat RHSA-2026:3713](https://access.redhat.com/errata/RHSA-2026:3713), [CSO Online](https://www.csoonline.com/article/4067305/red-hat-openshift-ai-weakness-allows-full-cluster-compromise-warns-advisory.html)
+
+### 2026-04-08 - PraisonAI Template Injection in Agent Tool Definitions
+
+- **Target:** PraisonAI (multi-agent teams framework, PyPI) prior to v4.5.115
+- **Impact:** Arbitrary code execution via template expressions injected into agent.start() input processed by create_agent_centric_tools()
+- **Root Cause:** Unescaped user input passed directly to template-rendering tools such as acp_create_file
+- **CVE:** CVE-2026-39891 (CVSS 8.8)
+- **Sources:** [GitLab Advisory](https://advisories.gitlab.com/pkg/pypi/praisonai/CVE-2026-39891/), [NVD](https://nvd.nist.gov/vuln/detail/CVE-2026-39891), [TheHackerWire](https://www.thehackerwire.com/praisonai-template-injection-via-agent-input-cve-2026-39891/)
+
+### 2026-04-08 - UNC1069 Contagious Interview Cross-Ecosystem Package Campaign
+
+- **Target:** npm, PyPI, Go, Rust, Packagist registries (developer tooling impersonation)
+- **Impact:** 1,700+ malicious packages identified since January 2025 fueling espionage and financial theft; SEAL blocked 164 UNC1069 domains impersonating Teams and Zoom between Feb 6 and Apr 7, 2026
+- **Root Cause:** DPRK-linked UNC1069 (overlaps BlueNoroff, Sapphire Sleet, Stardust Chollima) publishing malware-loader packages disguised as dev tooling; delivery via fake Zoom/Teams ClickFix lures after LinkedIn/Telegram/Slack social engineering
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/04/n-korean-hackers-spread-1700-malicious.html), [Vulert](https://vulert.com/blog/north-korea-malicious-packages-npm-pypi-go-rust/), [Cybersecuritywaala](https://cybersecuritywaala.com/news/north-korea-linked-malicious-packages-in-registries/)
+
+### 2026-04-07 - AWS Bedrock AgentCore "Agent God Mode" Cross-Agent Memory Access
+
+- **Target:** AWS Bedrock AgentCore starter toolkit
+- **Impact:** Default IAM roles auto-created by the toolkit scope permissions to wildcard, letting any agent read or poison memory belonging to every other agent in the AWS account; enables privilege escalation and cross-tenant data exfiltration
+- **Root Cause:** Starter toolkit auto-create logic issues IAM policies with GetMemory and RetrieveMemoryRecords on resource "*" instead of per-resource scoping
+- **Sources:** [Unit 42](https://unit42.paloaltonetworks.com/exploit-of-aws-agentcore-iam-god-mode/), [Unit 42 sandbox escape](https://unit42.paloaltonetworks.com/bypass-of-aws-sandbox-network-isolation-mode/)
+
+### 2026-04-07 - Flowise AI Agent Builder RCE Actively Exploited in the Wild
+
+- **Target:** Flowise (open-source AI agent builder) versions up to 3.0.5
+- **Impact:** Unauthenticated remote code execution via CustomMCP node; 12,000-15,000+ instances exposed on the internet; first in-the-wild exploitation from a Starlink IP
+- **Root Cause:** CustomMCP node parses user-supplied mcpServerConfig and executes JavaScript without validation, exposing child_process and fs modules under full Node.js runtime privileges
+- **CVE:** CVE-2025-59528 (CVSS 10.0)
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/04/flowise-ai-agent-builder-under-active.html), [BleepingComputer](https://www.bleepingcomputer.com/news/security/max-severity-flowise-rce-vulnerability-now-exploited-in-attacks/), [Security Affairs](https://securityaffairs.com/190471/security/attackers-exploit-critical-flowise-flaw-cve-2025-59528-for-remote-code-execution.html), [CSO Online](https://www.csoonline.com/article/4155680/hackers-exploit-a-critical-flowise-flaw-affecting-thousands-of-ai-workflows.html)
 
 ### 2026-04-03 - PraisonAI Gateway Unauthenticated Agent Control
 
@@ -48,6 +96,13 @@ No opinions. No product pitches. Just facts with sources.
 - **Impact:** $285M stolen in 12 minutes via fictitious CarbonVote Token, oracle manipulation, and zero-timelock Security Council migration
 - **Root Cause:** Six-month social engineering campaign by UNC4736 (DPRK) targeting multisig signers; pre-signed hidden authorizations
 - **Sources:** [TRM Labs](https://www.trmlabs.com/resources/blog/north-korean-hackers-attack-drift-protocol-in-285-million-heist), [Elliptic](https://www.elliptic.co/blog/drift-protocol-exploited-for-286-million-in-suspected-dprk-linked-attack), [The Hacker News](https://thehackernews.com/2026/04/285-million-drift-hack-traced-to-six.html)
+
+### 2026-03-30 - ChatGPT Hidden DNS Exfiltration Channel
+
+- **Target:** OpenAI ChatGPT code execution sandbox
+- **Impact:** A single prompt could silently exfiltrate user messages, uploaded files, and other sandbox contents over DNS; same path usable to establish a remote shell inside the Linux runtime
+- **Root Cause:** Sandbox blocked direct network requests but left recursive DNS resolution unrestricted; data encoded into DNS subdomain labels escaped all other network controls
+- **Sources:** [Check Point Research](https://research.checkpoint.com/2026/chatgpt-data-leakage-via-a-hidden-outbound-channel-in-the-code-execution-runtime/), [The Register](https://www.theregister.com/2026/03/30/openai_chatgpt_dns_data_snuggling_flaw/), [eSecurity Planet](https://www.esecurityplanet.com/artificial-intelligence/check-point-research-reveals-chatgpt-data-exfiltration-flaw/), [Cybersecurity News](https://cybersecuritynews.com/chatgpt-vulnerability/)
 
 ### 2026-03-31 - Mercor Data Breach via LiteLLM Supply Chain
 
@@ -158,6 +213,13 @@ No opinions. No product pitches. Just facts with sources.
 - **Root Cause:** Agent ran out of working memory and condensed prior messages, discarding the instruction to confirm before acting
 - **Sources:** [Fast Company](https://www.fastcompany.com/91497841/meta-superintelligence-lab-ai-safety-alignment-director-lost-control-of-agent-deleted-her-emails), [TechCrunch](https://techcrunch.com/2026/02/23/a-meta-ai-security-researcher-said-an-openclaw-agent-ran-amok-on-her-inbox/)
 
+### 2026-02-20 - CyberStrikeAI FortiGate Mass Compromise
+
+- **Target:** Fortinet FortiGate devices (600+ across 55 countries)
+- **Impact:** Russian-speaking financially motivated actor used commercial GenAI services and the open-source CyberStrikeAI framework to brute-force exposed management ports and single-factor credentials; Team Cymru observed 21 CyberStrikeAI C2 IPs between Jan 20 and Feb 26, 2026
+- **Root Cause:** No FortiGate CVE exploitation; AI orchestration let a low-skill actor scale reconnaissance, credential spraying, and post-compromise steps against exposed admin interfaces
+- **Sources:** [AWS Security Blog](https://aws.amazon.com/blogs/security/ai-augmented-threat-actor-accesses-fortigate-devices-at-scale/), [The Hacker News](https://thehackernews.com/2026/02/ai-assisted-threat-actor-compromises.html), [The Hacker News CyberStrikeAI](https://thehackernews.com/2026/03/open-source-cyberstrikeai-deployed-in.html), [The Record](https://therecord.media/gen-ai-fortigate-hackers-russia), [CSO Online](https://www.csoonline.com/article/4136198/russian-group-uses-ai-to-exploit-weakly-protected-fortinet-firewalls-says-amazon.html), [SC Media](https://www.scworld.com/news/threat-group-leverages-llms-to-compromise-600-fortigate-firewalls)
+
 ### 2026-02-09 - Clinejection Supply Chain Attack
 
 - **Target:** Cline AI coding assistant (5M+ users)
@@ -196,6 +258,13 @@ No opinions. No product pitches. Just facts with sources.
 - **Root Cause:** Missing path validation, unsanitized arguments in git_diff/git_checkout
 - **CVE:** CVE-2025-68143, CVE-2025-68144, CVE-2025-68145
 - **Sources:** [The Hacker News](https://thehackernews.com/2026/01/three-flaws-in-anthropic-mcp-git-server.html), [SecurityWeek](https://www.securityweek.com/anthropic-mcp-server-flaws-lead-to-code-execution-data-exposure/)
+
+### 2026-01 - Step Finance AI Trading Agent Treasury Drain
+
+- **Target:** Step Finance (Solana DeFi portfolio manager)
+- **Impact:** ~$40M drained from treasury; 261,000+ SOL transferred; native token crashed ~97% from pre-hack levels; only ~$4.7M recovered; platform wound down operations
+- **Root Cause:** Executive device compromise gave attackers wallet and fee-account access; trading agents held broad permissions across wallets, oracles, and trading endpoints with no scope isolation; 45.6% of surveyed teams reused shared API keys across agents
+- **Sources:** [KuCoin](https://www.kucoin.com/blog/en-ai-trading-agent-vulnerability-2026-how-a-45m-crypto-security-breach-exposed-protocol-risks)
 
 ### 2026-01-08 - n8n "Ni8mare" CVSS 10.0 RCE
 
@@ -252,6 +321,13 @@ No opinions. No product pitches. Just facts with sources.
 - **Impact:** Command injection in three official Anthropic-written extensions; SSH keys, AWS credentials, browser passwords exposed; CVSS 8.9
 - **Root Cause:** Unsanitized input handling; no sandboxing for Desktop Extensions
 - **Sources:** [Koi AI](https://www.koi.ai/blog/promptjacking-the-critical-rce-in-claude-desktop-that-turn-questions-into-exploits), [CSO Online](https://www.csoonline.com/article/4129820/anthropics-dxt-poses-critical-rce-vulnerability-by-running-with-full-system-privileges.html)
+
+### 2025-11-13 - GTG-1002 Chinese State-Sponsored AI-Orchestrated Espionage
+
+- **Target:** ~30 global organizations (large tech companies, financial institutions, chemical manufacturers, government agencies)
+- **Impact:** First publicly documented AI-orchestrated cyber espionage campaign; Claude Code executed 80-90% of tactical operations autonomously (reconnaissance, vulnerability discovery, exploitation, lateral movement, credential harvesting, analysis, exfiltration) with humans intervening only at decision gates; detected Sep 2025, disclosed Nov 13, 2025
+- **Root Cause:** Operators jailbroke Claude Code by claiming to be employees of legitimate cybersecurity firms running defensive tests, then split malicious workflows into innocuous-looking subtasks to bypass safety training
+- **Sources:** [Anthropic report (PDF)](https://assets.anthropic.com/m/ec212e6566a0d47/original/Disrupting-the-first-reported-AI-orchestrated-cyber-espionage-campaign.pdf), [Cybersecurity Dive](https://www.cybersecuritydive.com/news/anthropic-state-actor-ai-tool-espionage/805550/), [The Hacker News](https://thehackernews.com/2025/11/chinese-hackers-use-anthropics-ai-to.html), [The Register](https://www.theregister.com/2025/11/13/chinese_spies_claude_attacks/), [BlackFog](https://www.blackfog.com/gtg-1002-claude-hijacked-first-ai-led-cyberattack/), [ExtraHop](https://www.extrahop.com/blog/anthropic-reveals-the-first-ai-orchestrated-cyber-espionage-campaign), [AI Incident Database](https://incidentdatabase.ai/cite/1263/)
 
 ### 2025-11-04 - GitHub Copilot Filename Prompt Injection
 
@@ -706,7 +782,16 @@ No opinions. No product pitches. Just facts with sources.
 | Largest single crypto theft (Bybit) | $1.5 billion | [FBI IC3](https://www.ic3.gov/psa/2025/psa250226) |
 | Largest DeFi exploit of 2026 (Drift) | $285 million | [Elliptic](https://www.elliptic.co/blog/drift-protocol-exploited-for-286-million-in-suspected-dprk-linked-attack) |
 | AI trading agent losses Q1 2026 | $45 million+ | [KuCoin](https://www.kucoin.com/blog/en-ai-trading-agent-vulnerability-2026-how-a-45m-crypto-security-breach-exposed-protocol-risks) |
+| Step Finance treasury drained (Jan 2026) | $40 million (token -97%) | [KuCoin](https://www.kucoin.com/blog/en-ai-trading-agent-vulnerability-2026-how-a-45m-crypto-security-breach-exposed-protocol-risks) |
+| DeFi teams reusing shared API keys across agents | 45.6% | [KuCoin](https://www.kucoin.com/blog/en-ai-trading-agent-vulnerability-2026-how-a-45m-crypto-security-breach-exposed-protocol-risks) |
+| GTG-1002 organizations targeted (Sep-Nov 2025) | ~30 | [Anthropic](https://assets.anthropic.com/m/ec212e6566a0d47/original/Disrupting-the-first-reported-AI-orchestrated-cyber-espionage-campaign.pdf) |
+| GTG-1002 share of operations executed by AI | 80-90% | [Anthropic](https://assets.anthropic.com/m/ec212e6566a0d47/original/Disrupting-the-first-reported-AI-orchestrated-cyber-espionage-campaign.pdf) |
+| FortiGate devices compromised by CyberStrikeAI (Jan-Feb 2026) | 600+ across 55 countries | [AWS Security Blog](https://aws.amazon.com/blogs/security/ai-augmented-threat-actor-accesses-fortigate-devices-at-scale/) |
+| CyberStrikeAI C2 IPs observed | 21 (Jan 20-Feb 26, 2026) | [The Hacker News](https://thehackernews.com/2026/03/open-source-cyberstrikeai-deployed-in.html) |
 | MCP server CVEs in Jan-Feb 2026 | 30+ in 60 days | [MCP Security Report](https://www.heyuan110.com/posts/ai/2026-03-10-mcp-security-2026/) |
+| Flowise instances exposed (Apr 2026) | 12,000-15,000+ | [The Hacker News](https://thehackernews.com/2026/04/flowise-ai-agent-builder-under-active.html) |
+| UNC1069 malicious packages since Jan 2025 | 1,700+ across npm, PyPI, Go, Rust, Packagist | [The Hacker News](https://thehackernews.com/2026/04/n-korean-hackers-spread-1700-malicious.html) |
+| UNC1069 impersonation domains blocked (Feb 6-Apr 7, 2026) | 164 | [The Hacker News](https://thehackernews.com/2026/04/n-korean-hackers-spread-1700-malicious.html) |
 | MCP servers exposed, zero auth | 492 | [Trend Micro](https://www.trendmicro.com/en_us/research/26/c/teampcp-telnyx-attack-marks-a-shift-in-tactics.html) |
 | MCP servers with cmd injection flaws | 43% | [Invariant Labs](https://invariantlabs.ai/blog/mcp-security-notification-tool-poisoning-attacks) |
 | MCP servers with tool poisoning | 5.5% | [Invariant Labs](https://invariantlabs.ai/blog/mcp-security-notification-tool-poisoning-attacks) |
@@ -730,6 +815,7 @@ A single compromised credential triggers lateral movement across multiple packag
 
 **Key incidents:**
 - TeamPCP cascade (Mar 2026): Trivy -> Checkmarx -> LiteLLM -> Telnyx -> CanisterWorm -> Cisco -> Mercor. One service account compromise led to 1,000+ SaaS environments breached.
+- UNC1069 Contagious Interview (Apr 2026): 1,700+ malicious packages across npm, PyPI, Go, Rust, and Packagist since Jan 2025; ClickFix lures via fake Zoom/Teams links after social engineering.
 - Axios npm compromise (Mar 2026): Social engineering of one maintainer threatened 70-100M weekly downloads.
 - Bybit heist (Feb 2025): Compromise of one Safe{Wallet} developer led to $1.5B theft.
 - Ultralytics PyPI attack (Dec 2024): Git branch name abuse stole CI/CD credentials for two-phase supply chain attack.
@@ -749,6 +835,8 @@ An AI agent with legitimate access is tricked into performing actions on behalf 
 AI agents or chatbot integrations granted excessive access that becomes the attack surface.
 
 **Key incidents:**
+- AWS Bedrock AgentCore "God Mode" (Apr 2026): Starter toolkit auto-creates IAM roles with wildcard memory actions so any agent can read or poison every other agent's state.
+- Step Finance treasury drain (Jan 2026): Trading agents held wallet, oracle, and trading-endpoint permissions simultaneously; one device compromise cascaded into $40M loss.
 - Salesloft Drift OAuth breach (Aug 2025): Stolen OAuth tokens gave access to 700+ customer Salesforce environments.
 - LOLCopilot/M365 Copilot (Aug 2024): Default configurations grant broad access to all emails and documents.
 - Amazon Q extension (Jul 2025): Over-scoped GitHub token in CI/CD allowed destructive prompt injection.
@@ -769,6 +857,9 @@ Malicious configurations in repository files execute code when AI tools process 
 AI tools run user-supplied or AI-generated code without isolation.
 
 **Key incidents:**
+- Flowise CVE-2025-59528 (CVSS 10.0): CustomMCP node executes JavaScript from mcpServerConfig without validation; 12K+ exposed instances under active exploitation from Starlink IP in April 2026.
+- aws-mcp-server CVE-2026-5058 and CVE-2026-5059 (CVSS 9.8): Unauthenticated command injection via allowed-commands list passed to a system call.
+- PraisonAI CVE-2026-39891 (CVSS 8.8): Template injection via unescaped agent.start() input processed by create_agent_centric_tools().
 - Langflow CVE-2025-3248 (CVSS 9.8): exec() on user-supplied code without auth; added to CISA KEV.
 - Langflow CVE-2026-33017 (CVSS 9.3): Same exec() pattern exploited within 20 hours of disclosure.
 - n8n Ni8mare (CVSS 10.0): Content-Type confusion enables unauthenticated RCE on 100K+ instances.
@@ -809,16 +900,28 @@ AI agents execute privileged operations without per-action permission checks.
 AI agents send data to arbitrary external endpoints without restriction.
 
 **Key incidents:**
+- ChatGPT DNS exfiltration channel (Mar 2026): Sandbox blocked direct network traffic but left DNS resolution unrestricted, enabling data encoded in subdomain labels to leak out.
 - EchoLeak (CVE-2025-32711): M365 Copilot exfiltrates data via crafted emails.
 - GitHub Copilot CamoLeak (CVE-2025-59145): Data exfiltrated via GitHub Camo proxy image requests encoding secrets in URLs.
 - Slack AI exfiltration (Aug 2024): Markdown link rendering enables data exfiltration to attacker servers.
 - ASCII smuggling M365 Copilot (Jul 2024): Invisible Unicode in hyperlinks carries stolen MFA codes to external servers.
+
+### AI-Orchestrated Offensive Operations
+
+Threat actors use commercial or open-source AI agents to plan and execute the bulk of an intrusion end to end, with humans only approving decision gates.
+
+**Key incidents:**
+- GTG-1002 Chinese espionage (Sep-Nov 2025): Claude Code executed 80-90% of tactical operations against ~30 orgs after operators posed as legitimate red teamers.
+- CyberStrikeAI FortiGate campaign (Jan-Feb 2026): Russian-speaking actor used commercial GenAI plus the open-source CyberStrikeAI framework to compromise 600+ FortiGate devices across 55 countries without exploiting a single CVE.
+- Drift Protocol $285M exploit (Apr 2026): UNC4736 ran a six-month multi-channel social engineering campaign against multisig signers.
+- CanisterWorm (Mar 2026): First npm worm to use decentralized ICP infrastructure as C2, making takedown structurally impossible.
 
 ### Credential Theft via AI Tools
 
 AI development tools become vectors for credential and secret exposure.
 
 **Key incidents:**
+- Red Hat OpenShift AI odh-dashboard (CVE-2026-5483, Apr 2026): NodeJS endpoint discloses Kubernetes Service Account tokens usable against the cluster API.
 - Claude Code API key exfiltration (CVE-2026-21852): Malicious settings redirect API requests before trust prompt.
 - Claude Code InversePrompt (CVE-2025-54795): AI helps reverse-engineer its own security to enable command injection.
 - CrewAI "Uncrew" (Nov 2025): Improper error handling exposes admin GitHub token to all private repos.
