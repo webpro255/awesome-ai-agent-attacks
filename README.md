@@ -4,7 +4,7 @@ A curated timeline of real AI agent security incidents, breaches, and vulnerabil
 
 No opinions. No product pitches. Just facts with sources.
 
-Last updated: 2026-04-13
+Last updated: 2026-04-21
 
 ---
 
@@ -20,6 +20,89 @@ Last updated: 2026-04-13
 ---
 
 ## 2026 Incidents
+
+### 2026-04-20 - Vercel Breach via Context.ai AI Tool Supply Chain
+
+- **Target:** Vercel (Next.js hosting platform) via Context.ai (AI Office Suite)
+- **Impact:** Attacker accessed Vercel Google Workspace and internal systems, including environment variables for a "limited subset" of customer projects; stolen data offered for $2M on BreachForums by a ShinyHunters persona; downstream crypto projects scrambled to rotate API keys
+- **Root Cause:** Context.ai employee infected with Lumma Stealer in February 2026; attacker abused the Context.ai Google Workspace OAuth application that a Vercel employee had granted "Allow All" enterprise scopes; OAuth token replay escalated into the Vercel tenant
+- **Sources:** [TechCrunch](https://techcrunch.com/2026/04/20/app-host-vercel-confirms-security-incident-says-customer-data-was-stolen-via-breach-at-context-ai/), [The Hacker News](https://thehackernews.com/2026/04/vercel-breach-tied-to-context-ai-hack.html), [The Register](https://www.theregister.com/2026/04/20/vercel_context_ai_security_incident/), [Vercel Bulletin](https://vercel.com/kb/bulletin/vercel-april-2026-security-incident), [OX Security](https://www.ox.security/blog/vercel-context-ai-supply-chain-attack-breachforums/), [Trend Micro](https://www.trendmicro.com/en_us/research/26/d/vercel-breach-oauth-supply-chain.html), [CoinDesk](https://www.coindesk.com/tech/2026/04/20/hack-at-vercel-sends-crypto-developers-scrambling-to-lock-down-api-keys), [Tom's Hardware](https://www.tomshardware.com/tech-industry/cyber-security/vercel-breached-after-employee-grants-ai-tool-unrestricted-access-to-google-workspace)
+
+### 2026-04-17 - FastGPT Authentication and Password Change NoSQL Injection
+
+- **Target:** FastGPT AI agent building platform (before v4.14.9.5)
+- **Impact:** Unauthenticated attacker can log in as any user including root via MongoDB operator injection on the password field; authenticated attacker can bypass old-password verification to take over any account
+- **Root Cause:** TypeScript type assertion without runtime validation on password login endpoint; NoSQL operator injection in password change endpoint
+- **CVE:** CVE-2026-40351 (CVSS 9.8), CVE-2026-40352 (CVSS 8.8)
+- **Sources:** [TheHackerWire CVE-2026-40351](https://www.thehackerwire.com/vulnerability/CVE-2026-40351/), [TheHackerWire CVE-2026-40352](https://www.thehackerwire.com/vulnerability/CVE-2026-40352/)
+
+### 2026-04-16 - Anthropic MCP Systemic STDIO Design RCE
+
+- **Target:** Anthropic Model Context Protocol reference SDKs (Python, TypeScript, Java, Rust) and 200,000+ downstream instances
+- **Impact:** Arbitrary command execution on any MCP host via STDIO transport; OX Security demonstrated takeover of six production platforms and 30+ RCE reports across projects including LiteLLM, LangChain, Flowise, GPT Researcher, Agent Zero, and Windsurf; 11 CVEs assigned to downstream projects
+- **Root Cause:** MCP STDIO transport accepts arbitrary command strings and passes them to subprocess execution with no validation, sanitization, or sandboxing; commands execute even when process startup fails; Anthropic declined to modify the protocol and said sanitization is the developer's responsibility
+- **CVE:** CVE-2025-65720, CVE-2026-30623, CVE-2026-30624, CVE-2026-40933 (Flowise MCP Adapters, CVSS 10.0) and 7+ others
+- **Sources:** [OX Security](https://www.ox.security/blog/the-mother-of-all-ai-supply-chains-critical-systemic-vulnerability-at-the-core-of-the-mcp/), [The Hacker News](https://thehackernews.com/2026/04/anthropic-mcp-design-vulnerability.html), [The Register](https://www.theregister.com/2026/04/16/anthropic_mcp_design_flaw/), [CSO Online](https://www.csoonline.com/article/4159889/rce-by-design-mcp-architectural-choice-haunts-ai-agent-ecosystem.html), [Infosecurity Magazine](https://www.infosecurity-magazine.com/news/systemic-flaw-mcp-expose-150/), [TechRadar](https://www.techradar.com/pro/security/this-is-not-a-traditional-coding-error-experts-flag-potentially-critical-security-issues-at-the-heart-of-anthropics-mcp-exposes-150-million-downloads-and-thousands-of-servers-to-complete-takeover), [GitHub Advisory CVE-2026-40933](https://github.com/advisories/GHSA-c9gw-hvqq-f33r)
+
+### 2026-04-15 - LiteLLM OIDC Userinfo Cache Authentication Bypass
+
+- **Target:** LiteLLM (BerriAI LLM gateway) deployments with JWT auth enabled
+- **Impact:** Unauthenticated attacker can craft a token whose first 20 characters collide with a cached legitimate token, inheriting that user's identity and permissions across the gateway
+- **Root Cause:** OIDC userinfo cache keyed on token[:20] instead of the full token or a secure hash; JWTs produced by the same signing algorithm share the same header prefix
+- **CVE:** CVE-2026-35030 (CVSS 9.4)
+- **Sources:** [LiteLLM Advisory](https://docs.litellm.ai/blog/security-hardening-april-2026), [GitLab Advisory](https://advisories.gitlab.com/pkg/pypi/litellm/CVE-2026-35030/), [GitHub Advisory](https://github.com/advisories/GHSA-jjhc-v7c2-5hh6), [SecurityOnline](https://securityonline.info/litellm-security-vulnerability-auth-bypass-rce-patch/), [Wiz](https://www.wiz.io/vulnerability-database/cve/cve-2026-35030)
+
+### 2026-04-15 - Copilot Studio ShareLeak and Agentforce PipeLeak Form-Based Prompt Injection
+
+- **Target:** Microsoft Copilot Studio and Salesforce Agentforce
+- **Impact:** Attackers fill public-facing SharePoint or Web-to-Lead form fields with a fake system-role payload; hijacked agents query connected data sources in bulk and email the results to an attacker address with no volume cap, no Human-in-the-Loop prompt, and no trace shown to the employee who triggered the agent; Capsule Security reports the email channel remains exploitable on Agentforce Sub-Agents (formerly Custom Topics) even after Salesforce's remediation
+- **Root Cause:** Untrusted form inputs concatenated directly into agent context windows; agents simultaneously hold read access to CRM/SharePoint data and authority to send outbound email
+- **CVE:** CVE-2026-21520 (CVSS 7.5, Copilot Studio ShareLeak); PipeLeak has no CVE assigned
+- **Sources:** [VentureBeat](https://venturebeat.com/security/microsoft-salesforce-copilot-agentforce-prompt-injection-cve-agent-remediation-playbook), [Dark Reading](https://www.darkreading.com/cloud-security/microsoft-salesforce-patch-ai-agent-data-leak-flaws), [CSO Online](https://www.csoonline.com/article/4159079/copilot-and-agentforce-fall-to-form-based-prompt-injection-tricks.html), [NVD CVE-2026-21520](https://nvd.nist.gov/vuln/detail/CVE-2026-21520), [PointGuard AI](https://www.pointguardai.com/ai-security-incidents/copilot-studio-leak-the-assistant-that-overshared-cve-2026-21520)
+
+### 2026-04-15 - Claude Code, Gemini CLI, Copilot Agent Hijacked via GitHub Comments
+
+- **Target:** Anthropic Claude Code Security Review, Google Gemini CLI Action, GitHub Copilot Agent (all GitHub Actions integrations)
+- **Impact:** Prompt injection via PR titles, issue descriptions, and comments lets attackers execute arbitrary commands in the Actions runner, steal Anthropic and Gemini API keys, GitHub tokens, and any repository or organization secret available to the workflow
+- **Root Cause:** Each agent ingests untrusted GitHub comment content as authoritative instructions with no separation between policy and data; all three vendors paid bug bounties ($100 Anthropic, $500 GitHub, undisclosed Google) but none assigned CVEs or published advisories, leaving downstream users unaware
+- **Sources:** [The Register](https://www.theregister.com/2026/04/15/claude_gemini_copilot_agents_hijacked/), [SecurityWeek](https://www.securityweek.com/claude-code-gemini-cli-github-copilot-agents-vulnerable-to-prompt-injection-via-comments/), [The Next Web](https://thenextweb.com/news/ai-agents-hijacked-prompt-injection-bug-bounties-no-cve), [Cybernews](https://cybernews.com/security/ai-agents-github-prompt-injection-pattern/)
+
+### 2026-04-15 - n8n Webhook Weaponization for Phishing Campaigns
+
+- **Target:** n8n AI workflow automation platform (cloud-hosted webhooks)
+- **Impact:** Attackers embed n8n-hosted webhook URLs in phishing emails; clicking opens a JavaScript CAPTCHA page on the trusted n8n domain that then downloads modified RMM tools such as Datto and ITarian; March 2026 volume of emails carrying these URLs was 686% higher than January 2025
+- **Root Cause:** Public webhook URLs on trusted n8n infrastructure let attackers bypass email security filters that would otherwise block attacker-controlled domains; abuse first observed October 2025 and escalated through April 2026
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/04/n8n-webhooks-abused-since-october-2025.html), [Cisco Talos](https://blog.talosintelligence.com/the-n8n-n8mare/), [SC Media](https://www.scworld.com/brief/ai-workflow-platform-n8n-abused-for-phishing-and-device-fingerprinting), [TechRepublic](https://www.techrepublic.com/article/news-hackers-abuse-n8n-workflows-malware-delivery/)
+
+### 2026-04-14 - OWASP GenAI Q1 2026 Exploit Round-up Report
+
+- **Target:** AI ecosystem (sector-wide report covering January 1 - April 11, 2026)
+- **Impact:** Documents the transition from theoretical risks to active exploitation; 520 reported tool misuse and privilege escalation incidents in 2026; prompt injection with 450 incidents; highlights Anthropic Claude abuse in the 150GB Mexican government data theft as the period's prominent case; notes a growing gap between traditional CVE-based vulnerability management and architectural AI risks that never receive CVE IDs
+- **Root Cause:** Report synthesis; attackers target agent identities, orchestration layers, and supply chains rather than just model outputs
+- **Sources:** [OWASP GenAI Q1 2026 Report](https://genai.owasp.org/2026/04/14/owasp-genai-exploit-round-up-report-q1-2026/)
+
+### 2026-04-13 - Malicious LLM Router Research Reveals Credential and Crypto Theft
+
+- **Target:** 428 public AI API routers tested by UCSB/UCSD researchers (published arXiv April 8, amplified April 13)
+- **Impact:** 26 routers injected malicious tool calls, 9 injected malicious code into agent outputs, 17 accessed researcher AWS credentials, and at least one drained ETH from a researcher-controlled wallet; one client reportedly lost $500,000 in crypto to a malicious router; attacks include payload injection (AC-1), secret exfiltration (AC-2), dependency rewriting, and adaptive evasion that activates only in autonomous "YOLO mode"
+- **Root Cause:** LLM routers operate as opaque man-in-the-middle intermediaries between clients and model providers; agents accept rewritten tool calls as trusted output
+- **Sources:** [ArXiv paper](https://arxiv.org/html/2604.08407v1), [CoinDesk](https://www.coindesk.com/tech/2026/04/13/ai-agents-are-set-to-power-crypto-payments-but-a-hidden-flaw-could-expose-wallets), [Risky Business](https://news.risky.biz/risky-bulletin-malicious-llm-proxy-routers-found-in-the-wild/), [CCN](https://www.ccn.com/news/crypto/will-ai-steal-bitcoin-research-malicious-llm-routers-crypto-theft/), [OECD AI Incident Database](https://oecd.ai/en/incidents/2026-04-10-d6e2)
+
+### 2026-04-13 - Marimo Pre-Auth RCE Weaponized to Deploy NKAbuse via Hugging Face
+
+- **Target:** Marimo Python reactive notebook platform (all versions up to 0.20.4)
+- **Impact:** 662 exploit events from 11 source IPs across 10 countries between April 11 and 14, 2026; reverse shells, credential theft, DNS exfiltration, lateral movement to PostgreSQL and Redis, and deployment of a new NKAbuse variant; malware installer hosted on a typosquat Hugging Face Space "vsccode-modetx" drops a Go ELF binary named kagent that uses the NKN blockchain for C2
+- **Root Cause:** /terminal/ws WebSocket endpoint lacks the validate_auth() call present on other endpoints; unauthenticated attackers obtain a full PTY shell; exploitation began within 10 hours of public disclosure
+- **CVE:** CVE-2026-39987 (CVSS 9.3)
+- **Sources:** [Sysdig](https://www.sysdig.com/blog/cve-2026-39987-update-how-attackers-weaponized-marimo-to-deploy-a-blockchain-botnet-via-huggingface), [The Hacker News](https://thehackernews.com/2026/04/marimo-rce-flaw-cve-2026-39987.html), [BleepingComputer](https://www.bleepingcomputer.com/news/security/hackers-exploit-marimo-flaw-to-deploy-nkabuse-malware-from-hugging-face/), [Cybersecurity News](https://cybersecuritynews.com/attackers-spread-blockchain-based-backdoor-via-hugging-face/)
+
+### 2026-04-13 - Nginx UI MCP Auth Bypass Under Active Exploitation
+
+- **Target:** nginx-ui open-source Nginx management tool (before v2.3.4), approximately 2,600 publicly reachable instances
+- **Impact:** Network-adjacent attacker can invoke 12 MCP tools (including nginx_config_add with auto-reload) in two HTTP requests; full Nginx server takeover, traffic interception, administrator credential harvest; chains with CVE-2026-27944 to extract the node_secret for ongoing session control
+- **Root Cause:** /mcp_message endpoint handles every destructive tool invocation without the AuthRequired() middleware that protects the paired /mcp endpoint
+- **CVE:** CVE-2026-33032 (CVSS 9.8)
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/04/critical-nginx-ui-vulnerability-cve.html), [BleepingComputer](https://www.bleepingcomputer.com/news/security/critical-nginx-ui-auth-bypass-flaw-now-actively-exploited-in-the-wild/), [Rapid7](https://www.rapid7.com/blog/post/etr-cve-2026-33032-nginx-ui-missing-mcp-authentication/), [Picus Security](https://www.picussecurity.com/resource/blog/cve-2026-33032-mcpwn-how-a-missing-middleware-call-in-nginx-ui-hands-attackers-full-web-server-takeover), [Security Affairs](https://securityaffairs.com/190841/hacking/cve-2026-33032-severe-nginx-ui-bug-grants-unauthenticated-server-access)
 
 ### 2026-04-11 - aws-mcp-server Unauthenticated RCE via Command Injection
 
@@ -790,6 +873,14 @@ Last updated: 2026-04-13
 | CyberStrikeAI C2 IPs observed | 21 (Jan 20-Feb 26, 2026) | [The Hacker News](https://thehackernews.com/2026/03/open-source-cyberstrikeai-deployed-in.html) |
 | MCP server CVEs in Jan-Feb 2026 | 30+ in 60 days | [MCP Security Report](https://www.heyuan110.com/posts/ai/2026-03-10-mcp-security-2026/) |
 | Flowise instances exposed (Apr 2026) | 12,000-15,000+ | [The Hacker News](https://thehackernews.com/2026/04/flowise-ai-agent-builder-under-active.html) |
+| MCP STDIO design RCE exposure (OX Security, Apr 2026) | 200,000+ servers, 150M+ downloads across Python/TypeScript/Java/Rust SDKs | [OX Security](https://www.ox.security/blog/the-mother-of-all-ai-supply-chains-critical-systemic-vulnerability-at-the-core-of-the-mcp/) |
+| Marimo CVE-2026-39987 exploit events (Apr 11-14, 2026) | 662 from 11 IPs across 10 countries | [Sysdig](https://www.sysdig.com/blog/cve-2026-39987-update-how-attackers-weaponized-marimo-to-deploy-a-blockchain-botnet-via-huggingface) |
+| AI API routers tested vs. malicious (UCSB/UCSD, Apr 2026) | 26 of 428 routed malicious payloads; 17 stole AWS creds | [ArXiv](https://arxiv.org/html/2604.08407v1) |
+| Single crypto wallet drained by malicious LLM router | $500,000 | [CoinDesk](https://www.coindesk.com/tech/2026/04/13/ai-agents-are-set-to-power-crypto-payments-but-a-hidden-flaw-could-expose-wallets) |
+| n8n-hosted webhook phishing email volume (Mar 2026 vs Jan 2025) | 686% increase | [Cisco Talos](https://blog.talosintelligence.com/the-n8n-n8mare/) |
+| Vercel stolen data listing price on BreachForums (Apr 2026) | $2 million | [OX Security](https://www.ox.security/blog/vercel-context-ai-supply-chain-attack-breachforums/) |
+| Tool misuse incidents tracked in 2026 (OWASP Q1 report) | 520 (most reported category) | [OWASP GenAI Q1 2026](https://genai.owasp.org/2026/04/14/owasp-genai-exploit-round-up-report-q1-2026/) |
+| Prompt injection incidents tracked in 2026 (OWASP Q1 report) | 450 | [OWASP GenAI Q1 2026](https://genai.owasp.org/2026/04/14/owasp-genai-exploit-round-up-report-q1-2026/) |
 | UNC1069 malicious packages since Jan 2025 | 1,700+ across npm, PyPI, Go, Rust, Packagist | [The Hacker News](https://thehackernews.com/2026/04/n-korean-hackers-spread-1700-malicious.html) |
 | UNC1069 impersonation domains blocked (Feb 6-Apr 7, 2026) | 164 | [The Hacker News](https://thehackernews.com/2026/04/n-korean-hackers-spread-1700-malicious.html) |
 | MCP servers exposed, zero auth | 492 | [Trend Micro](https://www.trendmicro.com/en_us/research/26/c/teampcp-telnyx-attack-marks-a-shift-in-tactics.html) |
@@ -814,6 +905,7 @@ Last updated: 2026-04-13
 A single compromised credential triggers lateral movement across multiple package registries and downstream organizations.
 
 **Key incidents:**
+- Vercel / Context.ai OAuth chain (Apr 2026): Lumma Stealer infection of a Context.ai employee led to OAuth token theft, then escalated into the Vercel Google Workspace tenant because a Vercel employee had granted the Context.ai browser extension "Allow All" enterprise scopes.
 - TeamPCP cascade (Mar 2026): Trivy -> Checkmarx -> LiteLLM -> Telnyx -> CanisterWorm -> Cisco -> Mercor. One service account compromise led to 1,000+ SaaS environments breached.
 - UNC1069 Contagious Interview (Apr 2026): 1,700+ malicious packages across npm, PyPI, Go, Rust, and Packagist since Jan 2025; ClickFix lures via fake Zoom/Teams links after social engineering.
 - Axios npm compromise (Mar 2026): Social engineering of one maintainer threatened 70-100M weekly downloads.
@@ -825,6 +917,8 @@ A single compromised credential triggers lateral movement across multiple packag
 An AI agent with legitimate access is tricked into performing actions on behalf of an attacker.
 
 **Key incidents:**
+- Copilot Studio ShareLeak and Agentforce PipeLeak (Apr 2026): Crafted SharePoint and Web-to-Lead form payloads hijack agents into bulk-exfiltrating CRM and SharePoint data by email, with no volume cap and no user-visible indicator.
+- Claude Code / Gemini CLI / Copilot Agent via GitHub comments (Apr 2026): PR titles, issue descriptions, and comments hijack CI agents to exfiltrate API keys and secrets from the runner.
 - Salesforce Agentforce ForcedLeak (Sep 2025): Malicious Web-to-Lead form data tricks agent into exfiltrating CRM records.
 - ServiceNow Now Assist (Nov 2025): Low-privilege agent tricks higher-privilege agent into exporting case files.
 - EchoLeak M365 Copilot (Jun 2025): Crafted email triggers zero-click data exfiltration.
@@ -857,6 +951,9 @@ Malicious configurations in repository files execute code when AI tools process 
 AI tools run user-supplied or AI-generated code without isolation.
 
 **Key incidents:**
+- Anthropic MCP STDIO design RCE (Apr 2026): Reference SDKs in Python, TypeScript, Java, and Rust execute attacker-supplied command strings passed to STDIO transport; 200K+ servers and 150M+ downloads exposed; Anthropic declined to patch.
+- Flowise MCP Adapters CVE-2026-40933 (CVSS 10.0): Unsafe serialization of stdio commands lets an authenticated user add an MCP server that runs arbitrary commands such as `npx -c "touch /tmp/pwn"`.
+- Marimo CVE-2026-39987 (CVSS 9.3): /terminal/ws WebSocket lacks auth; weaponized within 10 hours and used to drop NKAbuse blockchain-C2 malware hosted on a Hugging Face typosquat.
 - Flowise CVE-2025-59528 (CVSS 10.0): CustomMCP node executes JavaScript from mcpServerConfig without validation; 12K+ exposed instances under active exploitation from Starlink IP in April 2026.
 - aws-mcp-server CVE-2026-5058 and CVE-2026-5059 (CVSS 9.8): Unauthenticated command injection via allowed-commands list passed to a system call.
 - PraisonAI CVE-2026-39891 (CVSS 8.8): Template injection via unescaped agent.start() input processed by create_agent_centric_tools().
@@ -880,6 +977,7 @@ Humans manipulate AI agents or use AI as intermediaries for social engineering.
 Malicious instructions embedded in tool descriptions, model files, or integration metadata.
 
 **Key incidents:**
+- Malicious LLM routers (Apr 2026): 26 of 428 tested routers rewrote tool calls, exfiltrated secrets, or redirected transactions; at least one drained a $500K crypto wallet.
 - MCP tool poisoning / WhatsApp exfiltration (Apr 2025): Hidden instructions in MCP tool descriptions cause silent data theft.
 - Hugging Face GGUF poisoned templates (Jul 2025): Malicious instructions embedded in 1.5M+ model files.
 - ClawHub malicious skills (Jan-Mar 2026): 1,184+ malicious skills distributing Atomic Stealer and keyloggers.
@@ -921,6 +1019,8 @@ Threat actors use commercial or open-source AI agents to plan and execute the bu
 AI development tools become vectors for credential and secret exposure.
 
 **Key incidents:**
+- LiteLLM CVE-2026-35030 (Apr 2026): OIDC userinfo cache keyed on token[:20] lets an attacker collide with a legitimate cached token and inherit that user's identity across the gateway.
+- FastGPT CVE-2026-40351 and CVE-2026-40352 (Apr 2026): TypeScript type assertion without runtime validation lets NoSQL operator injection log in as any user, including root; password-change endpoint bypasses old-password verification.
 - Red Hat OpenShift AI odh-dashboard (CVE-2026-5483, Apr 2026): NodeJS endpoint discloses Kubernetes Service Account tokens usable against the cluster API.
 - Claude Code API key exfiltration (CVE-2026-21852): Malicious settings redirect API requests before trust prompt.
 - Claude Code InversePrompt (CVE-2025-54795): AI helps reverse-engineer its own security to enable command injection.
