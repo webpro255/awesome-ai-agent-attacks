@@ -4,7 +4,7 @@ A curated timeline of real AI agent security incidents, breaches, and vulnerabil
 
 No opinions. No product pitches. Just facts with sources.
 
-Last updated: 2026-04-21
+Last updated: 2026-04-28
 
 ---
 
@@ -20,6 +20,86 @@ Last updated: 2026-04-21
 ---
 
 ## 2026 Incidents
+
+### 2026-04-24 - LangChain langchain-openai and langchain-text-splitters SSRF Disclosures
+
+- **Target:** LangChain langchain-openai (before 1.1.14) and langchain-text-splitters (before 1.1.2)
+- **Impact:** Attacker-controlled URLs can reach private and localhost services (cloud metadata, internal admin interfaces) from any host running LangChain image-token counting or HTML splitter helpers
+- **Root Cause:** TOCTOU and DNS rebinding window in `_url_to_size()` (validate-then-fetch pattern with independent DNS resolution); HTMLHeaderTextSplitter.split_text_from_url() validated the initial URL but followed redirects via `requests.get()` without revalidating redirect targets
+- **CVE:** CVE-2026-41488 (CVSS 3.1, langchain-openai SSRF), CVE-2026-41481 (CVSS 6.5, langchain-text-splitters redirect SSRF)
+- **Sources:** [GitLab Advisory CVE-2026-41488](https://radar.offseq.com/threat/cve-2026-41488-cwe-918-server-side-request-forgery-b7a78a3a), [GitLab Advisory CVE-2026-41481](https://radar.offseq.com/threat/cve-2026-41481-cwe-918-server-side-request-forgery-9716de86), [TheHackerWire CVE-2026-41488](https://www.thehackerwire.com/vulnerability/CVE-2026-41488/), [TheHackerWire CVE-2026-41481](https://www.thehackerwire.com/vulnerability/CVE-2026-41481/), [Vulnerability-Lookup CVE-2026-41488](https://vulnerability.circl.lu/vuln/cve-2026-41488)
+
+### 2026-04-23 - HexagonalRodent North Korean APT Industrializes Web3 Developer Attacks Using AI Coding Tools
+
+- **Target:** Web3 developers worldwide (subgroup of Famous Chollima/Lazarus tracked by Expel as HexagonalRodent)
+- **Impact:** 2,726 developer systems infected and 26,584 cryptocurrency wallet entries exfiltrated; an estimated $12 million in crypto assets stolen during Q1 2026; victims lured by fake high-paying job postings on LinkedIn and Web3 boards that ship "skills tests" abusing VSCode `tasks.json` to auto-execute malware on project open
+- **Root Cause:** Operators with low to medium technical skill scaled malware authoring, fake company website creation, and phishing lure crafting by prompting Cursor, ChatGPT, and Anima; Cursor blocked the associated accounts and IPs; OpenAI confirmed a small number of accounts had asked for help on dual-use topics
+- **Sources:** [Help Net Security](https://www.helpnetsecurity.com/2026/04/23/hexagonalrodent-north-korean-hackers-targeting-developers/), [Expel](https://expel.com/blog/inside-lazarus-how-north-korea-uses-ai-to-industrialize-attacks-on-developers/), [Yahoo / Decrypt](https://www.yahoo.com/news/articles/north-korean-hackers-industrialize-attacks-110000000.html), [KuCoin](https://www.kucoin.com/news/flash/north-korean-hackers-target-web3-developers-with-ai-powered-attacks-steal-12m-in-3-months)
+
+### 2026-04-23 - Google Workspace Reports 32% Rise in Indirect Prompt Injection Pages on the Open Web
+
+- **Target:** Public web content consumed by AI agents and Google Workspace Gemini integrations (sector-wide measurement based on Google's 2-3 billion crawled pages per month)
+- **Impact:** Google observed a 32% relative increase in malicious indirect prompt injection pages between November 2025 and February 2026; payloads target agentic AI features that can send email, run terminal commands, or process payments; Forcepoint amplified the same finding with field cases
+- **Root Cause:** AI agents ingest untrusted web content with no strict data versus instruction boundary; static blogs, forums, and comment sections are now intentional weaponization surfaces for IPI
+- **Sources:** [Google Online Security Blog "AI threats in the wild"](https://security.googleblog.com/2026/04/ai-threats-in-wild-current-state-of.html), [Google Workspace continuous IPI mitigation](https://security.googleblog.com/2026/04/google-workspaces-continuous-approach.html), [Help Net Security](https://www.helpnetsecurity.com/2026/04/24/indirect-prompt-injection-in-the-wild/), [WebProNews](https://www.webpronews.com/prompt-injections-lurk-in-plain-sight-googles-scan-reveals-webs-hidden-assault-on-ai-agents/)
+
+### 2026-04-23 - SecurityScorecard Finds 40,214 OpenClaw Instances Exposed Online with 63% RCE-Vulnerable
+
+- **Target:** OpenClaw (formerly Moltbot/Clawdbot) personal AI agent platform
+- **Impact:** Internet scan identified 40,214 reachable OpenClaw instances and 28,663 unique IP addresses hosting publicly accessible control panels; about 63% of deployments are vulnerable to remote code execution; 549 exposed instances correlate with prior breach activity and 1,493 are linked to known vulnerabilities; cloud and hosting providers concentrate the exposure
+- **Root Cause:** Default deployment patterns expose admin panels with no authentication; multiple unpatched 2026 OpenClaw CVEs including ClawBleed (CVE-2026-25253, CVSS 8.8), CVE-2026-25593, and the device-pairing privilege escalation chain CVE-2026-32922 (CVSS 9.9) remain widely deployed
+- **Sources:** [SecurityScorecard](https://securityscorecard.com/blog/how-exposed-openclaw-deployments-turn-agentic-ai-into-an-attack-surface/), [Infosecurity Magazine](https://www.infosecurity-magazine.com/news/researchers-40000-exposed-openclaw/), [Dataconomy](https://dataconomy.com/2026/04/23/hackers-exploit-vulnerabilities-in-openclaw-to-control-28000-systems/), [TechRadar](https://www.techradar.com/pro/security/the-math-is-simple-openclaw-trojan-horse-ai-agents-give-hackers-full-control-of-28-000-systems), [TechBriefly](https://techbriefly.com/2026/04/23/openclaw-ai-agent-flaw-exposes-over-28000-systems/)
+
+### 2026-04-22 - Bitwarden CLI npm Package Trojanized via Checkmarx KICS Cascade
+
+- **Target:** @bitwarden/cli npm package version 2026.4.0
+- **Impact:** Malicious build of Bitwarden CLI was live on npm for roughly 90 minutes (5:57 PM-7:30 PM ET, April 22, 2026) and pulled approximately 334 times; payload `bw1.js` ran on install and harvested GitHub and npm tokens, SSH keys, AWS, GCP, and Azure secrets, GitHub Actions secrets, AI tooling configuration files, environment variables, and shell history; data exfiltrated to public GitHub repositories created under victim accounts; Bitwarden vault data was not accessed
+- **Root Cause:** Earlier in the day, attackers compromised the Checkmarx KICS Docker Hub repository; Bitwarden's Dependabot pulled the malicious `checkmarx/kics:latest` image into the Bitwarden CI/CD pipeline, which then signed and published the trojanized CLI; payload contained the marker "Shai-Hulud: The Third Coming" with Dune-themed identifiers
+- **Sources:** [Bitwarden Statement](https://community.bitwarden.com/t/bitwarden-statement-on-checkmarx-supply-chain-incident/96127), [The Hacker News](https://thehackernews.com/2026/04/bitwarden-cli-compromised-in-ongoing.html), [The Register](https://www.theregister.com/2026/04/27/supply_chain_campaign_targets_security), [Socket](https://socket.dev/blog/bitwarden-cli-compromised), [SecurityWeek](https://www.securityweek.com/bitwarden-npm-package-hit-in-supply-chain-attack/), [CSO Online](https://www.csoonline.com/article/4162865/bitwarden-cli-password-manager-trojanized-in-supply-chain-attack.html), [Endor Labs](https://www.endorlabs.com/learn/shai-hulud-the-third-coming----inside-the-bitwarden-cli-2026-4-0-supply-chain-attack), [GitHub Issue 20353](https://github.com/bitwarden/clients/issues/20353)
+
+### 2026-04-22 - Xinference PyPI Package Compromise (Versions 2.6.0-2.6.2)
+
+- **Target:** Xinference (Xorbits Inference) Python package on PyPI; an open-source distributed AI model inference framework with 600,000+ downloads used to self-host LLMs, embedding models, and image generators
+- **Impact:** Three consecutive releases (2.6.0, 2.6.1, 2.6.2) shipped a base64-encoded credential-stealing payload that runs on import; harvests AWS credentials and secrets, Google Cloud configurations, Kubernetes tokens, environment variables, SSH keys, API keys, and database credentials; payload spawns a detached subprocess so it survives parent process exit
+- **Root Cause:** An automated bot account "XprobeBot" (active since October 2025) was compromised and committed the malicious payload directly into `__init__.py`; payload structure mirrors prior TeamPCP attacks (double base64, exhaustive credential sweep, detached subprocess on import), but TeamPCP publicly denied responsibility for this one
+- **Sources:** [Mend.io](https://www.mend.io/blog/malicious-xinference-pypi-teampcp-part-4/), [GBHackers](https://gbhackers.com/xinference-pypi-breach-exposes-developers/), [OX Security](https://www.ox.security/blog/xinference-allegedly-hacked-by-teampcp-malicious-package-in-pypi/), [Cyberpress](https://cyberpress.org/xinference-pypi-package-compromised/), [GitGuardian](https://blog.gitguardian.com/three-supply-chain-campaigns-hit-npm-pypi-and-docker-hub-in-48-hours/), [Orca Security](https://orca.security/resources/blog/xinference-pypi-package-compromise-remediation/)
+
+### 2026-04-21 - LMDeploy SSRF Exploited Within 13 Hours of Public Disclosure (CVE-2026-33626)
+
+- **Target:** LMDeploy LLM serving toolkit by Shanghai AI Laboratory / InternLM (all versions 0.12.0 and earlier with vision-language support)
+- **Impact:** Sysdig honeypot recorded the first exploit attempt 12 hours and 31 minutes after the GitHub advisory went live; attackers used the vision-language image loader as a generic HTTP SSRF primitive to port-scan internal networks behind the model server, hit AWS Instance Metadata Service (IMDS), Redis, MySQL, a secondary HTTP admin interface, and an out-of-band DNS exfiltration endpoint, all in a single eight-minute session
+- **Root Cause:** `load_image()` in `lmdeploy/vl/utils.py` fetches arbitrary URLs without validating internal or private IP ranges; fix in 0.12.3 adds URL validation and IP filtering
+- **CVE:** CVE-2026-33626 (CVSS 7.5)
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/04/lmdeploy-cve-2026-33626-flaw-exploited.html), [Sysdig](https://www.sysdig.com/blog/cve-2026-33626-how-attackers-exploited-lmdeploy-llm-inference-engines-in-12-hours), [GBHackers](https://gbhackers.com/attackers-exploit-lmdeploy-flaw/), [SC Media](https://www.scworld.com/brief/lmdeploy-vulnerability-exploited-in-real-time-highlighting-ai-infrastructure-risks), [SentinelOne CVE Profile](https://www.sentinelone.com/vulnerability-database/cve-2026-33626/), [Vulert](https://vulert.com/blog/lmdeploy-cve-2026-33626-ssrf/)
+
+### 2026-04-21 - CanisterSprawl Self-Propagating npm Worm via Namastex Labs and pgserve
+
+- **Target:** Namastex Labs npm publisher namespaces and pgserve (embedded PostgreSQL for Node.js development)
+- **Impact:** At least 16 malicious package versions across linked namespaces; pgserve releases 1.1.11, 1.1.12, and 1.1.13 (April 21 starting 22:14 UTC) carried a postinstall hook that harvested npm publish tokens, AWS, GCP, Azure, and Kubernetes credentials, SSH keys, and AI tooling configuration, then republished poisoned versions of every package the victim could publish; if a PyPI token was found, the worm jumped to PyPI; data exfiltrated both to a webhook (`telemetry.api-monitor.com`) and to ICP canister `cjn37-uyaaa-aaaac-qgnva-cai.raw.icp0.io`
+- **Root Cause:** Compromised maintainer credentials at Namastex Labs (a vendor of agentic AI tooling) plus npm's allowance of postinstall hooks; ICP canister IDs cannot be removed via registrar takedowns or DNS sinkholing, blunting law-enforcement response
+- **Sources:** [StepSecurity](https://www.stepsecurity.io/blog/pgserve-compromised-on-npm-malicious-versions-harvest-credentials), [Socket](https://socket.dev/blog/namastex-npm-packages-compromised-canisterworm), [The Hacker News](https://thehackernews.com/2026/04/self-propagating-supply-chain-worm.html), [The Register](https://www.theregister.com/2026/04/22/another_npm_supply_chain_attack/), [BleepingComputer](https://www.bleepingcomputer.com/news/security/new-npm-supply-chain-attack-self-spreads-to-steal-auth-tokens/), [SC Media](https://www.scworld.com/news/namastex-npm-packages-compromised-canisterworm-supply-chain-attack), [Cloud Security Alliance Lab](https://labs.cloudsecurityalliance.org/research/csa-research-note-npm-canistersprawl-supply-chain-worm-20260/), [Infosecurity Magazine](https://www.infosecurity-magazine.com/news/npm-supply-chain-worm-canister/)
+
+### 2026-04-21 - Anthropic Claude Mythos Preview Accessed by Discord Group via Vendor Breach
+
+- **Target:** Anthropic Claude Mythos Preview (cyber-offensive AI model held back under Project Glasswing limited-partner program)
+- **Impact:** A small private Discord community gained continuous access to Mythos starting on launch day (April 7, 2026) by guessing the preview URL pattern, drawing on operational details from a Mercor breach three weeks earlier; group has not used Mythos for cyberattacks but has retained access; Anthropic stated it is investigating "unauthorized access to Claude Mythos Preview through one of our third-party vendor environments"
+- **Root Cause:** A third-party contractor with operational knowledge confirmed URL guesses based on Anthropic's prior naming conventions; access controls relied on URL secrecy at the vendor environment rather than authenticated tenancy; Mercor breach context fed the recon
+- **Sources:** [TechCrunch](https://techcrunch.com/2026/04/21/unauthorized-group-has-gained-access-to-anthropics-exclusive-cyber-tool-mythos-report-claims/), [Bloomberg](https://www.bloomberg.com/news/articles/2026-04-21/anthropic-s-mythos-model-is-being-accessed-by-unauthorized-users), [Fortune](https://fortune.com/2026/04/23/anthropic-mythos-leak-dario-amodei-ceo-cybersecurity-hackers-exploits-ai/), [Engadget](https://www.engadget.com/ai/anthropic-is-investigating-unauthorized-access-of-its-mythos-cybersecurity-tool-091017168.html), [Cybernews](https://cybernews.com/security/anthropic-mythos-ai-unauthorized-access/), [Hackread](https://hackread.com/discord-access-anthropic-claude-mythos-ai-breach/), [GovInfoSecurity](https://www.govinfosecurity.com/report-discord-group-uses-claudes-supposedly-secret-mythos-a-31484), [The Next Web](https://thenextweb.com/news/anthropic-mythos-unauthorized-access-vendor-breach)
+
+### 2026-04-21 - Cloud Security Alliance Survey: AI Agent Incidents Common Across Enterprises
+
+- **Target:** AI agent governance across 418 surveyed organizations (CSA / Token Security study, "Autonomous but Not Controlled: AI Agent Incidents Now Common in Enterprises")
+- **Impact:** 65% of organizations experienced at least one AI agent-related cybersecurity incident in the past 12 months; 88% confirmed or suspected AI agent incidents; 82% had discovered previously unknown AI agents in their environment in the past year; 61% reported data exposure, 43% operational disruption, 35% financial loss, and 41% unintended actions in business processes from these incidents; only 21% had formal decommissioning processes in place
+- **Root Cause:** Survey analysis; visibility and decommissioning gaps allow shadow AI agents to operate outside identity, network, and audit controls; healthcare incident rate reaches 92.7%
+- **Sources:** [CSA Press Release](https://cloudsecurityalliance.org/press-releases/2026/04/21/new-cloud-security-alliance-survey-reveals-82-of-enterprises-have-unknown-ai-agents-in-their-environments), [BusinessWire](https://www.businesswire.com/news/home/20260421037010/en/New-Cloud-Security-Alliance-Survey-Reveals-82-of-Enterprises-Have-Unknown-AI-Agents-in-Their-Environments), [Infosecurity Magazine](https://www.infosecurity-magazine.com/news/unchecked-ai-agents-cause/), [ADVISOR Magazine](https://www.lifehealth.com/autonomous-but-not-controlled-ai-agent-incidents-now-common-in-enterprises/)
+
+### 2026-04-21 - Flowise CSV Agent Prompt Injection RCE (CVE-2026-41264)
+
+- **Target:** FlowiseAI Flowise (all versions before 3.1.0)
+- **Impact:** Authenticated RCE on Flowise hosts through any chatflow that uses the CSV Agent node; an attacker prompts the LLM into emitting a Python script that the server then runs without sandboxing
+- **Root Cause:** `run` method of the CSV_Agents class evaluates LLM-generated Python without proper sandboxing; bypasses earlier hardening for CVE-2026-41137; reported through Trend Micro Zero Day Initiative; fix in 3.1.0 disallows all imports inside CSV Agent
+- **CVE:** CVE-2026-41264 (CVSS 7.0)
+- **Sources:** [GitHub Advisory GHSA-3hjv-c53m-58jj](https://github.com/FlowiseAI/Flowise/security/advisories/GHSA-3hjv-c53m-58jj), [GitLab Advisory](https://advisories.gitlab.com/npm/flowise-components/CVE-2026-41264/), [THREATINT](https://cve.threatint.eu/CVE/CVE-2026-41264), [SC Media](https://www.scworld.com/brief/active-exploitation-of-max-severity-flowise-bug-threatens-broad-compromise)
 
 ### 2026-04-20 - Vercel Breach via Context.ai AI Tool Supply Chain
 
@@ -895,6 +975,17 @@ Last updated: 2026-04-21
 | ChatGPT credentials on dark web | 225,000+ | [The Hacker News](https://thehackernews.com/2024/03/over-225000-compromised-chatgpt.html) |
 | AI coding tool vulns (5 tools tested) | 69 vulns, 6 critical | [Fortune](https://fortune.com/2025/12/15/ai-coding-tools-security-exploit-software/) |
 | Deepfake fraud losses Q1 2025 | $200 million | [AI Incident Database](https://incidentdatabase.ai/) |
+| Organizations with AI agent-related cyber incident in past 12 months (CSA, Apr 2026) | 65% (88% confirmed or suspected) | [CSA Press Release](https://cloudsecurityalliance.org/press-releases/2026/04/21/new-cloud-security-alliance-survey-reveals-82-of-enterprises-have-unknown-ai-agents-in-their-environments) |
+| Enterprises that discovered previously unknown AI agents in their environment | 82% | [CSA Press Release](https://cloudsecurityalliance.org/press-releases/2026/04/21/new-cloud-security-alliance-survey-reveals-82-of-enterprises-have-unknown-ai-agents-in-their-environments) |
+| Healthcare-sector AI agent incident rate (CSA, Apr 2026) | 92.7% | [Infosecurity Magazine](https://www.infosecurity-magazine.com/news/unchecked-ai-agents-cause/) |
+| Organizations with formal AI agent decommissioning processes | 21% | [CSA Press Release](https://cloudsecurityalliance.org/press-releases/2026/04/21/new-cloud-security-alliance-survey-reveals-82-of-enterprises-have-unknown-ai-agents-in-their-environments) |
+| Increase in malicious indirect prompt injection web pages (Google, Nov 2025-Feb 2026) | 32% relative increase | [Google Online Security Blog](https://security.googleblog.com/2026/04/ai-threats-in-wild-current-state-of.html) |
+| OpenClaw instances reachable on the public internet (SecurityScorecard, Apr 2026) | 40,214 (28,663 unique IPs hosting accessible control panels) | [SecurityScorecard](https://securityscorecard.com/blog/how-exposed-openclaw-deployments-turn-agentic-ai-into-an-attack-surface/) |
+| Exposed OpenClaw instances vulnerable to RCE | ~63% | [Infosecurity Magazine](https://www.infosecurity-magazine.com/news/researchers-40000-exposed-openclaw/) |
+| Crypto stolen by HexagonalRodent in Q1 2026 via AI-augmented Web3 dev attacks | $12 million; 26,584 wallets exfiltrated from 2,726 systems | [Help Net Security](https://www.helpnetsecurity.com/2026/04/23/hexagonalrodent-north-korean-hackers-targeting-developers/) |
+| LMDeploy CVE-2026-33626 time from advisory to first in-the-wild exploit | 12 hours 31 minutes | [Sysdig](https://www.sysdig.com/blog/cve-2026-33626-how-attackers-exploited-lmdeploy-llm-inference-engines-in-12-hours) |
+| Bitwarden CLI 2026.4.0 trojanized npm package window | ~90 minutes (April 22, 2026); 334 downloads | [The Hacker News](https://thehackernews.com/2026/04/bitwarden-cli-compromised-in-ongoing.html) |
+| Xinference PyPI total downloads at time of compromise | 600,000+ | [Mend.io](https://www.mend.io/blog/malicious-xinference-pypi-teampcp-part-4/) |
 
 ---
 
@@ -905,8 +996,11 @@ Last updated: 2026-04-21
 A single compromised credential triggers lateral movement across multiple package registries and downstream organizations.
 
 **Key incidents:**
+- Bitwarden CLI cascade (Apr 22, 2026): Checkmarx KICS Docker Hub compromise propagated through Bitwarden's Dependabot pipeline, signing and publishing a trojanized @bitwarden/cli@2026.4.0 that harvested AI tooling configs alongside cloud and registry secrets.
+- CanisterSprawl npm worm via Namastex Labs and pgserve (Apr 21, 2026): Self-propagating worm jumps from npm into PyPI when a developer holds tokens for both registries; data exfiltrates to an ICP canister that is structurally takedown-resistant.
 - Vercel / Context.ai OAuth chain (Apr 2026): Lumma Stealer infection of a Context.ai employee led to OAuth token theft, then escalated into the Vercel Google Workspace tenant because a Vercel employee had granted the Context.ai browser extension "Allow All" enterprise scopes.
 - TeamPCP cascade (Mar 2026): Trivy -> Checkmarx -> LiteLLM -> Telnyx -> CanisterWorm -> Cisco -> Mercor. One service account compromise led to 1,000+ SaaS environments breached.
+- Xinference PyPI compromise (Apr 22, 2026): Compromised XprobeBot account injected a base64 credential stealer into `__init__.py` for versions 2.6.0-2.6.2 of an inference framework with 600,000+ downloads.
 - UNC1069 Contagious Interview (Apr 2026): 1,700+ malicious packages across npm, PyPI, Go, Rust, and Packagist since Jan 2025; ClickFix lures via fake Zoom/Teams links after social engineering.
 - Axios npm compromise (Mar 2026): Social engineering of one maintainer threatened 70-100M weekly downloads.
 - Bybit heist (Feb 2025): Compromise of one Safe{Wallet} developer led to $1.5B theft.
@@ -952,6 +1046,7 @@ AI tools run user-supplied or AI-generated code without isolation.
 
 **Key incidents:**
 - Anthropic MCP STDIO design RCE (Apr 2026): Reference SDKs in Python, TypeScript, Java, and Rust execute attacker-supplied command strings passed to STDIO transport; 200K+ servers and 150M+ downloads exposed; Anthropic declined to patch.
+- Flowise CSV Agent prompt injection RCE (CVE-2026-41264, Apr 21, 2026): Lack of sandboxing in the CSV_Agents `run` method lets an LLM-emitted Python script run on the host; bypass for the earlier CVE-2026-41137 hardening.
 - Flowise MCP Adapters CVE-2026-40933 (CVSS 10.0): Unsafe serialization of stdio commands lets an authenticated user add an MCP server that runs arbitrary commands such as `npx -c "touch /tmp/pwn"`.
 - Marimo CVE-2026-39987 (CVSS 9.3): /terminal/ws WebSocket lacks auth; weaponized within 10 hours and used to drop NKAbuse blockchain-C2 malware hosted on a Hugging Face typosquat.
 - Flowise CVE-2025-59528 (CVSS 10.0): CustomMCP node executes JavaScript from mcpServerConfig without validation; 12K+ exposed instances under active exploitation from Starlink IP in April 2026.
@@ -993,6 +1088,16 @@ AI agents execute privileged operations without per-action permission checks.
 - GitHub Copilot YOLO mode (CVE-2025-53773): Prompt injection disables all user confirmations.
 - Cursor CurXecute (CVE-2025-54135): Config changes and malicious commands execute before user can reject.
 
+### SSRF in AI Inference and Tooling
+
+URL handling in vision, image, and text-loading helpers fetches attacker-controlled hosts without isolating them from internal networks or cloud metadata services.
+
+**Key incidents:**
+- LMDeploy CVE-2026-33626 (Apr 21, 2026): `load_image()` in vision-language module fetches arbitrary URLs without IP filtering; first in-the-wild exploitation 12 hours 31 minutes after disclosure.
+- LangChain langchain-openai CVE-2026-41488 (Apr 24, 2026): TOCTOU/DNS-rebinding window in `_url_to_size()` between SSRF validation and the separate fetch with independent DNS resolution.
+- LangChain langchain-text-splitters CVE-2026-41481 (Apr 24, 2026): `HTMLHeaderTextSplitter.split_text_from_url()` validated only the initial URL and followed redirects via default `requests.get()` settings.
+- mcp-atlassian SSRF CVE-2026-27826 (Feb 2026): Custom `X-Atlassian-Jira-Url` and `X-Atlassian-Confluence-Url` headers caused outbound requests without validation, paired with arbitrary file write CVE-2026-27825 for unauthenticated RCE on network-exposed deployments.
+
 ### No Output Destination Control
 
 AI agents send data to arbitrary external endpoints without restriction.
@@ -1011,8 +1116,9 @@ Threat actors use commercial or open-source AI agents to plan and execute the bu
 **Key incidents:**
 - GTG-1002 Chinese espionage (Sep-Nov 2025): Claude Code executed 80-90% of tactical operations against ~30 orgs after operators posed as legitimate red teamers.
 - CyberStrikeAI FortiGate campaign (Jan-Feb 2026): Russian-speaking actor used commercial GenAI plus the open-source CyberStrikeAI framework to compromise 600+ FortiGate devices across 55 countries without exploiting a single CVE.
+- HexagonalRodent Web3 developer campaign (Q1 2026, reported Apr 23, 2026): North Korean APT subgroup of Famous Chollima used Cursor, ChatGPT, and Anima to author malware, build fake company websites, and craft phishing lures; stole an estimated $12 million in crypto across 26,584 wallets exfiltrated from 2,726 developer systems.
 - Drift Protocol $285M exploit (Apr 2026): UNC4736 ran a six-month multi-channel social engineering campaign against multisig signers.
-- CanisterWorm (Mar 2026): First npm worm to use decentralized ICP infrastructure as C2, making takedown structurally impossible.
+- CanisterWorm and CanisterSprawl (Mar-Apr 2026): First and second npm worms to use decentralized ICP infrastructure as C2, with the second adding cross-ecosystem hop to PyPI when a developer holds both tokens.
 
 ### Credential Theft via AI Tools
 
