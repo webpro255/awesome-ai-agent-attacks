@@ -4,7 +4,7 @@ A curated timeline of real AI agent security incidents, breaches, and vulnerabil
 
 No opinions. No product pitches. Just facts with sources.
 
-Last updated: 2026-04-28
+Last updated: 2026-06-30
 
 ---
 
@@ -20,6 +20,239 @@ Last updated: 2026-04-28
 ---
 
 ## 2026 Incidents
+
+### 2026-06-26 - Amazon Q Developer Silent MCP Config Auto-Load (CVE-2026-12957, CVE-2026-12958)
+
+- **Target:** Language Servers for AWS before 1.69.0; Amazon Q Developer for VS Code before 2.20, JetBrains before 4.3, Eclipse before 2.7.4; AWS Toolkit with Amazon Q for Visual Studio before 1.94.0.0
+- **Impact:** Opening a malicious repository silently executes commands and steals credentials, including AWS access keys, session tokens, cloud CLI tokens, API secrets, and SSH agent sockets, because spawned processes inherit the full developer environment
+- **Root Cause:** The extension auto-loaded MCP server configurations from `.amazonq/mcp.json` workspace files with no user consent or workspace-trust verification (CVE-2026-12957, improper trust boundary), plus missing symlink validation (CVE-2026-12958); found by Wiz Research (Maor Dokhanian) on April 20, 2026 and patched May 12, 2026
+- **CVE:** CVE-2026-12957, CVE-2026-12958
+- **Sources:** [Cybersecurity News](https://cybersecuritynews.com/amazon-q-vulnerability/), [AWS Security Blog (ICYMI May 2026)](https://aws.amazon.com/blogs/security/icymi-may-2026-aws-security/)
+
+### 2026-06-23 - Dify "DifyTap" Cross-Tenant Data Exposure (CVE-2026-41947 to CVE-2026-41950)
+
+- **Target:** Dify (LangGenius) open-source LLM app platform, fixed in 1.14.2
+- **Impact:** Four flaws, two critical and two unauthenticated. The tracing subsystem can be redirected to an attacker endpoint to persistently exfiltrate all messages and responses from any accessible application (CVE-2026-41947); the Plugin Daemon allows unauthenticated access to arbitrary internal API endpoints via path traversal (CVE-2026-41948); console users and chatbots can read other organizations' documents and attached files (CVE-2026-41949, CVE-2026-41950)
+- **Root Cause:** Missing tenant-identity validation and absent authentication on internal file and tracing endpoints; the platform also shipped a vulnerable PDFium binary for 18+ months, and container scanners missed the issues due to Dify's unpackaged code layout
+- **CVE:** CVE-2026-41947, CVE-2026-41948, CVE-2026-41949, CVE-2026-41950
+- **Sources:** [SC Media](https://www.scworld.com/brief/four-vulnerabilities-in-dify-expose-cross-tenant-data), [UVcyber Threat Advisory](https://www.uvcyber.com/resources/reports/threat-advisory-difytap-vulnerabilities)
+
+### 2026-06-22 - vLLM OpenAI-Compatible API Authentication Bypass (CVE-2026-48746)
+
+- **Target:** vLLM OpenAI-compatible API server, versions 0.3.0 through 0.21.x (fixed in 0.22.0)
+- **Impact:** A remote attacker bypasses API-key authentication and reaches protected inference endpoints without a valid `VLLM_API_KEY` or `--api-key`
+- **Root Cause:** `AuthenticationMiddleware.__call__` reconstructed the request path with `URL(scope=scope).path`, which trusts the unsanitized `Host` header; a crafted `Host: localhost/v1/models?` manipulates the path so the `/v1` auth check fails open. The fix uses `scope["path"]` directly
+- **CVE:** CVE-2026-48746 (CVSS 9.1)
+- **Sources:** [Miggo Vulnerability Database](https://www.miggo.io/vulnerability-database/cve/CVE-2026-48746), [OpenCVE](https://app.opencve.io/cve/?vendor=vllm-project&product=vllm)
+
+### 2026-06-18 - Microsoft AutoGen Studio "AutoJack" Drive-By Code Execution
+
+- **Target:** Microsoft AutoGen Studio built from the GitHub main branch after the MCP plugin was added and before commit b047730; published PyPI releases, including autogenstudio 0.4.2.2, were not affected
+- **Impact:** A malicious webpage tricks a localhost AutoGen Studio agent into executing arbitrary PowerShell, Bash, or executables with the developer's privileges; Microsoft demonstrated launching Calculator from a visited page
+- **Root Cause:** Three chained weaknesses: the MCP WebSocket trusted localhost connections, the auth middleware excluded `/api/mcp/*` routes, and the WebSocket accepted a base64 `server_params` value from the URL and passed it to process-launch code
+- **Sources:** [BleepingComputer](https://www.bleepingcomputer.com/news/security/microsoft-fixes-autogen-studio-flaw-that-enabled-code-execution/), [Threat Modeling](https://threat-modeling.com/microsoft-autogen-studio-code-execution-june-2026/)
+
+### 2026-06-17 - Mastra AI npm Scope Compromise (Sapphire Sleet / UNC1069)
+
+- **Target:** 144+ packages across the `mastra` and `@mastra` npm scope; `@mastra/core` draws more than 918,000 weekly downloads
+- **Impact:** The entire scope was backdoored in an 88-minute automated campaign; a malicious `easy-day-js` typosquat of dayjs ran a `postinstall` dropper that disabled TLS verification, contacted a C2, and downloaded a detached cross-platform information stealer that harvested browser history and 160+ cryptocurrency wallet extensions before self-deleting
+- **Root Cause:** Takeover of a dormant former-contributor npm account (`ehindero`) that still held publish rights, reached via a malicious LinkedIn link to an active employee; Microsoft attributed it to North Korean actor Sapphire Sleet (UNC1069), the same actor behind the earlier Axios compromise
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/06/144-mastra-npm-packages-compromised-via.html), [Microsoft Security Blog](https://www.microsoft.com/en-us/security/blog/2026/06/17/postinstall-payload-inside-mastra-npm-supply-chain-compromise/), [Snyk](https://snyk.io/blog/a-forgotten-contributor-account-compromised-the-entire-mastra-npm-package-scope/)
+
+### 2026-06-15 - Microsoft 365 Copilot "SearchLeak" One-Click Data Theft (CVE-2026-42824)
+
+- **Target:** Microsoft 365 Copilot Enterprise (Copilot Search)
+- **Impact:** A single malicious link click could steal emails, calendar details, indexed SharePoint and OneDrive files, one-time and MFA codes, and password-reset links with no authentication; Varonis demonstrated a proof of concept, with no in-the-wild exploitation observed. Microsoft mitigated server-side
+- **Root Cause:** Three chained flaws: parameter-to-prompt injection through the search `q` parameter, a race condition where streamed content rendered before sanitization, and a Content Security Policy allowlist bypass through Bing's image-fetch endpoint
+- **CVE:** CVE-2026-42824 (Microsoft 6.5, NVD 7.5)
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/06/one-click-microsoft-365-copilot-flaw.html), [BleepingComputer](https://www.bleepingcomputer.com/news/security/new-attack-turned-microsoft-365-copilot-into-1-click-data-theft-tool/), [Varonis](https://www.varonis.com/blog/searchleak)
+
+### 2026-06-08 - Langflow Path Traversal RCE Exploited in the Wild (CVE-2026-5027)
+
+- **Target:** Langflow before 1.9.0; roughly 7,000 instances exposed on the public internet (Censys)
+- **Impact:** Unauthenticated arbitrary file write leading to remote code execution, for example dropping a cron job; default auto-login means a single unauthenticated request reaches the vulnerable endpoint. After disclosure by Tenable and a 1.9.0 patch, attackers weaponized the flaw and exploitation was observed in June 2026
+- **Root Cause:** `POST /api/v2/files` does not sanitize the multipart `filename` parameter, allowing `../` traversal to write files anywhere on the filesystem
+- **CVE:** CVE-2026-5027 (CVSS 8.8)
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/06/unpatched-langflow-flaw-cve-2026-5027.html), [Orca Security](https://orca.security/resources/blog/cve-2026-5027-langflow-path-traversal-rce/), [SecurityWeek](https://www.securityweek.com/critical-langflow-vulnerability-exploited-hours-after-public-disclosure/)
+
+### 2026-06-05 - Hades PyPI Worm Wave (Shai-Hulud / Miasma Lineage)
+
+- **Target:** 19 PyPI packages across 37 malicious wheel artifacts, with a secondary cluster targeting computational-biology and MCP developers (IBM X-Force)
+- **Impact:** A `*-setup.pth` file runs the payload at Python interpreter startup with no import required; a Bun-based JavaScript stealer harvests credentials for GitHub, npm, PyPI, JFrog, CircleCI, Anthropic, AWS, GCP, Azure, and Kubernetes, plus SSH keys and Vault tokens. Notably, the malware embeds a plain-text prompt injection that tries to trick LLM-based package-analysis tools into rating it safe
+- **Root Cause:** `.pth` startup-hook execution combined with the Shai-Hulud and Miasma worm lineage; GitHub repo descriptions carried the marker "Hades - The End for the Damned"
+- **Sources:** [Socket](https://socket.dev/blog/shai-hulud-descends-to-hades-miasma-pypi-wave), [The Hacker News](https://thehackernews.com/2026/06/hades-pypi-attack-19-packages-poisoned.html), [Dark Reading](https://www.darkreading.com/application-security/hades-campaign-pypi-shai-hulud)
+
+### 2026-06-05 - Claude Code GitHub Action Prompt-Injection Secret Exfiltration
+
+- **Target:** Claude Code GitHub Action before 2.1.128
+- **Impact:** Prompt injection hidden in GitHub issues, pull requests, or comments could steer the agent into reading unsanitized environment data through `/proc/self/environ` and exfiltrating CI/CD secrets, API keys, and cloud credentials through issue comments, workflow logs, web requests, or shell commands
+- **Root Cause:** The agent processed untrusted GitHub content in the same runtime that held privileged secrets; disclosed by Microsoft researchers through HackerOne on April 29, 2026 and patched in 2.1.128 on May 5, 2026
+- **Sources:** [Decrypt](https://decrypt.co/370238/claude-code-vulnerability-attackers-steal-credentials-github-microsoft), [Cloud Security Alliance Lab](https://labs.cloudsecurityalliance.org/research/csa-research-note-claude-code-github-action-prompt-injection/)
+
+### 2026-06-03 - node-gyp "Phantom Gyp" Self-Propagating npm Worm (Miasma)
+
+- **Target:** 57 npm packages across hundreds of malicious versions; the largest AI target was `@vapi-ai/server-sdk` (Vapi.ai voice-AI SDK, ~86,500 weekly downloads), with poisoned versions 0.11.1, 0.11.2, 1.2.1, and 1.2.2
+- **Impact:** A weaponized `binding.gyp` makes node-gyp execute attacker code during the `npm install` configuration phase, bypassing pre/postinstall monitoring; it harvests npm, GitHub, AWS, GCP, Azure, Vault, and Kubernetes credentials, injects GitHub Actions workflows for persistence, and self-propagates
+- **Root Cause:** Novel abuse of GYP command-expansion syntax in `binding.gyp` build hooks; a descendant of the Shai-Hulud and Miasma worm families
+- **Sources:** [Snyk](https://snyk.io/blog/node-gyp-supply-chain-compromise-self-propagating-npm-worm-binding-gyp/), [StepSecurity](https://www.stepsecurity.io/blog/binding-gyp-npm-supply-chain-attack-spreads-like-worm)
+
+### 2026-06-01 - Red Hat @redhat-cloud-services npm "Miasma" Worm
+
+- **Target:** At least 32 package releases under the `@redhat-cloud-services` npm namespace (averaging ~80,000 weekly downloads), originating in the RedHatInsights/javascript-clients CI/CD pipeline
+- **Impact:** A `preinstall` hook ran an obfuscated `index.js` dropper that steals GitHub tokens, SSH keys, and GCP and Azure cloud identities on developer machines, scrapes GitHub Actions runner memory in CI, and republishes poisoned packages with valid SLSA provenance attestations
+- **Root Cause:** A compromised Red Hat employee account injected malicious GitHub Actions workflows that requested an OIDC token via `id-token: write` and abused npm trusted publishing; part of the Shai-Hulud and Miasma lineage. Tracked as Red Hat RHSB-2026-006
+- **Sources:** [Wiz](https://www.wiz.io/blog/miasma-supply-chain-attack-targeting-redhat-npm-packages), [Microsoft Security Blog](https://www.microsoft.com/en-us/security/blog/2026/06/02/preinstall-persistence-inside-red-hat-npm-miasma-credential-stealing-campaign/), [Red Hat](https://access.redhat.com/security/vulnerabilities/RHSB-2026-006)
+
+### 2026-05-28 - Nx Console Malicious VS Code Extension Leads to GitHub Repository Breach
+
+- **Target:** Poisoned Nx Console VS Code extension (malicious build delivered via auto-update) used to compromise a GitHub employee device
+- **Impact:** Unauthorized access to and exfiltration of internal GitHub source-code repositories after the trojanized IDE extension ran on the victim's machine
+- **Root Cause:** A prior Nx developer-system compromise let attackers push a trojanized extension build through the marketplace auto-update channel, abusing the trust developers place in recommended IDE extensions
+- **Sources:** [CISA Alert](https://www.cisa.gov/news-events/alerts/2026/05/28/supply-chain-compromises-impact-nx-console-and-github-repositories), [BleepingComputer](https://www.bleepingcomputer.com/news/security/vscode-ide-forks-expose-users-to-recommended-extension-attacks/)
+
+### 2026-05-25 - "Megalodon" Mass GitHub Actions Secret Exfiltration
+
+- **Target:** 5,561 distinct public GitHub repositories hit by 5,718 malicious commits, surfaced through trojanized Tiledesk npm versions
+- **Impact:** Injected GitHub Actions workflows harvested CI environment variables, AWS, GCP, and Azure credentials, SSH keys, Docker and Kubernetes configs, and GitLab and GitHub tokens, deployed across a six-hour window on May 18, 2026
+- **Root Cause:** Malicious CI workflows injected across thousands of repositories; the same npm account that shipped clean Tiledesk versions unknowingly published poisoned ones after its GitHub repository was compromised. Researched by SafeDep with additional analysis from OX Security
+- **Sources:** [SecurityWeek](https://www.securityweek.com/over-5500-github-repositories-infected-in-megalodon-supply-chain-attack/), [StepSecurity](https://www.stepsecurity.io/blog/megalodon-mass-github-actions-secret-exfiltration-across-5-500-public-repositories)
+
+### 2026-05-20 - NVIDIA Triton Inference Server Authentication Bypass (CVE-2026-24207)
+
+- **Target:** NVIDIA Triton Inference Server on Linux, all releases prior to r26.03
+- **Impact:** A critical unauthenticated authentication bypass can lead to code execution, privilege escalation, data tampering, denial of service, or information disclosure, alongside seven additional flaws including path traversal, integer overflow, and DALI-backend issues
+- **Root Cause:** Authentication bypass (CWE-288) plus memory-safety and integer-overflow defects in the model-serving stack
+- **CVE:** CVE-2026-24207 (CVSS 9.8); also CVE-2026-24206, -24208, -24209, -24210, -24213, -24214, -24215
+- **Sources:** [NVIDIA Security Bulletin](https://nvidia.custhelp.com/app/answers/detail/a_id/5828/~/security-bulletin:-nvidia-triton-inference-server---may-2026), [Security Online](https://securityonline.info/nvidia-triton-inference-server-vulnerability-cve-2026-24207-authentication-bypass/)
+
+### 2026-05-18 - actions-cool GitHub Actions Tag Hijack (Mini Shai-Hulud)
+
+- **Target:** `actions-cool/issues-helper` (all 53 tags) and `actions-cool/maintain-one-comment` (15 tags), retargeted to a single imposter commit
+- **Impact:** A Bun-based payload reads decrypted secrets directly from the `Runner.Worker` process memory inside GitHub Actions and exfiltrates CI/CD credentials from every workflow that pinned the actions by tag
+- **Root Cause:** Repository or maintainer compromise plus mutable-tag retargeting, attributed to the TeamPCP Mini Shai-Hulud campaign
+- **Sources:** [StepSecurity](https://www.stepsecurity.io/blog/actions-cool-issues-helper-github-action-compromised-all-tags-point-to-imposter-commit-that-exfiltrates-ci-cd-credentials), [The Hacker News](https://thehackernews.com/2026/05/github-actions-supply-chain-attack.html)
+
+### 2026-05-15 - PraisonAI Auth-Disabled API Server (CVE-2026-44338)
+
+- **Target:** PraisonAI legacy Flask API server, before 4.6.34
+- **Impact:** Unauthenticated attackers enumerate configured agents via `GET /agents`, trigger workflows via `POST /chat`, extract sensitive output, and exhaust costly model quotas; exploited within hours of disclosure
+- **Root Cause:** Hardcoded insecure defaults (`AUTH_ENABLED = False`, `AUTH_TOKEN = None`) with the server bound to `0.0.0.0:8080` and a `check_auth()` that fails open when auth is disabled
+- **CVE:** CVE-2026-44338
+- **Sources:** [Cybersecurity News](https://cybersecuritynews.com/praisonai-vulnerability-exploited/)
+
+### 2026-05-14 - OpenAI Internal Source Code and Certificate Theft via TanStack Worm
+
+- **Target:** OpenAI internal source-code repositories and code-signing certificates
+- **Impact:** Attackers stole limited credential material and digital certificates used to sign OpenAI products from a limited subset of internal repositories after two employee devices were infected; OpenAI said no user data, production systems, or intellectual property were compromised and rotated affected certificates, forcing a macOS app update
+- **Root Cause:** The compromise of the open-source TanStack library, where attackers published 84 malicious versions in a roughly six-minute window (part of the Mini Shai-Hulud worm), infected the developer machines that reached OpenAI's repositories
+- **Sources:** [TechCrunch](https://techcrunch.com/2026/05/14/openai-says-hackers-stole-some-data-after-latest-code-security-issue/), [The Hacker News (Mini Shai-Hulud)](https://thehackernews.com/2026/05/mini-shai-hulud-worm-compromises.html)
+
+### 2026-05-12 - Claude Code Deeplink RCE
+
+- **Target:** Claude Code before 2.1.118
+- **Impact:** A crafted `claude-cli://` deeplink injects `--settings={...}` (including a `SessionStart` hooks payload) through the `--prefill` value, so one click runs arbitrary shell commands; pointing the deeplink's `repo` parameter at an already-trusted local repository suppressed all warning prompts for a silent compromise
+- **Root Cause:** `eagerParseCliFlag` in `main.tsx` used `startsWith` across the whole argv array without tracking whether a `--settings=` string was a real flag or the value of another flag, letting flags be smuggled inside values. Researcher: Joern Chen (joernchen, 0day.click)
+- **Sources:** [0day.click](https://0day.click/recipe/2026-05-12-cc-rce/), [GBHackers](https://gbhackers.com/claude-code-vulnerability/), [Cybersecurity News](https://cybersecuritynews.com/claude-code-rce-flaw/)
+
+### 2026-05-12 - Cline AI Agent Unauthenticated WebSocket RCE (CVE-2026-44211)
+
+- **Target:** Cline AI coding agent (the bundled Kanban npm server) on macOS, Linux, and Windows; no patched version at disclosure
+- **Impact:** A malicious webpage can reach Cline's background local WebSocket server on port 3484, leak filesystem paths, git branch details, task titles, and live agent chat messages, and execute arbitrary code on the developer's machine
+- **Root Cause:** The local WebSocket server started with no authentication and no Origin-header validation, and browsers do not restrict cross-origin WebSocket connections to localhost. Documented by Oasis Security and researcher TheRealSpencer
+- **CVE:** CVE-2026-44211 (CVSS 9.7)
+- **Sources:** [Cybersecurity News](https://cybersecuritynews.com/cline-ai-agent-vulnerability/), [Oasis Security](https://www.oasis.security/blog/)
+
+### 2026-05-12 - GitHub Copilot and VS Code Security-Feature Bypass (CVE-2026-41109)
+
+- **Target:** GitHub Copilot extension before v1.43.20260512 and Visual Studio Code up to 1.96.x (fixed in VS Code 1.97.0)
+- **Impact:** A low-privileged local attacker can bypass Copilot's user-consent prompts and content filters, inject malicious code suggestions, silently disable telemetry consent, and leak environment variables and API keys through suggestion logging
+- **Root Cause:** Improper validation of inter-process communication between the Copilot extension and the VS Code core when the workspace was marked trusted; the flaw is in the integration layer, not the model
+- **CVE:** CVE-2026-41109 (CVSS 7.8)
+- **Sources:** [Windows News AI](https://windowsnews.ai/article/cve-2026-41109-copilot-and-vs-code-security-feature-bypass-in-the-dev-workflow.417882), [The Hacker Wire](https://www.thehackerwire.com/github-copilot-visual-studio-injection-bypasses-security-feature-cve-2026-41109/)
+
+### 2026-05-11 - Mini Shai-Hulud Worm Compromises TanStack, Mistral AI, and Guardrails AI (CVE-2026-45321)
+
+- **Target:** 170+ packages across npm and PyPI with 518 million cumulative downloads, including TanStack (42 packages, 84 versions), Mistral AI, Guardrails AI (`guardrails-ai==0.10.1`, project quarantined), OpenSearch, and UiPath
+- **Impact:** Credential theft across cloud providers, cryptocurrency wallets, AI tools, messaging apps, and CI systems; GitHub Actions cache poisoning and OIDC token extraction; self-propagation using any publishable npm token, with a dead-man's switch that runs destructive commands if a compromised token is revoked. It was the first documented npm worm to ship valid SLSA Build Level 3 provenance attestations
+- **Root Cause:** Abuse of npm OIDC trusted publishing and CI cache poisoning with malicious install-time hooks, attributed to TeamPCP
+- **CVE:** CVE-2026-45321 (CVSS 9.6)
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/05/mini-shai-hulud-worm-compromises.html), [Socket](https://socket.dev/blog/tanstack-npm-packages-compromised-mini-shai-hulud-supply-chain-attack), [Tenable](https://www.tenable.com/blog/mini-shai-hulud-frequently-asked-questions)
+
+### 2026-05-11 - Google GTIG Reports First AI-Developed Zero-Day for Mass Exploitation
+
+- **Target:** A popular open-source web-based system-administration tool (vendor unnamed) and internet-facing infrastructure running it
+- **Impact:** A cybercrime actor used a large language model to discover and weaponize a 2FA-bypass zero-day for a planned mass-exploitation campaign; Google Threat Intelligence Group identified and disrupted it through responsible disclosure before use
+- **Root Cause:** The LLM reasoned about a hardcoded trust assumption in the tool's 2FA enforcement logic, a semantic flaw that traditional scanners and fuzzers miss; the generated Python exploit carried LLM hallmarks including educational docstrings and a hallucinated CVSS score
+- **Sources:** [Google Cloud Threat Intelligence](https://cloud.google.com/blog/topics/threat-intelligence/ai-vulnerability-exploitation-initial-access), [The Hacker News](https://thehackernews.com/2026/05/hackers-used-ai-to-develop-first-known.html), [CNBC](https://www.cnbc.com/2026/05/11/google-thwarts-effort-hacker-group-use-ai-mass-exploitation-event.html)
+
+### 2026-05-10 - Ollama "Bleeding Llama" Unauthenticated Memory Leak (CVE-2026-7482)
+
+- **Target:** Ollama before 0.17.1; more than 300,000 servers exposed online
+- **Impact:** A remote, unauthenticated out-of-bounds heap read leaks process memory, including environment variables, API keys, system prompts, and other users' conversation data, which can then be pushed out through the `/api/push` endpoint
+- **Root Cause:** The `/api/create` endpoint processes attacker-supplied GGUF files whose declared tensor offset and size exceed the actual file length; during quantization the server reads past the heap buffer using unsafe Go pointer operations. Found by Cyera
+- **CVE:** CVE-2026-7482 (CVSS 9.1)
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/05/ollama-out-of-bounds-read-vulnerability.html), [Cyera](https://www.cyera.com/research/bleeding-llama-critical-unauthenticated-memory-leak-in-ollama), [SecurityWeek](https://www.securityweek.com/critical-bug-could-expose-300000-ollama-deployments-to-information-theft/)
+
+### 2026-05-07 - Microsoft Semantic Kernel Prompt-Injection to RCE (CVE-2026-26030, CVE-2026-25592)
+
+- **Target:** Microsoft Semantic Kernel agent framework, Python before 1.39.4 and .NET SDK before 1.71.0
+- **Impact:** Prompt injection escalates to host-level remote code execution and sandbox escape; Microsoft demonstrated launching calc.exe from a single prompt, plus arbitrary file write and data exfiltration
+- **Root Cause:** CVE-2026-26030 (Python) is unsafe string interpolation of AI-model-controlled parameters in the in-memory vector store with a blocklist bypassable through Python class-hierarchy traversal; CVE-2026-25592 (.NET) exposed `DownloadFileAsync` to model invocation because it was accidentally marked `[KernelFunction]` with no path validation
+- **CVE:** CVE-2026-26030, CVE-2026-25592
+- **Sources:** [Microsoft Security Blog](https://www.microsoft.com/en-us/security/blog/2026/05/07/prompts-become-shells-rce-vulnerabilities-ai-agent-frameworks/), [ByteIota](https://byteiota.com/semantic-kernel-rce-cve-2026-25592-cve-2026-26030/)
+
+### 2026-05-07 - Microsoft Azure AI Foundry M365 Agent Privilege Escalation (CVE-2026-35435)
+
+- **Target:** Microsoft Azure AI Foundry agents published to Microsoft 365 (cloud service)
+- **Impact:** An unauthorized network attacker can elevate privileges with no authentication and no user interaction to access and manipulate protected agent workflows, data connectors, and backend resources; remediated server-side
+- **Root Cause:** Improper access control (CWE-284) in Microsoft 365 published agents
+- **CVE:** CVE-2026-35435 (NVD 10.0, Microsoft 8.6)
+- **Sources:** [NVD](https://nvd.nist.gov/vuln/detail/CVE-2026-35435), [Red Packet Security](https://www.redpacketsecurity.com/cve-alert-cve-2026-35435-microsoft-azure-ai-foundry/)
+
+### 2026-05-07 - Malicious Hugging Face "Open-OSS/privacy-filter" Fake OpenAI Model
+
+- **Target:** Hugging Face repository `Open-OSS/privacy-filter`, typosquatting OpenAI's Privacy Filter release, plus six sibling repositories under the same account
+- **Impact:** The repo reached #1 trending with roughly 244,000 downloads and 667 likes within about 18 hours; its `loader.py` fetched commands over disabled-SSL connections and ran a hidden PowerShell chain that deployed a Rust-based infostealer targeting browser credentials, crypto wallets, Discord tokens, and SSH keys on Windows hosts
+- **Root Cause:** A malicious model repository masquerading as a vendor release, with engagement inflated by inauthentic accounts; found and reported by HiddenLayer
+- **Sources:** [HiddenLayer](https://www.hiddenlayer.com/research/malware-found-in-trending-hugging-face-repository-open-oss-privacy-filter), [Infosecurity Magazine](https://www.infosecurity-magazine.com/news/malicious-hugging-face-repo/)
+
+### 2026-05-05 - Ollama for Windows Auto-Updater RCE and Persistence (CVE-2026-42248, CVE-2026-42249)
+
+- **Target:** Ollama for Windows, versions 0.12.10 through 0.22.0 (and v0.23.0), with no fix available at publication
+- **Impact:** Chaining the two flaws lets an attacker plant a persistent executable that runs at every login for covert remote code execution
+- **Root Cause:** CVE-2026-42248 is a signature-verification function that is called but does nothing, so any downloaded payload executes; CVE-2026-42249 builds the staged-installer path from unsanitized HTTP `ETag` headers, letting `../` sequences write an arbitrary executable into the Windows Startup folder. Reported by Striga; coordination handed to CERT Polska after no vendor response
+- **CVE:** CVE-2026-42248, CVE-2026-42249
+- **Sources:** [Help Net Security](https://www.helpnetsecurity.com/2026/05/05/ollama-windows-vulnerabilities-cve-2026-42248-cve-2026-42249/), [CERT Polska](https://cert.pl/en/posts/2026/04/CVE-2026-42248/)
+
+### 2026-05-04 - Grok and Bankr AI Wallet Drained via Morse-Code Prompt Injection
+
+- **Target:** xAI's Grok integrated with the Bankr crypto trading agent on the Base network
+- **Impact:** Roughly $174,000 to $204,000 in DRB (DebtReliefBot) tokens transferred to an attacker, with about 80 to 88 percent later returned through negotiation
+- **Root Cause:** A two-stage permission-chain abuse: the attacker first unlocked a high-privilege agent toolset by activating a "Bankr Club Membership," then sent Grok a Morse-code message asking it to translate; once Grok output the decoded plaintext transfer instruction and tagged the trading bot, the bot treated the public reply as a valid executable command with no source validation
+- **Sources:** [SlowMist](https://slowmist.medium.com/behind-the-grok-exploitation-an-analysis-of-ai-agent-permission-chain-abuse-4d832d1bfc73), [Crypto Times](https://www.cryptotimes.io/2026/05/04/xais-grok-ai-loses-175k-in-crypto-heist-via-clever-prompt-injection-then-gets-it-all-back/), [OECD AI Incidents](https://oecd.ai/en/incidents/2026-05-04-4a73)
+
+### 2026-04-30 - PyTorch Lightning PyPI Compromise (Mini Shai-Hulud)
+
+- **Target:** `lightning` on PyPI, versions 2.6.2 and 2.6.3 (~311,000 daily downloads)
+- **Impact:** A hidden `_runtime` directory executes at import time, fetching the Bun runtime and running an ~11 MB obfuscated JavaScript credential stealer that targets GitHub, npm, and cloud tokens; it poisons local repositories with commits forged as `claude` and self-propagates by mutating npm tarballs and publishing directly to the registry
+- **Root Cause:** Maintainer or publish-credential compromise carrying a Mini Shai-Hulud payload, linked by shared obfuscation signatures to the broader npm and PyPI worm campaign
+- **Sources:** [Snyk](https://snyk.io/blog/lightning-pypi-compromise-bun-based-credential-stealer/), [The Hacker News (Hades lineage context)](https://thehackernews.com/2026/06/hades-pypi-attack-19-packages-poisoned.html)
+
+### 2026-04-30 - Google Gemini CLI CVSS 10.0 Headless RCE
+
+- **Target:** Gemini CLI (`@google/gemini-cli`) before 0.39.1 and before 0.40.0-preview.3, and the `run-gemini-cli` GitHub Action before 0.1.22
+- **Impact:** Maximum-severity remote code execution in CI. Headless mode auto-trusted workspace folders, so a malicious config file in `.gemini/` executed before sandbox init and exposed any secrets, credentials, or source the workflow could reach, enabling token theft and lateral movement
+- **Root Cause:** Unsafe workspace-trust handling plus a tool-allowlist bypass under `--yolo` mode when processing untrusted pull requests or issues
+- **CVE:** Advisory GHSA-wpqr-6v78-jr5g (CVSS 10.0)
+- **Sources:** [The Register](https://www.theregister.com/2026/04/30/googles_fix_for_critical_gemini/), [The Hacker News](https://thehackernews.com/2026/04/google-fixes-cvss-10-gemini-cli-ci-rce.html), [Hackread](https://hackread.com/google-cvss-10-gemini-cli-vulnerability-github-rce/)
+
+### 2026-04-29 - LiteLLM Pre-Auth SQL Injection (CVE-2026-42208)
+
+- **Target:** LiteLLM Proxy, versions 1.81.16 up to but not including 1.83.7 (fixed in 1.83.7-stable)
+- **Impact:** An unauthenticated attacker sends a crafted `Authorization: Bearer` header to any LLM API route and runs arbitrary SQL against the proxy's PostgreSQL backend, reading and modifying tables such as `litellm_credentials.credential_values` and `litellm_config` that hold upstream provider keys for OpenAI, Anthropic, and AWS Bedrock. Targeted exploitation began within 36 hours of disclosure
+- **Root Cause:** During proxy API-key checks, the caller-supplied Bearer value is concatenated into the SQL text against `LiteLLM_VerificationToken` instead of being passed as a bound parameter
+- **CVE:** CVE-2026-42208 (CVSS 9.3)
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/04/litellm-cve-2026-42208-sql-injection.html), [Sysdig](https://www.sysdig.com/blog/cve-2026-42208-targeted-sql-injection-against-litellms-authentication-path-discovered-36-hours-following-vulnerability-disclosure), [SecurityWeek](https://www.securityweek.com/fresh-litellm-vulnerability-exploited-shortly-after-disclosure/)
 
 ### 2026-04-24 - LangChain langchain-openai and langchain-text-splitters SSRF Disclosures
 
@@ -986,6 +1219,22 @@ Last updated: 2026-04-28
 | LMDeploy CVE-2026-33626 time from advisory to first in-the-wild exploit | 12 hours 31 minutes | [Sysdig](https://www.sysdig.com/blog/cve-2026-33626-how-attackers-exploited-lmdeploy-llm-inference-engines-in-12-hours) |
 | Bitwarden CLI 2026.4.0 trojanized npm package window | ~90 minutes (April 22, 2026); 334 downloads | [The Hacker News](https://thehackernews.com/2026/04/bitwarden-cli-compromised-in-ongoing.html) |
 | Xinference PyPI total downloads at time of compromise | 600,000+ | [Mend.io](https://www.mend.io/blog/malicious-xinference-pypi-teampcp-part-4/) |
+| North Korea share of all 2026 crypto-hack value (through April) | 76% ($577M from two attacks) | [TRM Labs](https://www.trmlabs.com/resources/blog/north-korea-stole-76-of-all-crypto-hack-value-in-2026-with-just-two-attacks) |
+| KelpDAO exploit (Apr 18, 2026) | $292 million | [TRM Labs](https://www.trmlabs.com/resources/blog/north-korea-stole-76-of-all-crypto-hack-value-in-2026-with-just-two-attacks) |
+| North Korea cumulative crypto theft since 2017 | $6 billion+ | [The Block](https://www.theblock.co/post/399569/north-korea-accounts-for-76-of-2026-crypto-hack-losses-with-theft-since-2017-topping-6-billion-trm-labs) |
+| Vulnerability exploitation as breach entry vector (Verizon 2026 DBIR) | 31% (first time above stolen credentials in 19 years) | [Verizon](https://www.verizon.com/about/news/breach-industry-wide-dbir-finds) |
+| Employees using unapproved "shadow AI" tools at work (Verizon 2026 DBIR) | 45% (up from ~15%) | [Verizon](https://www.verizon.com/about/news/breach-industry-wide-dbir-finds) |
+| Breaches involving a third party (Verizon 2026 DBIR) | 48% (up ~60%) | [Verizon](https://www.verizon.com/about/news/breach-industry-wide-dbir-finds) |
+| FAMOUS CHOLLIMA share of hands-on-keyboard intrusions on tech firms (Apr 2025-Mar 2026) | 47% | [Forbes / CrowdStrike](https://www.forbes.com/sites/tylerroush/2026/06/09/north-korean-hackers-posing-as-fake-it-workers-behind-nearly-half-of-all-tech-firm-attacks-report-says/) |
+| Compromised LiteLLM package downloads in a 3-hour window (Mar 2026, OWASP) | ~47,000 | [Help Net Security](https://www.helpnetsecurity.com/2026/06/11/owasp-prompt-injection-ai-security-failures/) |
+| Organizations with policies to detect shadow-AI deployments (OWASP, Jun 2026) | 37% | [Help Net Security](https://www.helpnetsecurity.com/2026/06/11/owasp-prompt-injection-ai-security-failures/) |
+| Most-flagged agentic AI repositories by advisory count (OWASP, Jun 2026) | n8n (57), Claude Code (22), AutoGPT (15) | [Help Net Security](https://www.helpnetsecurity.com/2026/06/11/owasp-prompt-injection-ai-security-failures/) |
+| Mini Shai-Hulud worm scope (May 2026) | 170+ packages, 518M cumulative downloads | [The Hacker News](https://thehackernews.com/2026/05/mini-shai-hulud-worm-compromises.html) |
+| Megalodon GitHub Actions campaign (May 2026) | 5,561 repositories, 5,718 malicious commits | [SecurityWeek](https://www.securityweek.com/over-5500-github-repositories-infected-in-megalodon-supply-chain-attack/) |
+| Ollama servers exposed to "Bleeding Llama" memory leak (May 2026) | 300,000+ | [Cyera](https://www.cyera.com/research/bleeding-llama-critical-unauthenticated-memory-leak-in-ollama) |
+| Fake OpenAI model downloads on Hugging Face in ~18 hours (May 2026) | ~244,000 (reached #1 trending) | [HiddenLayer](https://www.hiddenlayer.com/research/malware-found-in-trending-hugging-face-repository-open-oss-privacy-filter) |
+| Mastra npm scope packages backdoored in 88 minutes (Jun 2026) | 144+ (@mastra/core ~918K weekly downloads) | [The Hacker News](https://thehackernews.com/2026/06/144-mastra-npm-packages-compromised-via.html) |
+| AI-driven CVE forecast for 2026 | ~66,000 CVEs projected | [Help Net Security](https://www.helpnetsecurity.com/2026/06/15/first-2026-cve-forecast/) |
 
 ---
 
@@ -996,6 +1245,11 @@ Last updated: 2026-04-28
 A single compromised credential triggers lateral movement across multiple package registries and downstream organizations.
 
 **Key incidents:**
+- Shai-Hulud worm lineage (Apr-Jun 2026): Mini Shai-Hulud (TanStack, Mistral AI, Guardrails AI, CVE-2026-45321) escalated into Miasma (Red Hat npm, node-gyp "Phantom Gyp") and Hades (PyPI `.pth` startup hooks), repeatedly abusing npm OIDC trusted publishing, install-time hooks, the Bun runtime, and forged SLSA provenance to steal AI-provider and cloud credentials.
+- OpenAI internal source-code theft (May 14, 2026): The TanStack compromise infected developer machines and led to theft of limited credentials and code-signing certificates from a subset of OpenAI internal repositories.
+- Mastra AI npm scope takeover (Jun 17, 2026): A dormant former-contributor account let North Korean actor Sapphire Sleet (UNC1069) backdoor 144+ packages in 88 minutes with an install-time RAT dropper.
+- PyTorch Lightning PyPI compromise (Apr 30, 2026): Mini Shai-Hulud payload in `lightning` 2.6.2/2.6.3 ran a Bun-based stealer and self-propagated through npm and PyPI.
+- Megalodon (May 25, 2026): Injected GitHub Actions workflows across 5,561 repositories harvested CI/CD secrets, surfaced through trojanized Tiledesk npm versions.
 - Bitwarden CLI cascade (Apr 22, 2026): Checkmarx KICS Docker Hub compromise propagated through Bitwarden's Dependabot pipeline, signing and publishing a trojanized @bitwarden/cli@2026.4.0 that harvested AI tooling configs alongside cloud and registry secrets.
 - CanisterSprawl npm worm via Namastex Labs and pgserve (Apr 21, 2026): Self-propagating worm jumps from npm into PyPI when a developer holds tokens for both registries; data exfiltrates to an ICP canister that is structurally takedown-resistant.
 - Vercel / Context.ai OAuth chain (Apr 2026): Lumma Stealer infection of a Context.ai employee led to OAuth token theft, then escalated into the Vercel Google Workspace tenant because a Vercel employee had granted the Context.ai browser extension "Allow All" enterprise scopes.
@@ -1011,6 +1265,9 @@ A single compromised credential triggers lateral movement across multiple packag
 An AI agent with legitimate access is tricked into performing actions on behalf of an attacker.
 
 **Key incidents:**
+- Microsoft 365 Copilot SearchLeak (CVE-2026-42824, Jun 2026): A single malicious link injects instructions through the search `q` parameter and exfiltrates emails, files, and MFA codes via a Bing CSP-allowlist bypass.
+- Grok and Bankr wallet drain (May 2026): A Morse-code prompt injection routed through Grok produced a transfer command that the Bankr trading agent executed as authoritative.
+- Claude Code GitHub Action (Jun 2026): Prompt injection in issues and pull requests steered the agent into reading `/proc/self/environ` and exfiltrating CI/CD secrets.
 - Copilot Studio ShareLeak and Agentforce PipeLeak (Apr 2026): Crafted SharePoint and Web-to-Lead form payloads hijack agents into bulk-exfiltrating CRM and SharePoint data by email, with no volume cap and no user-visible indicator.
 - Claude Code / Gemini CLI / Copilot Agent via GitHub comments (Apr 2026): PR titles, issue descriptions, and comments hijack CI agents to exfiltrate API keys and secrets from the runner.
 - Salesforce Agentforce ForcedLeak (Sep 2025): Malicious Web-to-Lead form data tricks agent into exfiltrating CRM records.
@@ -1023,6 +1280,9 @@ An AI agent with legitimate access is tricked into performing actions on behalf 
 AI agents or chatbot integrations granted excessive access that becomes the attack surface.
 
 **Key incidents:**
+- Grok and Bankr "Bankr Club Membership" (May 2026): Activating a membership NFT silently granted the trading agent high-privilege transfer and swap rights that an attacker then abused.
+- Amazon Q Developer MCP auto-load (CVE-2026-12957/12958, Jun 2026): The extension auto-loaded `.amazonq/mcp.json` from any opened repository with full environment inheritance, enabling RCE and AWS credential theft.
+- Azure AI Foundry M365 agents (CVE-2026-35435, May 2026): Improper access control let an unauthenticated network attacker elevate privileges over published agent workflows and connectors.
 - AWS Bedrock AgentCore "God Mode" (Apr 2026): Starter toolkit auto-creates IAM roles with wildcard memory actions so any agent can read or poison every other agent's state.
 - Step Finance treasury drain (Jan 2026): Trading agents held wallet, oracle, and trading-endpoint permissions simultaneously; one device compromise cascaded into $40M loss.
 - Salesloft Drift OAuth breach (Aug 2025): Stolen OAuth tokens gave access to 700+ customer Salesforce environments.
@@ -1035,6 +1295,9 @@ AI agents or chatbot integrations granted excessive access that becomes the atta
 Malicious configurations in repository files execute code when AI tools process them.
 
 **Key incidents:**
+- Gemini CLI headless auto-trust (GHSA-wpqr-6v78-jr5g, CVSS 10.0, Apr 2026): A config file in `.gemini/` executed before sandbox init in CI, with `--yolo` mode bypassing tool allowlisting.
+- Amazon Q Developer (CVE-2026-12957/12958, Jun 2026): `.amazonq/mcp.json` in a repository auto-loaded MCP servers and spawned processes with no workspace-trust check.
+- Claude Code deeplink (May 2026): A `claude-cli://` link smuggled `--settings={...}` with a `SessionStart` hook through `--prefill`, suppressing the trust prompt when pointed at a trusted repo.
 - Claude Code RCE via hooks (CVE-2025-59536): Malicious .claude/settings.json executes commands before trust dialog.
 - Codex CLI command injection (CVE-2025-61260): Project-local configs execute commands without user consent.
 - Rules File Backdoor (Mar 2025): Invisible Unicode in .cursorrules and copilot-instructions.md injects malicious code.
@@ -1045,6 +1308,12 @@ Malicious configurations in repository files execute code when AI tools process 
 AI tools run user-supplied or AI-generated code without isolation.
 
 **Key incidents:**
+- Microsoft Semantic Kernel (CVE-2026-26030, CVE-2026-25592, May 2026): Unsafe string interpolation in the Python vector store and an accidentally exposed `[KernelFunction]` file-download method turn prompt injection into host RCE.
+- AutoGen Studio "AutoJack" (Jun 2026): A localhost MCP WebSocket trusting a base64 `server_params` value let a visited webpage run host commands; GitHub-main builds only, PyPI releases unaffected.
+- Cline AI agent (CVE-2026-44211, CVSS 9.7, May 2026): An unauthenticated local WebSocket on port 3484 with no Origin validation allowed cross-origin RCE from a malicious page.
+- PraisonAI legacy API server (CVE-2026-44338, May 2026): Authentication disabled by default plus binding to `0.0.0.0:8080` allowed unauthenticated workflow execution, exploited within hours.
+- Langflow path traversal (CVE-2026-5027, Jun 2026): Unsanitized `filename` in `POST /api/v2/files` writes arbitrary files for unauthenticated RCE, with default auto-login; exploited in the wild.
+- NVIDIA Triton Inference Server (CVE-2026-24207, CVSS 9.8, May 2026): Authentication bypass in the model-serving stack leads to code execution and privilege escalation.
 - Anthropic MCP STDIO design RCE (Apr 2026): Reference SDKs in Python, TypeScript, Java, and Rust execute attacker-supplied command strings passed to STDIO transport; 200K+ servers and 150M+ downloads exposed; Anthropic declined to patch.
 - Flowise CSV Agent prompt injection RCE (CVE-2026-41264, Apr 21, 2026): Lack of sandboxing in the CSV_Agents `run` method lets an LLM-emitted Python script run on the host; bypass for the earlier CVE-2026-41137 hardening.
 - Flowise MCP Adapters CVE-2026-40933 (CVSS 10.0): Unsafe serialization of stdio commands lets an authenticated user add an MCP server that runs arbitrary commands such as `npx -c "touch /tmp/pwn"`.
@@ -1115,6 +1384,8 @@ Threat actors use commercial or open-source AI agents to plan and execute the bu
 
 **Key incidents:**
 - GTG-1002 Chinese espionage (Sep-Nov 2025): Claude Code executed 80-90% of tactical operations against ~30 orgs after operators posed as legitimate red teamers.
+- First AI-developed zero-day (May 2026): Google GTIG disrupted a cybercrime plan in which an LLM discovered and weaponized a 2FA-bypass zero-day for mass exploitation, the exploit bearing LLM hallmarks like a hallucinated CVSS score.
+- FAMOUS CHOLLIMA AI-scaled intrusions (reported Jun 2026): CrowdStrike attributed 47% of hands-on-keyboard intrusions on technology firms (Apr 2025-Mar 2026) to the North Korean group, which uses AI-generated identities to enhance scale and speed.
 - CyberStrikeAI FortiGate campaign (Jan-Feb 2026): Russian-speaking actor used commercial GenAI plus the open-source CyberStrikeAI framework to compromise 600+ FortiGate devices across 55 countries without exploiting a single CVE.
 - HexagonalRodent Web3 developer campaign (Q1 2026, reported Apr 23, 2026): North Korean APT subgroup of Famous Chollima used Cursor, ChatGPT, and Anima to author malware, build fake company websites, and craft phishing lures; stole an estimated $12 million in crypto across 26,584 wallets exfiltrated from 2,726 developer systems.
 - Drift Protocol $285M exploit (Apr 2026): UNC4736 ran a six-month multi-channel social engineering campaign against multisig signers.
@@ -1125,6 +1396,10 @@ Threat actors use commercial or open-source AI agents to plan and execute the bu
 AI development tools become vectors for credential and secret exposure.
 
 **Key incidents:**
+- LiteLLM SQL injection (CVE-2026-42208, CVSS 9.3, Apr 2026): A crafted Bearer header runs arbitrary SQL against the proxy database, reading upstream OpenAI, Anthropic, and Bedrock provider keys; exploited within 36 hours.
+- Ollama "Bleeding Llama" (CVE-2026-7482, May 2026): An unauthenticated out-of-bounds read in GGUF quantization leaks API keys and conversation memory from 300,000+ servers.
+- Amazon Q Developer (CVE-2026-12957/12958, Jun 2026): Auto-loaded MCP configs spawn processes that inherit and exfiltrate AWS keys, SSH sockets, and CLI tokens.
+- Hades PyPI worm (Jun 2026): A `.pth` startup-hook stealer harvests Anthropic, GitHub, npm, and cloud credentials, and embeds prompt injection to fool LLM-based package scanners.
 - LiteLLM CVE-2026-35030 (Apr 2026): OIDC userinfo cache keyed on token[:20] lets an attacker collide with a legitimate cached token and inherit that user's identity across the gateway.
 - FastGPT CVE-2026-40351 and CVE-2026-40352 (Apr 2026): TypeScript type assertion without runtime validation lets NoSQL operator injection log in as any user, including root; password-change endpoint bypasses old-password verification.
 - Red Hat OpenShift AI odh-dashboard (CVE-2026-5483, Apr 2026): NodeJS endpoint discloses Kubernetes Service Account tokens usable against the cluster API.
@@ -1132,6 +1407,25 @@ AI development tools become vectors for credential and secret exposure.
 - Claude Code InversePrompt (CVE-2025-54795): AI helps reverse-engineer its own security to enable command injection.
 - CrewAI "Uncrew" (Nov 2025): Improper error handling exposes admin GitHub token to all private repos.
 - GitHub Copilot training data leakage (May 2024): Copilot reproduces real secrets from training data; 40% higher leakage rate.
+
+### Inference Server Authentication and Memory-Safety Failures
+
+LLM serving and inference engines expose unauthenticated endpoints or mishandle attacker-supplied model files, leaking memory or bypassing access control.
+
+**Key incidents:**
+- Ollama "Bleeding Llama" (CVE-2026-7482, May 2026): Out-of-bounds heap read during GGUF quantization leaks process memory from 300,000+ unauthenticated servers.
+- vLLM OpenAI API auth bypass (CVE-2026-48746, Jun 2026): A crafted `Host` header manipulates path reconstruction so the API-key check fails open.
+- NVIDIA Triton Inference Server (CVE-2026-24207, May 2026): Authentication bypass plus memory-safety flaws across the serving stack and DALI backend.
+- LiteLLM SQL injection (CVE-2026-42208, Apr 2026): A pre-auth Bearer header runs arbitrary SQL against the proxy's credential store.
+- Ollama for Windows auto-updater (CVE-2026-42248/42249, May 2026): No-op signature verification plus ETag path traversal plant a persistent executable in the Startup folder.
+
+### Adversarial Evasion of AI Security Scanners
+
+Attackers craft payloads that target the AI defenders themselves, embedding instructions to mislead LLM-based analysis and review tools.
+
+**Key incidents:**
+- Hades PyPI worm (Jun 2026): Malicious packages embed plain-text prompt injection that tells LLM-based package-analysis tools to classify them as safe.
+- Malicious LLM routers (Apr 2026): Routers rewrite tool calls and exfiltrate secrets while passing as legitimate middleware.
 
 ---
 
