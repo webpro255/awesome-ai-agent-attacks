@@ -4,7 +4,7 @@ A curated timeline of real AI agent security incidents, breaches, and vulnerabil
 
 No opinions. No product pitches. Just facts with sources.
 
-Last updated: 2026-06-30
+Last updated: 2026-07-06
 
 ---
 
@@ -20,6 +20,74 @@ Last updated: 2026-06-30
 ---
 
 ## 2026 Incidents
+
+### 2026-07-02 - Zscaler Documents In-the-Wild Indirect Prompt Injection Targeting Autonomous AI Agents
+
+- **Target:** Autonomous web-browsing AI agents; two live malicious-website campaigns observed by Zscaler ThreatLabz
+- **Impact:** One campaign used SEO poisoning plus hidden CSS and JSON-LD to impersonate a fake Python package "requests-secure-v2" and push agents to pay a bogus "$3.00 developer API license" plus about 0.0012 ETH to an attacker wallet; a second typosquatted DeBank via "debank[.]auction." In Zscaler's validation across 26 models, four (Llama 3.3 70B, Llama 3.2 90B Vision, Gemini 3 Flash, Gemini 2.5 Pro) executed the fraudulent payment and two misclassified the fake site as legitimate
+- **Root Cause:** Indirect prompt injection: agents ingest and act on hidden instructions embedded in retrieved web content with no boundary between data and instructions
+- **Sources:** [Zscaler ThreatLabz](https://www.zscaler.com/blogs/security-research/indirect-prompt-injection-web-content-targets-ai-agents), [Cybersecurity News](https://cybersecuritynews.com/hackers-abuse-seo-poisoning-and-hidden-html/)
+
+### 2026-07-02 - fast-mcp-telegram MCP Server Authentication Bypass (CVE-2026-52830)
+
+- **Target:** fast-mcp-telegram MCP server (PyPI), versions before 0.19.1
+- **Impact:** A remote, unauthenticated attacker bypasses authentication with a crafted Bearer token such as `../fast-mcp-telegram/telegram` to authenticate as the default legacy session, reaching the MCP tools and the connected Telegram account data across tenant boundaries
+- **Root Cause:** The Bearer token is joined directly into a session-file path with no normalization; the server rejects the literal token "telegram" but not path separators (CWE-22 path traversal plus CWE-287 improper authentication)
+- **CVE:** CVE-2026-52830 (CVSS 9.4)
+- **Sources:** [NVD](https://nvd.nist.gov/vuln/detail/CVE-2026-52830), [GitLab Advisory](https://advisories.gitlab.com/pypi/fast-mcp-telegram/CVE-2026-52830/)
+
+### 2026-07-01 - "JADEPUFFER" First Documented End-to-End Agentic Ransomware
+
+- **Target:** An internet-facing Langflow instance used for initial access, then a production database environment (MySQL and the Alibaba Nacos configuration service)
+- **Impact:** Sysdig documented what it calls the first extortion operation run end to end by an autonomous LLM agent: recon, credential theft, lateral movement, privilege escalation, and persistence, culminating in the encryption of 1,342 Nacos service-configuration items before the originals were deleted. The agent self-narrated, adapted in real time (a failed login diagnosed and fixed in 31 seconds), and swept for LLM API keys and cloud credentials; the encryption key was generated randomly and never stored, making recovery impossible
+- **Root Cause:** Initial access via the older Langflow unauthenticated code-execution flaw CVE-2025-3248, with Nacos reached through auth-bypass CVE-2021-29441; the novelty is the fully agent-driven operation rather than a new vulnerability
+- **CVE:** CVE-2025-3248, CVE-2021-29441 (exploited, not newly disclosed)
+- **Sources:** [Sysdig](https://sysdig.com/blog/jadepuffer-agentic-ransomware-for-automated-database-extortion), [The Register](https://www.theregister.com/security/2026/07/02/smooth-ai-criminal-drives-first-end-to-end-agentic-ransomware-attack/), [BleepingComputer](https://www.bleepingcomputer.com/news/security/jadepuffer-ransomware-used-ai-agent-to-automate-entire-attack/)
+
+### 2026-07-01 - Cursor "DuneSlide" Zero-Click Prompt-Injection RCE (CVE-2026-50548, CVE-2026-50549)
+
+- **Target:** Cursor AI code editor before 3.0 (fix shipped in Cursor 3.0, released April 2, 2026)
+- **Impact:** A single innocuous prompt that ingests attacker-controlled content from an MCP server or web-search result can escape the terminal sandbox and reach OS-level remote code execution with no user interaction, giving full compromise of the host machine and connected SaaS workspaces
+- **Root Cause:** Two chained flaws let injected instructions overwrite the `cursorsandbox` enforcer binary: CVE-2026-50548 trusts the agent-chosen working directory so a system path grants out-of-scope write permission, and CVE-2026-50549 is a symlink canonicalization check that fails open when path resolution fails. Reported by Cato AI Labs (Itay Ravia) on February 19, 2026; CVEs assigned June 5 and detailed publicly on July 1, 2026
+- **CVE:** CVE-2026-50548, CVE-2026-50549 (both CVSS 9.8)
+- **Sources:** [Cato Networks](https://www.catonetworks.com/blog/duneslide-two-critical-rce-vulnerabilities/), [The Hacker News](https://thehackernews.com/2026/07/critical-cursor-flaws-could-let-prompt.html), [SecurityWeek](https://www.securityweek.com/critical-cursor-ai-ide-flaws-could-lead-to-os-level-remote-code-execution/)
+
+### 2026-07-01 - Check Point Demonstrates LLM-Generated Browser-Native Ransomware
+
+- **Target:** Chromium-based browsers (Chrome, Edge) on Windows, macOS, Linux, ChromeOS, and Android; proof-of-concept technique generated by prompting DeepSeek
+- **Impact:** A fake image-enhancement page uses the browser File System Access API (`showDirectoryPicker`) to read, exfiltrate, and encrypt a victim's local files with no native payload, app install, browser exploit, or root access. iOS and Safari are unaffected because the API is not exposed there
+- **Root Cause:** A large language model connected an unrealistic "browser malware" idea to a legitimate, sanctioned browser permission API, producing a practical social-engineering abuse path rather than exploiting a browser vulnerability
+- **Sources:** [Check Point Research](https://research.checkpoint.com/2026/browser-only-ransomware-from-llm-hallucinations-to-a-practical-attack-technique/), [The Hacker News](https://thehackernews.com/2026/07/ai-generated-browser-ransomware-abuses.html)
+
+### 2026-07-01 - Apify Actors MCP Server Token Exfiltration (CVE-2026-50143)
+
+- **Target:** `@apify/actors-mcp-server` (npm), all versions before 0.10.11
+- **Impact:** A malicious Apify Actor with a crafted path can exfiltrate the victim's Apify API token; the MCP client automatically attaches the `Authorization: Bearer <APIFY_TOKEN>` header to every outbound connection, so redirecting the client to an attacker host leaks the credential
+- **Root Cause:** Unsafe URL construction that concatenates a trusted base URL with an attacker-controlled `webServerMcpPath` value taken from an Actor definition returned by the Apify API (CWE-918 server-side request forgery)
+- **CVE:** CVE-2026-50143 (CVSS 8.1)
+- **Sources:** [GitLab Advisory](https://advisories.gitlab.com/npm/@apify/actors-mcp-server/CVE-2026-50143/)
+
+### 2026-06-30 - "GuardFall" Shell-Injection Bypass in Open-Source AI Coding Agents
+
+- **Target:** 10 of 11 tested open-source AI coding and computer-use agents, including opencode, Goose, Cline, Roo-Code, Aider, Plandex, Open Interpreter, OpenHands, SWE-agent, and a NousResearch Hermes agent; only Continue mitigated it
+- **Impact:** Pattern-based command guards can be bypassed, so a poisoned README, MCP server, or Makefile can drive an agent into running destructive shell commands with the operator's full privileges, including wiping files or exfiltrating SSH keys and cloud credentials. Disclosed as lab research with no in-the-wild exploitation reported
+- **Root Cause:** Guards inspect the raw command string, but Bash performs quote removal, `$IFS` and parameter expansion, and command substitution before execution, so obfuscated commands slip past denylists; a decades-old shell-quoting bypass applied to AI agents. Found by Adversa AI (Omer Ben Simon)
+- **Sources:** [Adversa AI](https://adversa.ai/blog/opensource-ai-coding-agents-shell-injection-vulnerability/), [The Hacker News](https://thehackernews.com/2026/06/guardfall-exposes-open-source-ai-coding.html), [SC Media](https://www.scworld.com/brief/shell-injection-flaw-found-in-10-of-11-open-source-ai-agents)
+
+### 2026-06-30 - Palo Alto Unit 42 "Phantom Squatting" - AI-Hallucinated Domains as an Attack Surface
+
+- **Target:** 913 global brands analyzed; AI agents and users that trust LLM-generated URLs
+- **Impact:** From 685,339 adversarial prompts, Unit 42 collected 2.1 million unique URLs and identified roughly 250,000 unregistered "phantom" domains that adversaries can register, plus 13,229 URLs already flagged malicious. Documented real abuse includes a "Montana Empire" phishing kit on a hallucinated postal-service domain (registered about 23 days after the model predicted it) and a malicious Android APK hosted on another phantom domain
+- **Root Cause:** Structural LLM hallucination of non-existent but plausible domains ("zero-reputation bypass"); described as inherently hard to patch because it stems from model behavior rather than a software flaw
+- **Sources:** [Palo Alto Unit 42](https://unit42.paloaltonetworks.com/phantom-squatting-hallucinated-web-domains/), [Check Point Research](https://research.checkpoint.com/2026/6th-july-threat-intelligence-report-2/)
+
+### 2026-06-30 - Anthropic "buffa" Rust protobuf Memory-Amplification DoS (CVE-2026-55407)
+
+- **Target:** buffa, Anthropic's Rust protobuf library, versions before 0.8.0
+- **Impact:** An attacker sending crafted protobuf wire data to any service that decodes untrusted input with the default `preserve_unknown_fields=true` can force unbounded heap allocation; a nested-group path amplifies roughly 22x, so a 64 MiB message triggers about 1.4 GB of allocation and out-of-memory crashes
+- **Root Cause:** The `decode_unknown_field` path allocates memory proportional to attacker-controlled data with no per-message field-count limit; the 0.8.0 fix caps unknown fields (default 1 million) and bounds overhead. Found by Endor Labs' AI SAST engine (Peyton Kennedy)
+- **CVE:** CVE-2026-55407 (CVSS 6.3)
+- **Sources:** [Endor Labs](https://www.endorlabs.com/learn/endor-labs-ai-sast-finds-zero-day-cve-2026-55407-buffa)
 
 ### 2026-06-26 - Amazon Q Developer Silent MCP Config Auto-Load (CVE-2026-12957, CVE-2026-12958)
 
@@ -1235,6 +1303,10 @@ Last updated: 2026-06-30
 | Fake OpenAI model downloads on Hugging Face in ~18 hours (May 2026) | ~244,000 (reached #1 trending) | [HiddenLayer](https://www.hiddenlayer.com/research/malware-found-in-trending-hugging-face-repository-open-oss-privacy-filter) |
 | Mastra npm scope packages backdoored in 88 minutes (Jun 2026) | 144+ (@mastra/core ~918K weekly downloads) | [The Hacker News](https://thehackernews.com/2026/06/144-mastra-npm-packages-compromised-via.html) |
 | AI-driven CVE forecast for 2026 | ~66,000 CVEs projected | [Help Net Security](https://www.helpnetsecurity.com/2026/06/15/first-2026-cve-forecast/) |
+| Open-source AI coding agents bypassed by GuardFall shell injection (Jun 2026) | 10 of 11 tested (only Continue mitigated) | [Adversa AI](https://adversa.ai/blog/opensource-ai-coding-agents-shell-injection-vulnerability/) |
+| AI-hallucinated "phantom" domains registrable by attackers (Unit 42, Jun 2026) | ~250,000 (from 2.1M URLs across 913 brands) | [Palo Alto Unit 42](https://unit42.paloaltonetworks.com/phantom-squatting-hallucinated-web-domains/) |
+| Models that executed a fraudulent agent payment in Zscaler indirect-prompt-injection test (Jul 2026) | 4 of 26 (2 more misclassified the fake site as legitimate) | [Zscaler ThreatLabz](https://www.zscaler.com/blogs/security-research/indirect-prompt-injection-web-content-targets-ai-agents) |
+| Nacos configuration items encrypted by JADEPUFFER agentic ransomware (Jul 2026) | 1,342 (encryption key never stored, recovery impossible) | [Sysdig](https://sysdig.com/blog/jadepuffer-agentic-ransomware-for-automated-database-extortion) |
 
 ---
 
@@ -1265,6 +1337,7 @@ A single compromised credential triggers lateral movement across multiple packag
 An AI agent with legitimate access is tricked into performing actions on behalf of an attacker.
 
 **Key incidents:**
+- Zscaler in-the-wild IPI payment fraud (Jul 2026): Malicious websites use SEO poisoning and hidden HTML to steer web-browsing agents into paying a fake developer API license; 4 of 26 tested models executed the fraudulent crypto payment.
 - Microsoft 365 Copilot SearchLeak (CVE-2026-42824, Jun 2026): A single malicious link injects instructions through the search `q` parameter and exfiltrates emails, files, and MFA codes via a Bing CSP-allowlist bypass.
 - Grok and Bankr wallet drain (May 2026): A Morse-code prompt injection routed through Grok produced a transfer command that the Bankr trading agent executed as authoritative.
 - Claude Code GitHub Action (Jun 2026): Prompt injection in issues and pull requests steered the agent into reading `/proc/self/environ` and exfiltrating CI/CD secrets.
@@ -1308,6 +1381,7 @@ Malicious configurations in repository files execute code when AI tools process 
 AI tools run user-supplied or AI-generated code without isolation.
 
 **Key incidents:**
+- Cursor DuneSlide (CVE-2026-50548, CVE-2026-50549, CVSS 9.8, Jul 2026): Prompt-injected content overwrites the `cursorsandbox` enforcer binary via working-directory manipulation and a fail-open symlink check, escaping the terminal sandbox for zero-click OS-level RCE.
 - Microsoft Semantic Kernel (CVE-2026-26030, CVE-2026-25592, May 2026): Unsafe string interpolation in the Python vector store and an accidentally exposed `[KernelFunction]` file-download method turn prompt injection into host RCE.
 - AutoGen Studio "AutoJack" (Jun 2026): A localhost MCP WebSocket trusting a base64 `server_params` value let a visited webpage run host commands; GitHub-main builds only, PyPI releases unaffected.
 - Cline AI agent (CVE-2026-44211, CVSS 9.7, May 2026): An unauthenticated local WebSocket on port 3484 with no Origin validation allowed cross-origin RCE from a malicious page.
@@ -1362,6 +1436,7 @@ AI agents execute privileged operations without per-action permission checks.
 URL handling in vision, image, and text-loading helpers fetches attacker-controlled hosts without isolating them from internal networks or cloud metadata services.
 
 **Key incidents:**
+- Apify Actors MCP Server CVE-2026-50143 (Jul 2026): A malicious Actor's crafted `webServerMcpPath` is concatenated onto a trusted base URL, redirecting the MCP client so the auto-attached `Authorization: Bearer` header leaks the victim's Apify API token.
 - LMDeploy CVE-2026-33626 (Apr 21, 2026): `load_image()` in vision-language module fetches arbitrary URLs without IP filtering; first in-the-wild exploitation 12 hours 31 minutes after disclosure.
 - LangChain langchain-openai CVE-2026-41488 (Apr 24, 2026): TOCTOU/DNS-rebinding window in `_url_to_size()` between SSRF validation and the separate fetch with independent DNS resolution.
 - LangChain langchain-text-splitters CVE-2026-41481 (Apr 24, 2026): `HTMLHeaderTextSplitter.split_text_from_url()` validated only the initial URL and followed redirects via default `requests.get()` settings.
@@ -1383,6 +1458,8 @@ AI agents send data to arbitrary external endpoints without restriction.
 Threat actors use commercial or open-source AI agents to plan and execute the bulk of an intrusion end to end, with humans only approving decision gates.
 
 **Key incidents:**
+- JADEPUFFER agentic ransomware (Jul 2026): Sysdig documented the first extortion operation run end to end by an autonomous LLM agent, which breached a Langflow instance (CVE-2025-3248), pivoted to a Nacos database (CVE-2021-29441), and encrypted 1,342 config items while adapting in real time.
+- LLM-generated browser-native ransomware (Jul 2026): Check Point prompted DeepSeek into building a proof-of-concept that abuses the browser File System Access API to read, exfiltrate, and encrypt local files with no native payload.
 - GTG-1002 Chinese espionage (Sep-Nov 2025): Claude Code executed 80-90% of tactical operations against ~30 orgs after operators posed as legitimate red teamers.
 - First AI-developed zero-day (May 2026): Google GTIG disrupted a cybercrime plan in which an LLM discovered and weaponized a 2FA-bypass zero-day for mass exploitation, the exploit bearing LLM hallmarks like a hallucinated CVSS score.
 - FAMOUS CHOLLIMA AI-scaled intrusions (reported Jun 2026): CrowdStrike attributed 47% of hands-on-keyboard intrusions on technology firms (Apr 2025-Mar 2026) to the North Korean group, which uses AI-generated identities to enhance scale and speed.
@@ -1424,8 +1501,17 @@ LLM serving and inference engines expose unauthenticated endpoints or mishandle 
 Attackers craft payloads that target the AI defenders themselves, embedding instructions to mislead LLM-based analysis and review tools.
 
 **Key incidents:**
+- GuardFall shell-injection bypass (Jun 2026): Obfuscated commands survive pattern-based command guards in 10 of 11 open-source AI coding agents because the guards inspect the raw string while Bash performs quote removal, expansion, and command substitution before execution.
 - Hades PyPI worm (Jun 2026): Malicious packages embed plain-text prompt injection that tells LLM-based package-analysis tools to classify them as safe.
 - Malicious LLM routers (Apr 2026): Routers rewrite tool calls and exfiltrate secrets while passing as legitimate middleware.
+
+### Hallucinated Artifact Exploitation
+
+Attackers pre-position malicious resources at the names, domains, or packages that LLMs reliably invent, so an agent or user that trusts model output is routed straight to attacker infrastructure.
+
+**Key incidents:**
+- Phantom Squatting (Unit 42, Jun 2026): From 685,339 prompts across 913 brands, models produced ~250,000 registrable non-existent domains; adversaries registered predicted domains to host a phishing kit and a malicious Android APK, exploiting the "zero-reputation bypass" of freshly minted domains.
+- LLM phantom-squatting phishing (Check Point, Jul 2026): Attackers register AI-hallucinated domains, including a postal-service lookalike behind the "Montana Empire" credential-theft kit, to catch traffic misdirected by model output.
 
 ---
 
