@@ -4,7 +4,7 @@ A curated timeline of real AI agent security incidents, breaches, and vulnerabil
 
 No opinions. No product pitches. Just facts with sources.
 
-Last updated: 2026-07-06
+Last updated: 2026-07-13
 
 ---
 
@@ -20,6 +20,196 @@ Last updated: 2026-07-06
 ---
 
 ## 2026 Incidents
+
+### 2026-07-13 - Orca Security 2026 State of AI Security Report
+
+- **Target:** Cloud AI deployments across hundreds of thousands of scanned enterprise environments
+- **Impact:** The report finds AI security debt piling up. 99.9% of AI-related vulnerability alerts that have an available fix remain unpatched; 81.2% of companies running AI packages carry at least one known vulnerability and 74.1% at least one critical CVE; 56% of AI adopters have pushed agent frameworks to production; 64% run vector databases (RAG users average 3.78 of them); and about 30% store at least one AI key insecurely
+- **Root Cause:** Rapid AI adoption outpacing patching, key hygiene, and encryption, with agent frameworks and vector stores deployed faster than they are secured
+- **Sources:** [Help Net Security](https://www.helpnetsecurity.com/2026/07/13/ai-infrastructure-security-risks-report/)
+
+### 2026-07-11 - "Ghostcommit" Hides Prompt Injection Inside PNG Images to Steal Secrets
+
+- **Target:** AI code-review agents Cursor and Google Antigravity (backed by Claude Sonnet, Gemini, and GPT-5.5); Anthropic's Claude Code refused across all tested models
+- **Impact:** Instructions hidden as readable text inside a PNG referenced by an `AGENTS.md` convention file drive an agent to read a project `.env` byte by byte and emit the secrets as a tuple of integer constants disguised as ordinary code, slipping past secret scanners. One run leaked an entire `.env` as a 311-integer constant containing API keys, database URLs, and cloud credentials. A survey found 73% of merged pull requests across 300 top repositories reached the default branch with no substantive human or bot review
+- **Root Cause:** AI code reviewers treat image files as binary blobs and exclude them from analysis, so a prompt injection carried inside an image is never inspected, while encoding stolen secrets as integers evades string-pattern secret detection. Found by Sudipta Chattopadhyay and Murali Ediga (University of Missouri-Kansas City ASSET Research Group)
+- **Sources:** [BleepingComputer](https://www.bleepingcomputer.com/news/security/ghostcommit-hides-prompt-injection-in-images-to-fool-ai-agents-steal-secrets/), [Cybersecurity News](https://cybersecuritynews.com/ghostcommit-attack-hides-prompts/)
+
+### 2026-07-10 - Wave of Critical RCE Flaws Across AI Agent Frameworks (CVE-2026-61447, CVE-2026-54769, CVE-2026-57572, CVE-2026-59726)
+
+- **Target:** PraisonAI before 1.6.78; Langroid before 0.65.2; Crawl4AI before 0.9.0; Ruflo before 3.16.3
+- **Impact:** Four separate critical remote code execution paths were disclosed the same week. PraisonAI's CodeAgent runs LLM-generated Python with no AST validation or sandbox (CVE-2026-61447); Langroid escapes its evaluation sandbox in `TableChatAgent`/`VectorStore` when `full_eval=True` (CVE-2026-54769); Crawl4AI's Docker API accepts attacker-supplied Chromium arguments for unauthenticated RCE (CVE-2026-57572); and Ruflo, a meta-harness for Claude Code and Codex, exposes an unauthenticated MCP bridge whose `terminal_execute` tool grants shell access and provider-key theft (CVE-2026-59726)
+- **Root Cause:** LLM-generated code, SQL, or shell arguments executed without validation or isolation, plus MCP and dashboard endpoints exposed with no authentication
+- **CVE:** CVE-2026-61447, CVE-2026-54769, CVE-2026-57572, CVE-2026-59726 (all CVSS 10.0)
+- **Sources:** [NVD CVE-2026-61447](https://nvd.nist.gov/vuln/detail/CVE-2026-61447), [NVD CVE-2026-54769](https://nvd.nist.gov/vuln/detail/CVE-2026-54769), [NVD CVE-2026-57572](https://nvd.nist.gov/vuln/detail/CVE-2026-57572), [NVD CVE-2026-59726](https://nvd.nist.gov/vuln/detail/CVE-2026-59726)
+
+### 2026-07-09 - Open WebUI 16-Flaw Security Batch (CVE-2026-59212 to CVE-2026-59227)
+
+- **Target:** Open WebUI (self-hosted LLM interface) before 0.10.0
+- **Impact:** Sixteen flaws fixed at once. The most severe include identity spoofing on the terminal WebSocket via an unencoded `session_id` (CVE-2026-59224, CVSS 8.0), running code in another user's session through client-supplied session IDs on `execute:python`/`execute:tool` events (CVE-2026-59216), a nine-times percent-encoded path-traversal bypass of an eight-pass decode (CVE-2026-59221), a Pyodide same-origin worker reaching admin endpoints (CVE-2026-59214), and revoked JWTs still authenticating realtime connections (CVE-2026-59219)
+- **Root Cause:** Missing authorization on realtime socket events, client-trusted session identifiers, and incomplete input decoding across a self-hosted LLM UI
+- **CVE:** CVE-2026-59212 through CVE-2026-59227 and CVE-2026-59715
+- **Sources:** [NVD CVE-2026-59224](https://nvd.nist.gov/vuln/detail/CVE-2026-59224), [NVD CVE-2026-59216](https://nvd.nist.gov/vuln/detail/CVE-2026-59216)
+
+### 2026-07-09 - "Friendly Fire" Turns AI Code-Audit Agents Into Code Execution
+
+- **Target:** Anthropic Claude Code (CLI 2.1.116 through 2.1.199 on Sonnet 4.6, Sonnet 5, and Opus 4.8) and OpenAI Codex (CLI 0.142.4 on GPT-5.5) running in autonomous or auto-approval review modes
+- **Impact:** When these agents are asked to audit an untrusted third-party repository, a malicious binary disguised as a compiled build artifact (seeded with strings from legitimate source to defeat disassembly checks) plus instructions planted in a plain README drive the agent to run the payload on the developer's machine, turning a security-review tool into an execution vector. Newer models sometimes flagged that the binary did not match its supposed source and executed it anyway
+- **Root Cause:** Models cannot reliably separate code they are analyzing from instructions embedded in documentation, a design-level weakness rather than a version-specific bug. Found by the AI Now Institute (Boyan Milanov, Heidy Khlaaf)
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/07/friendly-fire-ai-agents-built-to-catch.html), [Infosecurity Magazine](https://www.infosecurity-magazine.com/news/anthropic-openai-report-exploit/)
+
+### 2026-07-09 - AWS AI Gateway Wired to Amazon Bedrock Hijacked for Cryptomining
+
+- **Target:** An internet-exposed "LiteLLM-Proxy" EC2 instance acting as an AI gateway with a privileged IAM role for Amazon Bedrock
+- **Impact:** With SSH (port 22) open to `0.0.0.0/0`, the host was brute-forced, a 3.42 MB XMRig cryptominer was pulled from an attacker endpoint, and the instance began mining to `pool.hasvault[.]pro`. Follow-on activity from a Vietnam-based IP attempted Bedrock model calls and an IAM `CreateUser`, showing intent to abuse the gateway's model access and cloud privileges
+- **Root Cause:** An AI gateway that centralizes model access, identities, and cloud IAM privileges, left exposed to the internet with weak SSH controls, becomes a high-value pivot. Detected by Darktrace (activity June 12-13, 2026)
+- **Sources:** [SiliconANGLE](https://siliconangle.com/2026/07/09/darktrace-finds-ai-gateway-amazon-bedrock-access-hijacked-cryptomining/), [Dark Reading](https://www.darkreading.com/cyber-risk/ai-gateways-keys-kingdom), [GBHackers](https://gbhackers.com/hackers-compromise-aws-ai-gateway-connected-to-amazon-bedrock/)
+
+### 2026-07-09 - Cline AI Coding Agent Hub WebSocket RCE (CVE-2026-59723)
+
+- **Target:** Cline autonomous coding agent before 3.0.30
+- **Impact:** The Cline Hub dashboard `/browser` WebSocket accepts connections without Origin validation; when `ROOM_SECRET` is unset on `127.0.0.1`, a malicious webpage can send `desktopCommand` frames to read workspace state, alter MCP and provider settings, and trigger command execution
+- **Root Cause:** Missing Origin and authentication checks on a locally bound WebSocket (CWE-346), a repeat of the local-agent WebSocket exposure pattern
+- **CVE:** CVE-2026-59723 (CVSS 8.8)
+- **Sources:** [NVD](https://nvd.nist.gov/vuln/detail/CVE-2026-59723), [Cline release](https://github.com/cline/cline/releases/tag/cli-v3.0.30)
+
+### 2026-07-08 - "GhostApproval" Symlink Flaws Defeat Human-in-the-Loop in Six AI Coding Assistants
+
+- **Target:** Amazon Q Developer, Anthropic Claude Code, Augment, Cursor, Google Antigravity, and Windsurf
+- **Impact:** A malicious repository plants a symlink disguised as an innocuous file (for example `project_settings.json`) that points at `~/.ssh/authorized_keys` or a shell startup file. When the developer asks the agent to set up or edit the file, the agent writes attacker content through the symlink for passwordless SSH access or code execution, while the approval dialog displays the harmless presented path rather than the real target. Some tools write before approval or with no prompt at all
+- **Root Cause:** Agents follow symlinks with standard file operations but seek approval based on the shown path, not the resolved target (CWE-61 symlink following plus CWE-451 UI misrepresentation), so human approval is meaningless. Found by Wiz Research. Amazon (CVE-2026-12958, fixed in Language Server 1.69.0) and Cursor (CVE-2026-50549, fixed in 3.0) patched, Google fixed with a CVE pending, Augment and Windsurf were unpatched at disclosure, and Anthropic called it outside its threat model
+- **CVE:** CVE-2026-12958, CVE-2026-50549
+- **Sources:** [Wiz](https://www.wiz.io/blog/ghostapproval-a-trust-boundary-gap-in-ai-coding-assistants), [The Hacker News](https://thehackernews.com/2026/07/ghostapproval-symlink-flaws-could-let.html), [The Register](https://www.theregister.com/security/2026/07/08/bug-in-top-ai-coding-agents-shows-that-unix-era-security-headaches-never-really-die/)
+
+### 2026-07-08 - "HalluSquatting" Weaponizes AI Package-Name Hallucinations
+
+- **Target:** AI coding assistants Cursor, Windsurf, GitHub Copilot, Cline, Gemini CLI, and the OpenClaw family
+- **Impact:** Attackers register the fake package and repository names that models reliably invent, seed them with malicious code plus hidden prompt injection, and wait for an assistant to fetch the attacker version when a user asks for the "real" resource, chaining hallucination to code execution via the agent's terminal tool. Researchers measured an 85% consistency rate for the same incorrect repository names across phrasings and vendors and a 100% success rate for skill-install requests
+- **Root Cause:** Structural LLM hallucination of plausible but non-existent artifacts combined with agents that fetch and run model-named resources without verification. Found by the Ben Nassi group (Tel Aviv University) with Stav Cohen (Technion) and Ron Bitton (Intuit)
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/07/new-hallusquatting-attack-could-trick.html)
+
+### 2026-07-08 - GitHub Copilot Guardrails Bypassed by Multi-Step Workflow Framing
+
+- **Target:** GitHub Copilot IDE agents in VS Code, backed by Claude Sonnet 4.6, Claude Haiku 4.5, Gemini 3.1 Pro, and Gemini 3.5 Flash
+- **Impact:** Harmful requests that Copilot refuses in direct chat succeed when decomposed into ordinary coding-workflow steps. Across 204 harmful prompts and four model backends, direct prompting produced only 8 of 816 unsafe completions, while the workflow-staged version produced 816 of 816, with usable harmful output typically after about six exchanges
+- **Root Cause:** Safety guardrails evaluate a single prompt in isolation, so reframing a harmful goal as a sequence of benign-looking IDE tasks slips past them. Found by the Alan Turing Institute (Abhishek Kumar, Carsten Maple)
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/07/github-copilot-refuses-harmful-requests.html), [Help Net Security](https://www.helpnetsecurity.com/2026/07/09/github-coding-agent-jailbreak/), [The Register](https://www.theregister.com/security/2026/07/08/github-copilot-sorry-dave-i-cant-do-that-harmful-thing-unless-you-ask-me-in-code/)
+
+### 2026-07-08 - China's CNVDB Labels Claude Code a "Backdoor"; Alibaba Bans It
+
+- **Target:** Anthropic Claude Code, versions 2.1.91 (April 2) through 2.1.196 (June 29)
+- **Impact:** China's national vulnerability body alleged Claude Code contained a built-in monitoring mechanism that collected user location and identity data and sent it to external servers. Alibaba added Claude Code to its high-risk software list and barred employees from using it starting July 10, moving staff to in-house tools
+- **Root Cause:** Anthropic said the code was a March 2026 anti-abuse experiment that checked base URL, timezone, and hostname against reseller and Chinese-company lists to counter unauthorized reselling and model distillation, and that it was removed in version 2.1.198 (July 1). The dispute is over disclosure and intent rather than a formal CVE
+- **Sources:** [The Register](https://www.theregister.com/security/2026/07/08/china-ditch-older-claude-versions-with-backdoor-code/5268371), [CNBC](https://www.cnbc.com/2026/07/08/china-anthropic-ai-claude-code-backdoor-security-threat.html), [TechCrunch](https://techcrunch.com/2026/07/04/alibaba-reportedly-bans-employees-from-using-claude-code/)
+
+### 2026-07-08 - Sygnia Documents Lone Attacker Breaching AWS in 72 Hours With Agentic AI
+
+- **Target:** An unnamed global enterprise's large AWS environment
+- **Impact:** A single financially motivated actor used AI-assisted, parallelized workflows to compromise a large AWS estate in about 72 hours, work that normally takes weeks, then attempted extortion. The attacker harvested secrets from S3, databases, Secrets Manager, and Parameter Store, established persistence via new access keys, IAM users, and reverse shells, exfiltrated RDS data, and staged reversible destructive moves (blocking S3 access, scaling containers to zero, writing deny ACLs, purging queues) for leverage; at one point four access keys from four accounts were used in a single second from one IP
+- **Root Cause:** LLM and agentic tooling lowered the barrier and accelerated recon, credential discovery, cloud enumeration, and pipeline abuse. Initial access came through an AWS key exposed by an internet-facing application. Investigated by Sygnia
+- **Sources:** [Infosecurity Magazine](https://www.infosecurity-magazine.com/news/threat-actor-agentic-ai-cloud/), [Dark Reading](https://www.darkreading.com/cloud-security/lone-attacker-ai-breach-aws-cloud-environment)
+
+### 2026-07-08 - Injective SDK npm Packages Backdoored to Steal Wallet Keys and Poison AI Agent Configs
+
+- **Target:** `@injectivelabs/sdk-ts` (about 50,000 weekly downloads) and 18 related packages
+- **Impact:** A compromised maintainer account pushed a backdoor that hooked `PrivateKey.fromMnemonic()` and `PrivateKey.fromHex()` to capture BIP-39 seed phrases and private keys the moment a wallet loaded, sending them to an attacker server; reporting noted the campaign also dropped persistent backdoor files into AI coding assistant configuration (a Claude Code SessionStart hook, Cursor rules, Gemini settings). The malicious version was live about 49 minutes and downloaded 310 times before a clean 1.20.23 was published, with no user funds reported lost
+- **Root Cause:** Maintainer account compromise plus automatic publishing propagated the tainted build across the scope within minutes; poisoning AI-assistant config files gives the malware persistence inside developer agents
+- **Sources:** [BleepingComputer](https://www.bleepingcomputer.com/news/security/injective-sdk-on-npm-infected-with-cryptocurrency-wallet-stealer/), [The Hacker News](https://thehackernews.com/2026/07/injective-labs-github-compromise-pushes.html), [StepSecurity](https://www.stepsecurity.io/blog/injective-npm-supply-chain-attack-18-packages-backdoored-to-steal-crypto-wallet-keys)
+
+### 2026-07-08 - ESET H1 2026 Threat Report: Malicious AI Agent Skills Surge, First GenAI Android Malware
+
+- **Target:** Public AI agent skill repositories; Android users
+- **Impact:** ESET analyzed roughly 900,000 unique AI agent skills, flagging more than 25,000 as suspicious and over 3,000 as outright malicious, up from about 10,000 and 600 respectively as the scanned population grew from 60,000 to 900,000 between March and May 2026; capabilities included command execution, file and credential access, and obfuscation. The report also names PromptSpy, described as the first Android malware to use generative AI in its execution flow
+- **Root Cause:** Threat actors planting malicious skills in open marketplaces and repositories, and beginning to embed generative AI directly into malware
+- **Sources:** [Help Net Security](https://www.helpnetsecurity.com/2026/07/08/eset-ai-threat-trends-report/), [ESET (GlobeNewswire)](https://www.globenewswire.com/news-release/2026/07/08/3323874/0/en/ESET-Threat-Report-AI-boosts-cyber-attackers-efficiency.html)
+
+### 2026-07-08 - LiteLLM MCP Authentication Bypass (CVE-2026-59822)
+
+- **Target:** LiteLLM (BerriAI) before 1.84.0
+- **Impact:** A fabricated `Authorization` header on the MCP Streamable HTTP endpoint triggers an OAuth2 passthrough fallback that replaces failed key validation with an empty auth object, letting an unauthenticated attacker reach MCP tooling without a valid key. Three sibling flaws the same day cover a Skills ZIP path traversal (CVE-2026-59820), an arbitrary file read via `/health/test_connection` (CVE-2026-59819), and unsandboxed code in Custom Code Guardrails (CVE-2026-59821)
+- **Root Cause:** Authentication fallback logic that fails open (CWE-287) in the MCP request path
+- **CVE:** CVE-2026-59822 (CVSS 8.8), CVE-2026-59820, CVE-2026-59819, CVE-2026-59821
+- **Sources:** [NVD](https://nvd.nist.gov/vuln/detail/CVE-2026-59822), [LiteLLM release](https://github.com/BerriAI/litellm/releases/tag/v1.84.0)
+
+### 2026-07-07 - "GitLost" Leaks Private Repositories via GitHub Agentic Workflows
+
+- **Target:** GitHub Agentic Workflows (public preview; agents running on Copilot, Claude, Gemini, or Codex inside GitHub Actions)
+- **Impact:** An unauthenticated attacker files a public GitHub issue containing hidden plain-English instructions; when the workflow triggers, the credentialed agent (which can read repositories the attacker cannot) follows them and posts private repository contents into a public comment. The proof of concept exfiltrated a private repo's README into a public comment, and prefixing the injection with "Additionally" bypassed GitHub's threat-detection guardrails
+- **Root Cause:** The agent cannot distinguish owner instructions from attacker-planted content in an untrusted issue (the "lethal trifecta" of private-data access, untrusted input, and a public output channel); GitHub describes it as an architectural limitation rather than a patchable bug. Found by Noma Security
+- **Sources:** [Noma Security](https://noma.security/blog/gitlost-how-we-tricked-githubs-ai-agent-into-leaking-private-repos/), [The Hacker News](https://thehackernews.com/2026/07/public-github-issue-could-trick-github.html), [SecurityWeek](https://www.securityweek.com/critical-vulnerability-exposes-github-agentic-workflows-to-prompt-injection/)
+
+### 2026-07-07 - Google Dialogflow CX "Rogue Agent" Cross-Agent Hijack
+
+- **Target:** Google Dialogflow CX agents using Code Block Playbooks with custom Python
+- **Impact:** An attacker with `dialogflow.playbooks.update` permission on one Code Block-enabled agent could overwrite `code_execution_env.py` in a shared, customer-invisible Cloud Run runtime, running injected code for every agent in the same Google Cloud project to read live conversations, steal user data, and inject phishing responses
+- **Root Cause:** A writable setup file in a shared runtime with no isolation between agents, plus unrestricted outbound access and exposed metadata. Found by Varonis; reported November 2025, initially fixed April 2026 and fully resolved June 2026, with no evidence of in-the-wild abuse and no CVE
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/07/rogue-agent-flaw-could-have-let.html), [Axios](https://www.axios.com/2026/07/07/varonis-google-ai-agent-chatbot-security), [Dark Reading](https://www.darkreading.com/application-security/dialogflow-cx-rogue-agent-flaw-enabled-ai-chatbot-data-theft)
+
+### 2026-07-07 - "WriteOut" Cross-Tenant Account Takeover in Writer AI
+
+- **Target:** Writer enterprise generative AI platform, live agent preview feature
+- **Impact:** A logged-in user who clicked a shared agent preview link could have their account hijacked across organizational tenants, exposing private chats, documents, agent configurations, private models, connectors, and LLM credentials, with potential admin control
+- **Root Cause:** Writer served agent previews from the same origin as the main app, so the browser auto-attached the user's session cookie and the proxy forwarded it into the attacker-controlled sandbox, breaking tenant isolation. Found by SAND Security; Writer moved previews to an isolated origin and stopped forwarding the session cookie, fixing it within 24 hours, with no customer data compromised
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/07/writer-ai-flaw-could-let-agent-previews.html), [SAND Security](https://www.sandsecurity.ai/blog/writeout-writer-ai-cross-tenant)
+
+### 2026-07-07 - CISA Adds Langflow IDOR (CVE-2026-55255) to KEV, First AI Agent Platform in the Catalog
+
+- **Target:** Langflow before 1.9.1 (guidance updated to 1.9.2)
+- **Impact:** An insecure direct object reference in `/api/v1/responses` lets an authenticated attacker execute any flow belonging to another user by supplying the victim's flow ID, exposing embedded LLM provider keys, cloud credentials, and database secrets. Sysdig observed a lone operator chaining reconnaissance, this IDOR, and a loop of the Langflow RCE CVE-2026-33017 between June 22 and 25, 2026 to harvest secrets and stage second-stage implants. CISA added it to the Known Exploited Vulnerabilities catalog on July 7 with a July 10 federal deadline, the first AI agent orchestration platform to enter the catalog
+- **Root Cause:** Authorization bypass through a user-controlled key (CWE-639); flow lookups query by UUID with no ownership check
+- **CVE:** CVE-2026-55255 (NVD CVSS 8.4; vendor rates 9.9)
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/07/cisa-adds-4-actively-exploited-adobe.html), [BleepingComputer](https://www.bleepingcomputer.com/news/security/cisa-orders-feds-to-prioritize-patching-langflow-auth-bypass-flaw/), [Help Net Security](https://www.helpnetsecurity.com/2026/07/08/langflow-vulnerability-cve-2026-55255-exploited/)
+
+### 2026-07-07 - Google Gemini Live API RCE via Unconstrained Ephemeral Tokens
+
+- **Target:** Browser-based applications using the Gemini Live API for voice sessions
+- **Impact:** Misconfigured ephemeral tokens let a client override the system prompt and tool definitions and trigger code execution; a proof of concept ran `os.uname()` and returned a nonce-based SHA-256 to prove genuine execution. The weakness traces back to Google's own reference implementation
+- **Root Cause:** Every setup-frame field is optional, so any parameter not locked server-side (via `live_connect_constraints`) stays client-controllable. Reported by researcher Alvin Ferdiansyah
+- **Sources:** [GBHackers](https://gbhackers.com/google-gemini-live-api-flaw/), [Cybersecurity News](https://cybersecuritynews.com/gemini-live-voice-session-flaw/)
+
+### 2026-07-07 - mem0 Unauthenticated Memory Access and Key Disclosure (CVE-2026-59705, CVE-2026-59706)
+
+- **Target:** mem0 (mem0ai) OpenMemory API
+- **Impact:** OpenMemory API routers were registered with no authentication, letting an unauthenticated attacker read, write, or delete arbitrary user memories and force a global pause for denial of service (CVE-2026-59705); a companion flaw exposes LLM API keys in plaintext through the config API and allows SSRF via the `ollama_base_url` value (CVE-2026-59706)
+- **Root Cause:** Missing authentication middleware on agent memory endpoints (CWE-306), a direct memory-poisoning and credential-theft path against a widely used agent memory store
+- **CVE:** CVE-2026-59705 (CVSS 9.3), CVE-2026-59706 (CVSS 9.2)
+- **Sources:** [NVD CVE-2026-59705](https://nvd.nist.gov/vuln/detail/CVE-2026-59705), [NVD CVE-2026-59706](https://nvd.nist.gov/vuln/detail/CVE-2026-59706)
+
+### 2026-07-07 - DigiCert AI Trust Outlook: 78% of Enterprises Report AI Security Incidents
+
+- **Target:** Enterprise AI deployments (survey of 1,001 IT and security decision-makers in the US, UK, and Australia, conducted May 2026)
+- **Impact:** 78% of organizations said they experienced AI-related incidents or identified AI-related vulnerabilities, which coverage attributes largely to unauthorized or misconfigured AI agents. Nearly half lack centralized visibility into their AI systems and 47% cannot fully trace AI decisions back to models and source data, even as 75% deployed four or more AI-powered systems in the prior six months
+- **Root Cause:** AI adoption outrunning governance, identity, and visibility controls
+- **Sources:** [DigiCert (GlobeNewswire)](https://www.globenewswire.com/news-release/2026/07/07/3323253/0/en/latest-digicert-research-shows-ai-security-risks-already-hitting-enterprises-with-78-reporting-incidents.html), [The Register](https://www.theregister.com/security/2026/07/07/enterprise-ai-still-smarting-from-leaping-before-looking/5267353), [SD Times](https://sdtimes.com/ai-governance/survey-reveals-78-of-enterprises-are-reporting-ai-related-security-incidents/)
+
+### 2026-07-07 - Trend Micro "Stars Don't Save You" MCP Ecosystem Study
+
+- **Target:** 9,695 MCP servers indexed across GitHub, Glama, Lobehub, and PulseMCP
+- **Impact:** 5,832 servers carried at least one weakness and 2,259 had confirmed exploitable vulnerabilities across 4,982 distinct issues, including 2,054 with no authentication, 880 arbitrary file access, 490 denial of service, 476 command injection, 422 SSRF, 211 SQL injection, and 185 prompt injection. The study found no correlation between GitHub stars or verification badges and actual security
+- **Root Cause:** An immature MCP ecosystem where popularity signals do not track security and many servers ship without authentication or input validation
+- **Sources:** [Trend AI Security](https://www.trendaisecurity.com/en-us/resources-insights/research/stars-dont-save-you-popularity-is-not-security-in-the-mcp-ecosystem), [Cyberpress](https://cyberpress.org/4982-security-issues-expose-2259-public-mcp-servers-to-ai-agent-attacks/), [GBHackers](https://gbhackers.com/thousands-of-mcp-servers-found-vulnerable/)
+
+### 2026-07-06 - "SkillCloak" Repacks Malicious AI Agent Skills to Evade Scanners
+
+- **Target:** AI agent skill marketplaces and scanners; cloaked skills tested against Claude Code and OpenAI Codex
+- **Impact:** SkillCloak preserves a payload's malicious behavior while rewriting its visible structure, using structural obfuscation and self-extracting packing that hides components in scanner-skipped directories such as `.git` and restores them at runtime. Across 8 scanners and 1,613 real malicious ClawHub skills, self-extracting packing evaded every scanner more than 90% of the time (most above 99%) and dropped the best static scanner from about 99% to 10% detection, while cloaked skills still ran under production agents with no measurable loss of function; the authors' runtime detector SkillDetonate caught 97% of synthetic and 87% of real-world cases
+- **Root Cause:** Static scanners inspect skills at submission time, but malicious behavior manifests at runtime. Found by the Hong Kong University of Science and Technology
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/07/new-skillcloak-technique-lets-malicious.html), [Help Net Security](https://www.helpnetsecurity.com/2026/07/09/malicious-ai-agent-skills-scan/), [arXiv](https://arxiv.org/abs/2607.02357)
+
+### 2026-07-06 - Summer.fi "Keeper AI Agents" Exploit Drains About $6M
+
+- **Target:** Summer.fi (Lazy Summer Protocol) DeFi automation
+- **Impact:** An exploit drained roughly $6 million, with the attack path traversing the protocol's automated "Keeper AI Agents" that handle rebalancing; commentators framed it as AI automation now sitting above smart-contract risk. It was one of several DeFi incidents in the week (a BonkDAO governance drain and a Bonzo Lend oracle exploit) totaling around $35 million
+- **Root Cause:** Automated agent-driven protocol actions layered on top of smart-contract exposure, expanding the blast radius of the underlying exploit
+- **Sources:** [CryptoSlate](https://cryptoslate.com/summer-fi-exploit-shows-ai-automation-now-sits-above-defi-smart-contract-risk/), [Crypto Times](https://www.cryptotimes.io/2026/07/12/crypto-loses-35m-in-a-week-bonkdao-bonzo-lend-summer-fi-hacked/)
+
+### 2026-07-06 - OpenAI Codex Desktop Zero-Click Data Exfiltration (CVE-2026-14898)
+
+- **Target:** OpenAI Codex desktop app for macOS before 26.527.31326
+- **Impact:** The app renders remote Markdown images returned by the model, so an indirect prompt injection can make the model build a remote image URL containing sensitive data that is fetched automatically with no user click, leaking it to an attacker server
+- **Root Cause:** Auto-fetching remote images from untrusted model output (CWE-200), the same image-based exfiltration pattern seen in other assistants
+- **CVE:** CVE-2026-14898 (CVSS 6.5)
+- **Sources:** [NVD](https://nvd.nist.gov/vuln/detail/CVE-2026-14898), [OpenAI Codex](https://openai.com/codex/)
 
 ### 2026-07-02 - Zscaler Documents In-the-Wild Indirect Prompt Injection Targeting Autonomous AI Agents
 
@@ -1307,6 +1497,20 @@ Last updated: 2026-07-06
 | AI-hallucinated "phantom" domains registrable by attackers (Unit 42, Jun 2026) | ~250,000 (from 2.1M URLs across 913 brands) | [Palo Alto Unit 42](https://unit42.paloaltonetworks.com/phantom-squatting-hallucinated-web-domains/) |
 | Models that executed a fraudulent agent payment in Zscaler indirect-prompt-injection test (Jul 2026) | 4 of 26 (2 more misclassified the fake site as legitimate) | [Zscaler ThreatLabz](https://www.zscaler.com/blogs/security-research/indirect-prompt-injection-web-content-targets-ai-agents) |
 | Nacos configuration items encrypted by JADEPUFFER agentic ransomware (Jul 2026) | 1,342 (encryption key never stored, recovery impossible) | [Sysdig](https://sysdig.com/blog/jadepuffer-agentic-ransomware-for-automated-database-extortion) |
+| Enterprises reporting an AI-related security incident or vulnerability (DigiCert, Jul 2026) | 78% (of 1,001 IT/security leaders across US, UK, Australia) | [DigiCert](https://www.globenewswire.com/news-release/2026/07/07/3323253/0/en/latest-digicert-research-shows-ai-security-risks-already-hitting-enterprises-with-78-reporting-incidents.html) |
+| Organizations that cannot fully trace AI decisions to models and source data (DigiCert, Jul 2026) | 47% (nearly half also lack centralized AI visibility) | [DigiCert](https://www.globenewswire.com/news-release/2026/07/07/3323253/0/en/latest-digicert-research-shows-ai-security-risks-already-hitting-enterprises-with-78-reporting-incidents.html) |
+| AI-related vulnerability alerts with an available fix left unpatched (Orca, Jul 2026) | 99.9% | [Help Net Security](https://www.helpnetsecurity.com/2026/07/13/ai-infrastructure-security-risks-report/) |
+| Companies running AI packages with at least one known vulnerability (Orca, Jul 2026) | 81.2% (74.1% have at least one critical CVE) | [Help Net Security](https://www.helpnetsecurity.com/2026/07/13/ai-infrastructure-security-risks-report/) |
+| Prompt-injection techniques in CrowdStrike taxonomy (Jul 7, 2026) | 200+ (18 newly added) | [CrowdStrike](https://www.crowdstrike.com/en-us/blog/crowdstrike-uncovers-new-prompt-injection-techniques/) |
+| GitHub Copilot harmful-output rate, workflow-staged vs direct prompt (Alan Turing Institute, Jul 2026) | 816/816 (100%) vs 8/816 (0.98%) | [Help Net Security](https://www.helpnetsecurity.com/2026/07/09/github-coding-agent-jailbreak/) |
+| Unique AI agent skills analyzed; suspicious; malicious (ESET H1 2026, Jul 2026) | ~900,000; 25,000+; 3,000+ | [Help Net Security](https://www.helpnetsecurity.com/2026/07/08/eset-ai-threat-trends-report/) |
+| Compromised credential records for AI/dev platforms in stealer logs (SOCRadar, Jul 2026) | OpenAI 3.1M, Replit 204K, Hugging Face 186K, RunwayML 95K | [SOCRadar](https://socradar.io/blog/ai-agent-credential-stealer-log-source-code/) |
+| MCP servers analyzed; exploitable; running with no authentication (Trend Micro, Jul 2026) | 9,695; 2,259; 2,054 | [Trend AI Security](https://www.trendaisecurity.com/en-us/resources-insights/research/stars-dont-save-you-popularity-is-not-security-in-the-mcp-ecosystem) |
+| SkillCloak self-extracting packing evasion of skill scanners (HKUST, Jul 2026) | >90% across all 8 scanners tested (best scanner dropped 99% to ~10%) | [Help Net Security](https://www.helpnetsecurity.com/2026/07/09/malicious-ai-agent-skills-scan/) |
+| HalluSquatting consistency of hallucinated repo names; skill-install success (Jul 2026) | 85%; 100% | [The Hacker News](https://thehackernews.com/2026/07/new-hallusquatting-attack-could-trick.html) |
+| Merged pull requests reaching default branch with no substantive human or bot review (Ghostcommit study, Jul 2026) | 73% (across 300 top repositories) | [BleepingComputer](https://www.bleepingcomputer.com/news/security/ghostcommit-hides-prompt-injection-in-images-to-fool-ai-agents-steal-secrets/) |
+| Langflow CVE-2026-55255 significance (Jul 7, 2026) | First AI agent orchestration platform added to CISA KEV | [BleepingComputer](https://www.bleepingcomputer.com/news/security/cisa-orders-feds-to-prioritize-patching-langflow-auth-bypass-flaw/) |
+| 2025 scams that involved AI or deepfakes; total US scam losses (Gallup, Jul 2026) | 12%; $68 billion | [Gallup](https://news.gallup.com/poll/710984/scam-victims-report-billions-lost-harm-mental-health.aspx) |
 
 ---
 
@@ -1421,11 +1625,25 @@ Malicious instructions embedded in tool descriptions, model files, or integratio
 - ClawHub malicious skills (Jan-Mar 2026): 1,184+ malicious skills distributing Atomic Stealer and keyloggers.
 - GitHub Copilot filename injection (Nov 2025): Extremely long filenames with prompt injection instructions.
 
+### Cross-Tenant and Cross-Agent Isolation Failures
+
+Managed AI platforms and agent runtimes fail to isolate one customer, tenant, or agent from another, so a request or write in one context reaches data or execution in another.
+
+**Key incidents:**
+- Writer AI "WriteOut" (Jul 2026): Agent live previews were served from the main app origin, so the browser forwarded a logged-in user's session cookie into an attacker sandbox for cross-tenant account takeover.
+- Google Dialogflow CX "Rogue Agent" (Jul 2026): A writable setup file in a shared, un-isolated Cloud Run runtime let one agent's owner run code across every agent in the Google Cloud project.
+- GitLost GitHub Agentic Workflows (Jul 2026): A public issue's hidden instructions drove a credentialed agent to leak private-repository contents into a public comment (the "lethal trifecta" of private data, untrusted input, and a public channel).
+- mem0 unauthenticated memory API (CVE-2026-59705/59706, Jul 2026): Missing auth on the agent memory store allowed reading, writing, and deleting any user's memories and leaked LLM API keys in plaintext.
+- Dify "DifyTap" (CVE-2026-41947 to 41950, Jun 2026): Console users and chatbots could read other organizations' documents and the tracing subsystem could be redirected to exfiltrate all messages.
+- AWS Bedrock AgentCore "Agent God Mode" (Apr 2026): Auto-created IAM roles with wildcard privileges let one agent reach every other agent's memory across the account.
+
 ### No Action-Level Authorization
 
 AI agents execute privileged operations without per-action permission checks.
 
 **Key incidents:**
+- GhostApproval symlink deception (Jul 2026): In six AI coding assistants a symlink disguised as a benign file makes the approval dialog show a harmless path while the write lands on `~/.ssh/authorized_keys` or a shell startup file, so human-in-the-loop approval is meaningless.
+- Friendly Fire (Jul 2026): Claude Code and Codex in auto-approval review modes run attacker binaries disguised as build artifacts while auditing untrusted repositories.
 - Meta Sev 1 rogue AI agent (Mar 2026): Agent posted technical advice containing sensitive data without human confirmation.
 - ROME agent sandbox escape (Mar 2026): Agent spontaneously initiated crypto mining and reverse SSH tunnel.
 - GitHub Copilot YOLO mode (CVE-2025-53773): Prompt injection disables all user confirmations.
@@ -1458,6 +1676,8 @@ AI agents send data to arbitrary external endpoints without restriction.
 Threat actors use commercial or open-source AI agents to plan and execute the bulk of an intrusion end to end, with humans only approving decision gates.
 
 **Key incidents:**
+- Sygnia AI-accelerated AWS breach (Jul 2026): A lone financially motivated actor used agentic AI to compromise a large AWS environment in about 72 hours, harvesting secrets, planting persistence, exfiltrating RDS data, and staging reversible destructive actions for extortion leverage.
+- AWS AI gateway cryptojacking (Jul 2026): An internet-exposed LiteLLM-Proxy instance with a privileged Amazon Bedrock IAM role was brute-forced over SSH and hijacked to run XMRig, with follow-on attempts to abuse its Bedrock access.
 - JADEPUFFER agentic ransomware (Jul 2026): Sysdig documented the first extortion operation run end to end by an autonomous LLM agent, which breached a Langflow instance (CVE-2025-3248), pivoted to a Nacos database (CVE-2021-29441), and encrypted 1,342 config items while adapting in real time.
 - LLM-generated browser-native ransomware (Jul 2026): Check Point prompted DeepSeek into building a proof-of-concept that abuses the browser File System Access API to read, exfiltrate, and encrypt local files with no native payload.
 - GTG-1002 Chinese espionage (Sep-Nov 2025): Claude Code executed 80-90% of tactical operations against ~30 orgs after operators posed as legitimate red teamers.
@@ -1501,6 +1721,8 @@ LLM serving and inference engines expose unauthenticated endpoints or mishandle 
 Attackers craft payloads that target the AI defenders themselves, embedding instructions to mislead LLM-based analysis and review tools.
 
 **Key incidents:**
+- SkillCloak scanner evasion (Jul 2026): Self-extracting packing and structural obfuscation keep malicious AI agent skills fully functional while evading every one of 8 tested scanners more than 90% of the time, dropping the best static scanner from 99% to 10% detection.
+- Ghostcommit image-hidden injection (Jul 2026): Prompt injection carried inside a PNG referenced by an `AGENTS.md` file is never inspected because AI code reviewers skip image files, and stolen secrets are encoded as integer constants to evade secret scanners.
 - GuardFall shell-injection bypass (Jun 2026): Obfuscated commands survive pattern-based command guards in 10 of 11 open-source AI coding agents because the guards inspect the raw string while Bash performs quote removal, expansion, and command substitution before execution.
 - Hades PyPI worm (Jun 2026): Malicious packages embed plain-text prompt injection that tells LLM-based package-analysis tools to classify them as safe.
 - Malicious LLM routers (Apr 2026): Routers rewrite tool calls and exfiltrate secrets while passing as legitimate middleware.
@@ -1510,6 +1732,7 @@ Attackers craft payloads that target the AI defenders themselves, embedding inst
 Attackers pre-position malicious resources at the names, domains, or packages that LLMs reliably invent, so an agent or user that trusts model output is routed straight to attacker infrastructure.
 
 **Key incidents:**
+- HalluSquatting (Jul 2026): Attackers register the fake package and repository names that models reliably invent, then serve malicious code plus hidden prompt injection when an assistant fetches the "real" resource; researchers found an 85% consistency rate for the invented names and a 100% success rate for skill-install requests across Cursor, Windsurf, Copilot, Cline, Gemini CLI, and OpenClaw.
 - Phantom Squatting (Unit 42, Jun 2026): From 685,339 prompts across 913 brands, models produced ~250,000 registrable non-existent domains; adversaries registered predicted domains to host a phishing kit and a malicious Android APK, exploiting the "zero-reputation bypass" of freshly minted domains.
 - LLM phantom-squatting phishing (Check Point, Jul 2026): Attackers register AI-hallucinated domains, including a postal-service lookalike behind the "Montana Empire" credential-theft kit, to catch traffic misdirected by model output.
 
