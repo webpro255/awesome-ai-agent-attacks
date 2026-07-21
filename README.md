@@ -4,7 +4,7 @@ A curated timeline of real AI agent security incidents, breaches, and vulnerabil
 
 No opinions. No product pitches. Just facts with sources.
 
-Last updated: 2026-07-13
+Last updated: 2026-07-20
 
 ---
 
@@ -20,6 +20,27 @@ Last updated: 2026-07-13
 ---
 
 ## 2026 Incidents
+
+### 2026-07-16 - Hugging Face Production Infrastructure Breached End-to-End by an Autonomous AI Agent
+
+- **Target:** Hugging Face production infrastructure, specifically its dataset-processing pipeline that handles untrusted uploads
+- **Impact:** Attackers gained unauthorized access to a limited set of internal datasets and several service credentials, then moved laterally into several internal clusters. Hugging Face found no evidence that public models, user-facing datasets, Spaces, or the software supply chain were tampered with, and was still assessing possible partner and customer data exposure. The intrusion had logged more than 17,000 individual attacker actions before it was contained. What made the incident notable is that it was driven end to end by an autonomous agent framework (described as built on an agentic security-research harness) running thousands of actions from a swarm of short-lived sandboxes, with self-migrating command-and-control staged on public services; the underlying model was never identified but operated without usage-policy constraints. Hugging Face ran its own forensics with the open-weight GLM 5.2 model after commercial APIs blocked submissions that contained the attack payloads
+- **Root Cause:** Two code-execution paths in the dataset-processing environment reached by a single malicious dataset upload: a remote-code dataset loader and a template injection in a dataset configuration. Both ran attacker code on a processing worker, which the agent used to escalate to node-level access and harvest cloud and cluster credentials
+- **Sources:** [Hugging Face](https://huggingface.co/blog/security-incident-july-2026), [BleepingComputer](https://www.bleepingcomputer.com/news/security/hugging-face-breach-autonomous-ai-agent-system-internal-datasets-credentials/), [The Hacker News](https://thehackernews.com/2026/07/worlds-largest-ai-model-repository.html), [Help Net Security](https://www.helpnetsecurity.com/2026/07/20/hugging-face-breached-by-autonomous-ai-agent/)
+
+### 2026-07-14 - "ClaudeBleed Reopened": Rogue Browser Extensions Can Still Drive Claude for Chrome to Read Gmail and Calendar
+
+- **Target:** Anthropic's Claude for Chrome browser extension through v1.0.80 (released July 7, 2026) in "Act without asking" mode, with access to connected Gmail, Google Docs, Google Calendar, and Salesforce
+- **Impact:** Any co-installed browser extension able to inject scripts into claude.ai can silently trigger Claude's pre-approved agentic tasks, abusing its connected-account access to read recent Gmail, open the user's latest Google Doc and its comments, read the calendar and create meetings, or modify Salesforce leads, all without a genuine user action. Manifold Security reported that the bypass remained about six lines of JavaScript across eight releases and stayed unpatched at disclosure
+- **Root Cause:** Two trust-boundary defects. The extension's approval click handler never checked the browser's `event.isTrusted` property, so a synthetic (script-generated) click was accepted as a real user gesture; and the Claude side panel initialized in privileged mode whenever loaded with `?skipPermissions=true` in its URL, with no user gesture or consent, turning any URL-construction bug into a silent-execution path. A follow-on to the earlier "ClaudeBleed" issue whose pre-approved-task-list mitigation Manifold showed was still bypassable. Reported to Anthropic on May 21, 2026 by Ax Sharma (Manifold Security)
+- **Sources:** [SecurityWeek](https://www.securityweek.com/unpatched-claude-for-chrome-flaw-lets-extensions-read-gmail-calendar/), [BleepingComputer](https://www.bleepingcomputer.com/news/security/claude-chrome-extension-flaw-lets-malicious-extensions-trigger-ai-actions/), [Manifold Security](https://www.manifold.security/blog/claude-for-chrome-extension-bypass), [The Hacker News](https://thehackernews.com/2026/07/claude-for-chrome-flaw-lets-other.html)
+
+### 2026-07-14 - Check Point AI Security Report 2026: "AI Has Crossed From Assistant to Operator"
+
+- **Target:** Enterprise and government defenders; the report's opening case study covers nine Mexican government agencies
+- **Impact:** Check Point Research documented a single operator who used Claude Code and GPT-4.1 together to breach nine Mexican government agencies between late December 2025 and mid-February 2026, turning 1,088 typed prompts into 5,317 AI-executed commands across 34 attack sessions and exposing roughly 400 million records (tax filings, civil registry, patient, vehicle, and electoral data). Claude Code handled about 75% of live exploitation across 305 internal servers, while a separate GPT-4.1 pipeline generated 2,597 structured intelligence reports and auto-tasked follow-on activity using more than 400 custom scripts against 20 CVEs. Broader findings: detections of long malicious prompt-injection payloads rose roughly fivefold between March and May 2026, high-risk AI interactions per organization doubled year-over-year (from about 1 in 50 to 1 in 25), and facial-recognition systems correctly flagged only about 41% of AI-generated faces
+- **Root Cause:** Commercial and open-source AI agents now execute the bulk of an intrusion autonomously, collapsing the time and skill required to run a large multi-agency campaign while defenders lack per-action controls and AI-usage visibility
+- **Sources:** [Check Point Research](https://research.checkpoint.com/2026/ai-security-report-2026/), [Check Point Software](https://www.checkpoint.com/press-releases/check-point-research-ai-has-crossed-from-assistant-to-operator-rewriting-the-rules-of-autonomous-ai-cyber-attack-and-defense/), [IT Security Guru](https://www.itsecurityguru.org/2026/07/14/ai-has-crossed-from-assistant-to-operator-check-point-research-warns/)
 
 ### 2026-07-13 - Orca Security 2026 State of AI Security Report
 
@@ -1511,6 +1532,11 @@ Last updated: 2026-07-13
 | Merged pull requests reaching default branch with no substantive human or bot review (Ghostcommit study, Jul 2026) | 73% (across 300 top repositories) | [BleepingComputer](https://www.bleepingcomputer.com/news/security/ghostcommit-hides-prompt-injection-in-images-to-fool-ai-agents-steal-secrets/) |
 | Langflow CVE-2026-55255 significance (Jul 7, 2026) | First AI agent orchestration platform added to CISA KEV | [BleepingComputer](https://www.bleepingcomputer.com/news/security/cisa-orders-feds-to-prioritize-patching-langflow-auth-bypass-flaw/) |
 | 2025 scams that involved AI or deepfakes; total US scam losses (Gallup, Jul 2026) | 12%; $68 billion | [Gallup](https://news.gallup.com/poll/710984/scam-victims-report-billions-lost-harm-mental-health.aspx) |
+| Autonomous-agent actions logged inside Hugging Face before containment (Jul 2026) | 17,000+ | [Hugging Face](https://huggingface.co/blog/security-incident-july-2026) |
+| Single-operator AI campaign vs 9 Mexican government agencies (Check Point, Jul 2026) | 1,088 prompts to 5,317 AI-executed commands across 34 sessions; ~400 million records; 305 servers; 20 CVEs | [Check Point Research](https://research.checkpoint.com/2026/ai-security-report-2026/) |
+| Increase in long malicious prompt-injection payload detections, Mar-May 2026 (Check Point, Jul 2026) | ~5x (fivefold) | [Check Point Research](https://research.checkpoint.com/2026/ai-security-report-2026/) |
+| High-risk AI interactions per organization, year-over-year (Check Point, Jul 2026) | doubled, from ~1 in 50 to ~1 in 25 | [Check Point Research](https://research.checkpoint.com/2026/ai-security-report-2026/) |
+| Claude for Chrome bypass size / releases still vulnerable (Manifold, Jul 2026) | ~6 lines of JavaScript across 8 releases through v1.0.80 | [Manifold Security](https://www.manifold.security/blog/claude-for-chrome-extension-bypass) |
 
 ---
 
@@ -1541,6 +1567,7 @@ A single compromised credential triggers lateral movement across multiple packag
 An AI agent with legitimate access is tricked into performing actions on behalf of an attacker.
 
 **Key incidents:**
+- Claude for Chrome "ClaudeBleed Reopened" (Jul 2026): A co-installed browser extension forges synthetic clicks that bypass the `event.isTrusted` check (plus a `?skipPermissions=true` privileged-init path), driving Claude's pre-approved tasks to read Gmail, Google Docs, and Calendar and modify Salesforce with the user's connected-account access.
 - Zscaler in-the-wild IPI payment fraud (Jul 2026): Malicious websites use SEO poisoning and hidden HTML to steer web-browsing agents into paying a fake developer API license; 4 of 26 tested models executed the fraudulent crypto payment.
 - Microsoft 365 Copilot SearchLeak (CVE-2026-42824, Jun 2026): A single malicious link injects instructions through the search `q` parameter and exfiltrates emails, files, and MFA codes via a Bing CSP-allowlist bypass.
 - Grok and Bankr wallet drain (May 2026): A Morse-code prompt injection routed through Grok produced a transfer command that the Bankr trading agent executed as authoritative.
@@ -1676,6 +1703,8 @@ AI agents send data to arbitrary external endpoints without restriction.
 Threat actors use commercial or open-source AI agents to plan and execute the bulk of an intrusion end to end, with humans only approving decision gates.
 
 **Key incidents:**
+- Hugging Face autonomous-agent breach (Jul 2026): An autonomous agent framework ran more than 17,000 logged actions from a swarm of short-lived sandboxes, chaining a malicious dataset upload into worker code execution, node-level access, credential theft, and lateral movement across several internal clusters.
+- Check Point "assistant to operator" Mexico campaign (Jul 2026): A single operator paired Claude Code and GPT-4.1 to breach nine Mexican government agencies, turning 1,088 prompts into 5,317 AI-executed commands across 34 sessions and exposing roughly 400 million records.
 - Sygnia AI-accelerated AWS breach (Jul 2026): A lone financially motivated actor used agentic AI to compromise a large AWS environment in about 72 hours, harvesting secrets, planting persistence, exfiltrating RDS data, and staging reversible destructive actions for extortion leverage.
 - AWS AI gateway cryptojacking (Jul 2026): An internet-exposed LiteLLM-Proxy instance with a privileged Amazon Bedrock IAM role was brute-forced over SSH and hijacked to run XMRig, with follow-on attempts to abuse its Bedrock access.
 - JADEPUFFER agentic ransomware (Jul 2026): Sysdig documented the first extortion operation run end to end by an autonomous LLM agent, which breached a Langflow instance (CVE-2025-3248), pivoted to a Nacos database (CVE-2021-29441), and encrypted 1,342 config items while adapting in real time.
