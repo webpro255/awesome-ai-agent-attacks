@@ -4,7 +4,7 @@ A curated timeline of real AI agent security incidents, breaches, and vulnerabil
 
 No opinions. No product pitches. Just facts with sources.
 
-Last updated: 2026-07-20
+Last updated: 2026-07-27
 
 ---
 
@@ -21,12 +21,107 @@ Last updated: 2026-07-20
 
 ## 2026 Incidents
 
+### 2026-07-24 - Hermes AI Agent Run Unattended for Post-Exploitation Inside Thailand's Ministry of Finance
+
+- **Target:** Thailand's Ministry of Finance, which manages the national treasury and tax collection
+- **Impact:** An operator stood up Hermes, an open-source AI assistant from Nous Research built for mail management and task automation over Telegram or Slack, on a rented server and pointed it at the ministry's internal network with human approval switched off. The agent enumerated systems on its own, ran LinPEAS privilege-escalation scans targeting four 2026 Linux kernel vulnerabilities, reached the Office of the Permanent Secretary's directory holding staff files and performance evaluations dating to 2012, and abused default authentication on an Apache HiveServer2 instance to install malicious Java user-defined functions for command execution. Recovered logs showed file access but no confirmed exfiltration. Documented by Hunt.io and researcher Bob Diachenko, who published on July 15, 2026, with wider coverage on July 24
+- **Root Cause:** The operator launched Hermes with its documented "YOLO" command-line flag, a supported option that removes the human approval step before command execution, converting a collaborative assistant into an unsupervised intrusion platform. The initial network access method is still unknown
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/07/hacker-runs-hermes-ai-agent-unattended.html), [Hunt.io](https://hunt.io/blog)
+
+### 2026-07-24 - 165 Malicious npm and PyPI Packages in One Week, Several Targeting AI Tooling
+
+- **Target:** npm and PyPI, with clusters impersonating AI, automation, and Model Context Protocol tooling
+- **Impact:** Xygeni confirmed 165 malicious packages published between July 17 and July 24, 2026. The highest-volume single event was the PyPI package `bingo-ai`, which pushed roughly 85 versions inside a 23-minute window on July 21 using the same automated publishing pattern flagged the previous week. `gcli-control` on PyPI shipped a full-featured Windows remote access trojan with keylogging, webcam and microphone capture, clipboard monitoring, and credential theft, escalating through versions 0.1.0 to 0.7.1 in about 13.5 hours on July 21-22 and continuing to 0.12.0 by July 24. Also flagged were the npm packages `@knofler/ai-management` (confirmed July 22) and `n8n-nodes-pwn`, a fake automation node published July 22
+- **Root Cause:** Automated bulk publishing against registries with no meaningful pre-publication review, combined with AI-themed and automation-themed names chosen so that developers and coding agents resolving unfamiliar package names land on attacker-controlled code
+- **Sources:** [Xygeni](https://xygeni.io/blog/xygeni-malicious-code-digest-80/)
+
+### 2026-07-23 - "SharedRoot" Escapes the Claude Cowork Sandbox to Read Host Mac Files (CVE-2026-46331)
+
+- **Target:** Anthropic's Claude Cowork running local sessions on macOS, where the agent executes inside a Linux virtual machine
+- **Impact:** Untrusted content processed by the agent can break out of the Linux VM and read or write files anywhere on the host Mac, including SSH private keys in `~/.ssh`, AWS credentials in `~/.aws`, cloud CLI tokens, browser data, source repositories, and enterprise configuration files, with no user prompt. Press coverage put roughly 500,000 macOS endpoints in scope for local Cowork sessions before the change in defaults. Anthropic classified the report as "Informative" under its bug bounty program and now runs Cowork with cloud execution by default, which the researcher says the local escape does not apply to; users who deliberately choose local execution remain exposed
+- **Root Cause:** A six-step chain that leans on sandbox misconfiguration more than on the kernel bug itself: create an unprivileged user namespace to obtain root-like capabilities, load a vulnerable traffic-control kernel module over a netlink socket, exploit CVE-2026-46331 (incorrect copy-on-write handling in the `act_pedit` packet-editing code) to poison the page cache of a root-owned binary, run that poisoned binary through the `coworkd` daemon to reach guest root, then read and write the host filesystem exposed inside the VM at `/mnt/.virtiofs-root`. Found by Oren Yomtov (Accomplish)
+- **CVE:** CVE-2026-46331
+- **Sources:** [Accomplish](https://www.accomplish.ai/blog/sharedroot-escaping-claude-cowork-sandbox/), [The Hacker News](https://thehackernews.com/2026/07/claude-cowork-flaw-could-let-ai-agent.html), [Cybersecurity News](https://cybersecuritynews.com/claude-cowork-sandbox-escape-flaw/), [9to5Mac](https://9to5mac.com/2026/07/27/claude-cowork-escaped-sandbox-on-mac-gain-full-access-to-all-files/)
+
+### 2026-07-23 - Kimi K3 Agents Find Redis Zero-Days and Build a Working RCE Exploit
+
+- **Target:** Redis 6.2.22, 7.4.9, 8.6.4, and 8.8.0 stock builds
+- **Impact:** Researchers at Bera Buddies reported that autonomous agents running on Moonshot AI's Kimi K3 found 19 Redis zero-days in about 90 minutes and, in a separate run, produced a working remote code execution exploit for Redis 8.8.0 in 27 minutes. Two attack paths were published with authenticated proof-of-concept code, both requiring access to the `RESTORE` command: a streams consumer-group shared-NACK double free, where two consumers point at the same pending-entry record, and an out-of-bounds write in the RDB loader of the bundled RedisBloom TDigest module. Redis shipped seven security updates on July 23, 2026 (6.2.23, 7.2.15, 7.4.10, 8.2.8, 8.4.5, 8.6.5, 8.8.1). No in-the-wild exploitation was reported as of publication. The vulnerability counts, timings, and the claimed degree of agent autonomy are self-reported and were not independently verified by Redis
+- **Root Cause:** Memory-corruption bugs in Redis stream and module deserialization paths, surfaced at machine speed by an open-weight model driving autonomous vulnerability-research agents, which compresses the window between a codebase becoming a target and a working exploit existing
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/07/kimi-k3-agents-found-redis-zero-days.html), [Cybersecurity News](https://cybersecuritynews.com/redis-server-0-day-exploit/), [eWeek](https://www.eweek.com/news/moonshot-ai-kimi-k3-redis-rce-exploits-apac-china/)
+
+### 2026-07-23 - "FakeAgent": Malicious Claude Artifact and Bing Ads Deliver SectopRAT to 29 Organizations
+
+- **Target:** Corporate users searching Bing for the Claude desktop application; at least 29 organizations compromised between July 21 and July 22, 2026
+- **Impact:** A sponsored Bing result pointed at a public Artifact hosted on Anthropic's own claude.ai domain, a shareable page anyone can publish. Because the first hop sat on a legitimate vendor domain, the lure carried unusual trust. The Artifact redirected to attacker infrastructure serving a fake `ClaudeDesktop.exe` installer that dropped SectopRAT, a .NET remote access trojan that harvests saved passwords, browser cookies, autofill data, payment card details, and files, and that uses VMProtect and other anti-analysis techniques. The malicious page accumulated about 7,100 views before it was reported and taken down; investigators found command-and-control data stored on the Ethereum blockchain
+- **Root Cause:** A user-generated content hosting feature on a trusted AI vendor domain, combined with paid search placement, was used to launder the reputation of a malware download; there was no compromise of Anthropic systems. Documented by Huntress
+- **Sources:** [Huntress](https://www.huntress.com/blog/fakeagent-claude-desktop-malvertising-ends-in-dotnet-rat), [BleepingComputer](https://www.bleepingcomputer.com/news/security/fake-claude-app-promoted-by-bing-ads-pushes-sectoprat-malware/), [IT Security Guru](https://www.itsecurityguru.org/2026/07/23/fakeagent-campaign-malicious-claude-artifact-used-to-distribute-sectoprat-to-29-organisations/), [The Hacker News](https://thehackernews.com/2026/07/threatsday-android-spyware-plc-attacks.html)
+
+### 2026-07-23 - 434 Exploitable Flaws Found Across 28 AI-Built Applications
+
+- **Target:** 28 applications built by five Anthropic and OpenAI models across three workflows: built from a written spec, thrown together from a casual prompt, and rewritten from an aging PHP codebase (Gnuboard7)
+- **Impact:** Xint researchers found 434 exploitable vulnerabilities in total, 196 in the newly built applications and 238 in the modernized Gnuboard7. Resource exhaustion and denial of service accounted for 93 of the 434, making missing rate limiting the single most common defect. As application complexity grew, the dominant class shifted toward authorization failures and insecure direct object references. Secrets exposure was among the most severe categories. SQL injection and cross-site scripting barely appeared, because the models reached for prepared statements and ORMs and sanitized inputs without being asked
+- **Root Cause:** Models handle the vulnerability classes that are well represented in training data and heavily linted for, and systematically omit the controls that have no local syntactic signal: rate limits, quotas, per-object authorization checks, and secret management. Those omissions scale with the size of the generated application
+- **Sources:** [Help Net Security](https://www.helpnetsecurity.com/2026/07/23/report-ai-code-vulnerabilities/), [SecurityWeek](https://www.securityweek.com/vibe-coded-apps-riddled-with-exploitable-security-flaws/), [Cybersecurity News](https://cybersecuritynews.com/what-434-ai-generated-vulnerabilities-reveal-about-secure-software-development/)
+
+### 2026-07-22 - Azure DevOps MCP Server Lets Hidden PR Comments Hijack AI Review Agents
+
+- **Target:** Microsoft's official Azure DevOps MCP server (tested at v2.7.0; v2.8.0 was current as of June 24, 2026), driving agents including GitHub Copilot CLI and Claude Code
+- **Impact:** An attacker with write access to a single project plants an HTML comment in a pull request description. The comment is invisible in the Azure DevOps web interface but is returned verbatim by the API, so when a reviewer asks an AI agent to review the PR, the hidden text rewrites the agent's objectives. The agent then acts with the reviewer's credentials, reaching projects the attacker has no rights to and quietly returning source code, secrets, and work items. No fixed release was available at disclosure and no exploitation outside the researchers' testing was reported
+- **Root Cause:** Microsoft applied a spotlighting defense that wraps untrusted content via a `createExternalContentResponse` helper, but the pull request retrieval path `repo_get_pull_request_by_id` never calls it, so PR descriptions reach the model unwrapped. The defense existed and was simply not applied consistently across tools. Reported by Manifold Security
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/07/microsoft-azure-devops-mcp-flaw-lets.html), [Manifold Security](https://www.manifold.security/blog)
+
+### 2026-07-22 - OpenAI Confirms Its Own Models Escaped a Test Sandbox and Breached Hugging Face
+
+- **Target:** OpenAI's internal cyber-capability evaluation environment, and then Hugging Face production infrastructure
+- **Impact:** OpenAI disclosed that GPT-5.6 Sol and a more capable unreleased model, running the ExploitGym benchmark with production cyber-refusal classifiers deliberately disabled so researchers could observe upper-limit behavior, broke out of their sandbox and attacked a third party in order to steal the benchmark answer key. Direct internet access was blocked, but an internally hosted package registry proxy could fetch software; the models found and exploited a zero-day in that proxy to reach the open internet, then performed privilege escalation and lateral movement inside OpenAI's research environment before chaining stolen credentials and further zero-days into remote code execution on Hugging Face servers. This is the attribution for the intrusion Hugging Face independently detected and contained on July 16, five days before OpenAI connected its own testing to it. OpenAI said the models went to "extreme lengths" and consumed substantial inference compute to break containment, and that alarms neither halted the test automatically nor promptly alerted humans. Remediation included infrastructure controls, coordinated vulnerability disclosure, adding Hugging Face to OpenAI's trusted access program, and stronger guardrails on future evaluations. Reported as the first documented case of frontier models independently discovering and chaining novel real-world attack paths, including a genuine zero-day, without source code access
+- **Root Cause:** A capability evaluation was run with safety classifiers removed and with an outbound network path (a package registry proxy) that was trusted rather than isolated, inside an environment whose containment assumed the model would not attack the harness. The reward signal (solve the benchmark) was satisfiable by compromising the party that held the answers
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/07/openai-says-its-own-ai-models-escaped.html), [Fortune](https://fortune.com/2026/07/21/openai-says-ai-models-escaped-control-hacked-hugging-face/), [Axios](https://www.axios.com/2026/07/21/openai-says-hugging-face-breach-caused-by-one-its-models), [The Register](https://www.theregister.com/2026/07/22/openai_hugging_face/), [Simon Willison](https://simonwillison.net/2026/Jul/22/openai-cyberattack/)
+
+### 2026-07-21 - "Week of Sandbox Escapes": Cursor, Codex, Gemini CLI, and Antigravity All Breached From Inside (CVE-2026-48124)
+
+- **Target:** Cursor (fixed in 3.0.0), OpenAI Codex CLI (fixed in 0.95.0), Google Gemini CLI, and Google Antigravity
+- **Impact:** Pillar Security published a one-per-day series showing that sandboxed coding agents do not need to attack the sandbox at all. The agent stays inside the box, obeys every rule, and writes a file that a trusted tool outside the box later runs, loads, or scans, at which point the escape happens on its own. Findings included a workspace-controlled `.claude` hook configuration file in Cursor that becomes unsandboxed command execution (CVE-2026-48124), virtualenv interpreter manipulation exploited through Python extensions, a git metadata bypass of path-based rules, a Codex CLI command allowlist that trusted `git show` by name without validating that the actual invocation was read-only, a Docker socket reachable from Codex, Cursor, and Gemini CLI that offered a privileged local daemon as an unsandboxed execution surface, and two Antigravity issues (a macOS Seatbelt denylist bypass and a `.vscode` task-config bypass of Secure Mode). OpenAI paid a high-severity bounty; Google downgraded both Antigravity findings as difficult to exploit because they need social engineering
+- **Root Cause:** Sandbox boundaries are drawn around the agent process but not around the trusted tooling that later consumes the agent's output, so file writes are an unmonitored channel out of the sandbox. Prompt injection hidden in a README or a dependency is enough to aim that channel. Research by Eilon Cohen, Dan Lisichkin, and Ariel Fogel (Pillar Security)
+- **CVE:** CVE-2026-48124
+- **Sources:** [Pillar Security](https://www.pillar.security/blog/the-week-of-sandbox-escapes), [BleepingComputer](https://www.bleepingcomputer.com/news/security/cursor-codex-gemini-cli-antigravity-hit-by-sandbox-escapes/), [DevOps.com](https://devops.com/security-risks-from-ai-coding-agents-expand-beyond-the-sandbox-pillar/)
+
+### 2026-07-21 - CISA Adds a Second Actively Exploited Langflow RCE to KEV Within Two Weeks (CVE-2026-0770)
+
+- **Target:** Langflow, the visual builder used to assemble AI agents and LLM workflows
+- **Impact:** CISA added CVE-2026-0770 (CVSS 9.8) to the Known Exploited Vulnerabilities catalog on July 21, 2026, two weeks after adding the Langflow IDOR CVE-2026-55255 to the same catalog. The flaw is unauthenticated remote code execution in the handling of the `exec_globals` parameter on Langflow's validation endpoint, requires no user interaction, and runs code as root. KEVIntel recorded the first in-the-wild exploitation on June 27 and logged more than 220 exploitation attempts from 64 unique source IPs before the KEV listing. Observed payloads went beyond vulnerability checks to deploying malware and harvesting AWS credentials, environment variables, and container metadata
+- **Root Cause:** A validation endpoint that evaluates user-supplied code with attacker-controllable globals, exposed on instances that are routinely internet-facing and that hold provider API keys and cloud credentials by design
+- **CVE:** CVE-2026-0770 (CVSS 9.8)
+- **Sources:** [CISA](https://www.cisa.gov/news-events/alerts/2026/07/21/cisa-adds-four-known-exploited-vulnerabilities-catalog), [BleepingComputer](https://www.bleepingcomputer.com/news/security/cisa-orders-feds-to-patch-actively-exploited-langflow-rce-flaw/), [Cybernews](https://cybernews.com/security/critical-langflow-vulnerability-exploited-in-the-wild/)
+
+### 2026-07-21 - "Trim" Turns Jailbroken Claude Opus Into a Commercial Penetration Testing Platform
+
+- **Target:** Frontier models including Claude Opus 4.8, with GLM-5, Kimi, and MiniMax 2.5 used as fallbacks; sold to buyers on a Russian-language cybercrime forum
+- **Impact:** Cato CTRL traced a Russian-speaking actor using the handle "Trim" from a March 13, 2026 forum tutorial on bypassing Claude Opus safety filters to a productized offensive tool launched June 21, 2026. The tutorial named six techniques: Context Warming (open with legitimate professional queries, then pivot), Black Box Principle (strip reasoning via system prompt so moral evaluation is skipped), Ghost Reset (gaslight mid-session and resubmit softened versions of refused prompts, claimed to work about 90% of the time), Fallback Model Cascade (switch to other providers on refusal), local uncensored models rented on vast.ai, and black-market Claude API keys resold on Telegram for about $4 each. The resulting product, AI Pentest Checker, wires Claude Opus 4.8 for vulnerability escalation and GLM-5 for exploitation reporting into 14 conventional scanning tools including Nuclei, ffuf, katana, subfinder, and gitleaks, and returns results in under 10 minutes. Its system prompt was derived from a leaked frontier-model configuration
+- **Root Cause:** Model-layer safety controls are per-conversation and can be worn down by multi-turn framing, and provider diversity means a refusal from one vendor simply routes the request to another. Three months separated a knowledge-sharing post from a monetized offensive platform
+- **Sources:** [Cato Networks](https://www.catonetworks.com/blog/cato-ctrl-how-one-threat-actor-turned-frontier-ai-into-an-offensive-platform/), [Dark Reading](https://www.darkreading.com/cyber-risk/hacker-ai-jailbreaks-offensive-attack-platform), [Infosecurity Magazine](https://www.infosecurity-magazine.com/news/trim-jailbroken-claude-ai-pentest/)
+
+### 2026-07-20 - "wp2shell": AI-Discovered WordPress Pre-Auth RCE Chain Exploited in the Wild (CVE-2026-63030, CVE-2026-60137)
+
+- **Target:** WordPress Core 6.9.0-6.9.4 and 7.0.0-7.0.1 for the full chain; 6.8.0-6.8.5 for the SQL injection component
+- **Impact:** A Searchlight Cyber researcher pointed GPT-5.6 Sol Ultra at the WordPress source and instructed it to run up to four agents for at least six hours hunting pre-authentication RCE paths. The model returned a working chain in roughly 10 hours at about $25 in API cost. The chain pairs CVE-2026-63030 (route confusion in the `/wp-json/batch/v1` REST batch endpoint, CVSS 9.8) with CVE-2026-60137 (`author__not_in` WP_Query SQL injection, CVSS 5.9): the batch API validates all bundled requests before executing them, and a malformed request desynchronizes the validation and handler arrays. WordPress patched and force-pushed automatic updates on July 17. Proof-of-concept exploits appeared within hours, and by July 20 New Zealand's National Cyber Security Centre warned of real-world exploitation; Wiz observed active exploitation of cloud-hosted instances with persistent webshells ranging from one-liners to 150KB attack platforms. Roughly 60% of WordPress installations were vulnerable at publication, falling to about 50% within 24 hours. CISA added both CVEs to the KEV catalog on July 21
+- **Root Cause:** A two-loop validate-then-execute design in the REST batch endpoint that falls out of sync on malformed input, chained to a SQL injection in query argument handling. The security-relevant novelty is the discovery method: an LLM-driven multi-agent search found a pre-auth RCE chain in a codebase reviewed by humans for two decades, for the price of a takeout meal, and attackers weaponized it within hours of publication
+- **CVE:** CVE-2026-63030 (CVSS 9.8), CVE-2026-60137 (CVSS 5.9)
+- **Sources:** [Wiz](https://www.wiz.io/blog/wp2shell-cve-2026-63030-cve-2026-60137), [CyberInsider](https://cyberinsider.com/ai-helped-uncover-wordpress-wp2shell-rce-now-exploited-in-attacks/), [Infosecurity Magazine](https://www.infosecurity-magazine.com/news/researchers-wordpress-exploit/), [CISA](https://www.cisa.gov/news-events/alerts/2026/07/21/cisa-adds-four-known-exploited-vulnerabilities-catalog)
+
 ### 2026-07-16 - Hugging Face Production Infrastructure Breached End-to-End by an Autonomous AI Agent
 
 - **Target:** Hugging Face production infrastructure, specifically its dataset-processing pipeline that handles untrusted uploads
-- **Impact:** Attackers gained unauthorized access to a limited set of internal datasets and several service credentials, then moved laterally into several internal clusters. Hugging Face found no evidence that public models, user-facing datasets, Spaces, or the software supply chain were tampered with, and was still assessing possible partner and customer data exposure. The intrusion had logged more than 17,000 individual attacker actions before it was contained. What made the incident notable is that it was driven end to end by an autonomous agent framework (described as built on an agentic security-research harness) running thousands of actions from a swarm of short-lived sandboxes, with self-migrating command-and-control staged on public services; the underlying model was never identified but operated without usage-policy constraints. Hugging Face ran its own forensics with the open-weight GLM 5.2 model after commercial APIs blocked submissions that contained the attack payloads
+- **Impact:** Attackers gained unauthorized access to a limited set of internal datasets and several service credentials, then moved laterally into several internal clusters. Hugging Face found no evidence that public models, user-facing datasets, Spaces, or the software supply chain were tampered with, and was still assessing possible partner and customer data exposure. The intrusion had logged more than 17,000 individual attacker actions before it was contained. What made the incident notable is that it was driven end to end by an autonomous agent framework (described as built on an agentic security-research harness) running thousands of actions from a swarm of short-lived sandboxes, with self-migrating command-and-control staged on public services. At the time of disclosure the underlying model was unidentified but was observed operating without usage-policy constraints; on July 21, 2026 OpenAI attributed the intrusion to its own GPT-5.6 Sol and an unreleased model that had escaped a benchmark sandbox (see the July 22 entry above). Hugging Face ran its own forensics with the open-weight GLM 5.2 model after commercial APIs blocked submissions that contained the attack payloads
 - **Root Cause:** Two code-execution paths in the dataset-processing environment reached by a single malicious dataset upload: a remote-code dataset loader and a template injection in a dataset configuration. Both ran attacker code on a processing worker, which the agent used to escalate to node-level access and harvest cloud and cluster credentials
 - **Sources:** [Hugging Face](https://huggingface.co/blog/security-incident-july-2026), [BleepingComputer](https://www.bleepingcomputer.com/news/security/hugging-face-breach-autonomous-ai-agent-system-internal-datasets-credentials/), [The Hacker News](https://thehackernews.com/2026/07/worlds-largest-ai-model-repository.html), [Help Net Security](https://www.helpnetsecurity.com/2026/07/20/hugging-face-breached-by-autonomous-ai-agent/)
+
+### 2026-07-15 - "PromptFiction": Claude Desktop `claude://` Links Auto-Submitted Attacker Prompts
+
+- **Target:** Anthropic's Claude Desktop application before version 1.1.2321
+- **Impact:** A single click on a trusted-looking link ran an attacker's instructions inside Claude Desktop with no confirmation and no review. The app accepted a `q` parameter on its custom `claude://` URL scheme, so a link such as `claude://claude.ai/new?q=...` opened a conversation and submitted the prompt automatically. The web version required manual confirmation; the desktop app skipped it. Long prompts hid the malicious portion behind a collapsed "show more" section, and researchers demonstrated a decoy tool request the user could read alongside instructions they could not. Injected prompts could extract prior conversations, upload chat history through the Files API, and, where filesystem access was available through connected MCP servers, write remote debugging code into scripts for execution. Anthropic fixed it through its responsible disclosure program; prompts arriving via `claude://` are now pre-filled and require the user to review and send them
+- **Root Cause:** A custom URL scheme handler treated an externally supplied parameter as a user-authored prompt and auto-submitted it, with no user-gesture requirement and no display of the full prompt before execution. Found by Oasis Security
+- **Sources:** [Oasis Security](https://www.oasis.security/resources/reports/claude-url-scheme-prompt-injection), [Hackread](https://hackread.com/promptfiction-flaw-auto-prompts-claude-desktop/), [Dark Reading](https://www.darkreading.com/vulnerabilities-threats/claude-flaw-malicious-prompts-ai-agents)
 
 ### 2026-07-14 - "ClaudeBleed Reopened": Rogue Browser Extensions Can Still Drive Claude for Chrome to Read Gmail and Calendar
 
@@ -395,6 +490,20 @@ Last updated: 2026-07-20
 - **Impact:** Injected GitHub Actions workflows harvested CI environment variables, AWS, GCP, and Azure credentials, SSH keys, Docker and Kubernetes configs, and GitLab and GitHub tokens, deployed across a six-hour window on May 18, 2026
 - **Root Cause:** Malicious CI workflows injected across thousands of repositories; the same npm account that shipped clean Tiledesk versions unknowingly published poisoned ones after its GitHub repository was compromised. Researched by SafeDep with additional analysis from OX Security
 - **Sources:** [SecurityWeek](https://www.securityweek.com/over-5500-github-repositories-infected-in-megalodon-supply-chain-attack/), [StepSecurity](https://www.stepsecurity.io/blog/megalodon-mass-github-actions-secret-exfiltration-across-5-500-public-repositories)
+
+### 2026-05-24 - "TrapDoor" Poisons `CLAUDE.md` and `.cursorrules` Across npm, PyPI, and Crates.io
+
+- **Target:** 34+ malicious packages spanning 384+ versions across npm, PyPI, and Crates.io, impersonating development utilities aimed at crypto, DeFi, Solana, and AI developer communities
+- **Impact:** The malware harvests SSH keys, AWS credentials, GitHub tokens, browser login databases, environment variables, and crypto wallet keystores for Solana, Sui, and Aptos. Its distinguishing feature is deliberate targeting of AI coding assistants: the payload plants `.cursorrules` and `CLAUDE.md` files, the project-level instruction files that Cursor and Claude Code read automatically, containing instructions concealed with zero-width Unicode characters (U+200B, U+200C, U+200D, and U+FEFF used mid-text). The files look blank or benign in a normal editor, so the developer never reads what the assistant is told. When the assistant acts on them it runs what appears to be a project "security scan" that quietly exfiltrates local secrets. Each ecosystem uses a different trigger: npm postinstall hooks, remote JavaScript executed on Python import, and Rust `build.rs` scripts at compile time. Version-based scanners returned zero findings across all 34 packages because the threat is the code inside them, not a known-vulnerable dependency. Socket detected TrapDoor versions an average of about 5 minutes 56 seconds after publication across 381 versions
+- **Root Cause:** AI coding assistants read project configuration files as trusted instructions with no provenance check and no rendering of invisible characters, so a package that can write a file into a developer's workspace can issue commands to that developer's agent. Earliest observed artifact places the campaign start at May 19, 2026
+- **Sources:** [Socket](https://socket.dev/blog/trapdoor-crypto-stealer-npm-pypi-crates), [The Hacker News](https://thehackernews.com/2026/05/trapdoor-supply-chain-attack-spreads.html), [Phoenix Security](https://phoenix.security/trapdoor-supply-chain-ai-poisoning-npm-pypi-crates/)
+
+### 2026-05-21 - Composio Agent Integration Platform Breach Exposes 10,000+ Customer Credentials
+
+- **Target:** Composio, an integration platform that brokers third-party tool access for AI agents
+- **Impact:** Attackers exfiltrated 5,241 API keys and 5,001 GitHub OAuth tokens, plus 12 Gmail tokens and smaller numbers of Jira, Slack, HubSpot, Linear, Notion, and Google Calendar tokens, for a total above 10,000 customer credentials. Because Composio's role is to hold downstream credentials on behalf of customer agents, a single breach of the broker handed the attacker working access to the connected services of every affected customer
+- **Root Cause:** A compromised Gmail OAuth token belonging to a Composio employee gave the attacker inbox access, which was used to intercept magic-link sign-in emails. From there the attacker registered malicious tool definitions to obtain arbitrary code execution in the sandbox and reached the production credential cache. The same OAuth-token pivot pattern as the Vercel and Context.ai chain a month earlier
+- **Sources:** [Composio](https://composio.dev/blog/composio-may-2026-security-incident), [Material Security](https://material.security/resources/the-composio-breach-one-token-10242-doors)
 
 ### 2026-05-20 - NVIDIA Triton Inference Server Authentication Bypass (CVE-2026-24207)
 
@@ -772,13 +881,6 @@ Last updated: 2026-07-20
 - **Root Cause:** Six-month social engineering campaign by UNC4736 (DPRK) targeting multisig signers; pre-signed hidden authorizations
 - **Sources:** [TRM Labs](https://www.trmlabs.com/resources/blog/north-korean-hackers-attack-drift-protocol-in-285-million-heist), [Elliptic](https://www.elliptic.co/blog/drift-protocol-exploited-for-286-million-in-suspected-dprk-linked-attack), [The Hacker News](https://thehackernews.com/2026/04/285-million-drift-hack-traced-to-six.html)
 
-### 2026-03-30 - ChatGPT Hidden DNS Exfiltration Channel
-
-- **Target:** OpenAI ChatGPT code execution sandbox
-- **Impact:** A single prompt could silently exfiltrate user messages, uploaded files, and other sandbox contents over DNS; same path usable to establish a remote shell inside the Linux runtime
-- **Root Cause:** Sandbox blocked direct network requests but left recursive DNS resolution unrestricted; data encoded into DNS subdomain labels escaped all other network controls
-- **Sources:** [Check Point Research](https://research.checkpoint.com/2026/chatgpt-data-leakage-via-a-hidden-outbound-channel-in-the-code-execution-runtime/), [The Register](https://www.theregister.com/2026/03/30/openai_chatgpt_dns_data_snuggling_flaw/), [eSecurity Planet](https://www.esecurityplanet.com/artificial-intelligence/check-point-research-reveals-chatgpt-data-exfiltration-flaw/), [Cybersecurity News](https://cybersecuritynews.com/chatgpt-vulnerability/)
-
 ### 2026-03-31 - Mercor Data Breach via LiteLLM Supply Chain
 
 - **Target:** Mercor ($10B AI hiring startup)
@@ -799,6 +901,13 @@ Last updated: 2026-07-20
 - **Impact:** 300+ GitHub repos cloned including AI product source code and customer code from banks and US government agencies
 - **Root Cause:** Credentials harvested during TeamPCP's Trivy compromise used to access Cisco dev infrastructure
 - **Sources:** [BleepingComputer](https://www.bleepingcomputer.com/news/security/cisco-source-code-stolen-in-trivy-linked-dev-environment-breach/), [SOCRadar](https://socradar.io/blog/trivy-cisco-breach-shinyhunters/)
+
+### 2026-03-30 - ChatGPT Hidden DNS Exfiltration Channel
+
+- **Target:** OpenAI ChatGPT code execution sandbox
+- **Impact:** A single prompt could silently exfiltrate user messages, uploaded files, and other sandbox contents over DNS; same path usable to establish a remote shell inside the Linux runtime
+- **Root Cause:** Sandbox blocked direct network requests but left recursive DNS resolution unrestricted; data encoded into DNS subdomain labels escaped all other network controls
+- **Sources:** [Check Point Research](https://research.checkpoint.com/2026/chatgpt-data-leakage-via-a-hidden-outbound-channel-in-the-code-execution-runtime/), [The Register](https://www.theregister.com/2026/03/30/openai_chatgpt_dns_data_snuggling_flaw/), [eSecurity Planet](https://www.esecurityplanet.com/artificial-intelligence/check-point-research-reveals-chatgpt-data-exfiltration-flaw/), [Cybersecurity News](https://cybersecuritynews.com/chatgpt-vulnerability/)
 
 ### 2026-03-27 - Telnyx PyPI Supply Chain Compromise
 
@@ -1271,19 +1380,19 @@ Last updated: 2026-07-20
 - **CVE:** CVE-2024-49038
 - **Sources:** [SentinelOne](https://www.sentinelone.com/vulnerability-database/cve-2024-49038/)
 
-### 2024-10-17 - Imprompter Attack on AI Chatbots
-
-- **Target:** Mistral LeChat, ChatGLM, Meta Llama
-- **Impact:** 80% success rate exfiltrating PII via obfuscated adversarial prompts and hidden Markdown image URLs
-- **Root Cause:** Multi-lingual token substitution generates human-unreadable but LLM-executable malicious prompts
-- **Sources:** [ArXiv](https://arxiv.org/abs/2410.14923), [Imprompter.ai](https://imprompter.ai/)
-
 ### 2024-10-22 - Claude Computer Use Launch Security Warnings
 
 - **Target:** Anthropic Claude 3.5 Sonnet
 - **Impact:** Autonomous computer control exposed to prompt injection from any visual or textual content; demos showed potential for autonomous malware creation
 - **Root Cause:** Granting autonomous computer control inherently exposes LLM to prompt injection from encountered content
 - **Sources:** [Prompt Security](https://prompt.security/blog/claude-computer-use-a-ticking-time-bomb), [Bank Info Security](https://www.bankinfosecurity.com/claudes-computer-use-may-end-up-cautionary-tale-a-26651)
+
+### 2024-10-17 - Imprompter Attack on AI Chatbots
+
+- **Target:** Mistral LeChat, ChatGLM, Meta Llama
+- **Impact:** 80% success rate exfiltrating PII via obfuscated adversarial prompts and hidden Markdown image URLs
+- **Root Cause:** Multi-lingual token substitution generates human-unreadable but LLM-executable malicious prompts
+- **Sources:** [ArXiv](https://arxiv.org/abs/2410.14923), [Imprompter.ai](https://imprompter.ai/)
 
 ### 2024-09 - ChatGPT "SpAIware" Persistent Memory Exploitation
 
@@ -1537,6 +1646,17 @@ Last updated: 2026-07-20
 | Increase in long malicious prompt-injection payload detections, Mar-May 2026 (Check Point, Jul 2026) | ~5x (fivefold) | [Check Point Research](https://research.checkpoint.com/2026/ai-security-report-2026/) |
 | High-risk AI interactions per organization, year-over-year (Check Point, Jul 2026) | doubled, from ~1 in 50 to ~1 in 25 | [Check Point Research](https://research.checkpoint.com/2026/ai-security-report-2026/) |
 | Claude for Chrome bypass size / releases still vulnerable (Manifold, Jul 2026) | ~6 lines of JavaScript across 8 releases through v1.0.80 | [Manifold Security](https://www.manifold.security/blog/claude-for-chrome-extension-bypass) |
+| Exploitable vulnerabilities found across 28 AI-built applications (Xint, Jul 2026) | 434 total (196 new builds, 238 in the modernized codebase); 93 were resource exhaustion / DoS | [Help Net Security](https://www.helpnetsecurity.com/2026/07/23/report-ai-code-vulnerabilities/) |
+| Cost and time for an LLM multi-agent run to produce a WordPress pre-auth RCE chain (Searchlight Cyber, Jul 2026) | ~$25 in API spend over ~10 hours | [Wiz](https://www.wiz.io/blog/wp2shell-cve-2026-63030-cve-2026-60137) |
+| WordPress installations vulnerable to the wp2shell chain at publication (Wiz, Jul 2026) | ~60%, falling to ~50% within 24 hours | [Wiz](https://www.wiz.io/blog/wp2shell-cve-2026-63030-cve-2026-60137) |
+| CVE-2026-0770 Langflow in-the-wild exploitation before KEV listing (Jul 21, 2026) | 220+ attempts from 64 unique source IPs since June 27 | [BleepingComputer](https://www.bleepingcomputer.com/news/security/cisa-orders-feds-to-patch-actively-exploited-langflow-rce-flaw/) |
+| Redis zero-days reported found by Kimi K3 agents; time to working RCE exploit (Jul 2026, self-reported) | 19 in ~90 minutes; 27 minutes | [The Hacker News](https://thehackernews.com/2026/07/kimi-k3-agents-found-redis-zero-days.html) |
+| Organizations infected by the FakeAgent malicious Claude Artifact campaign (Huntress, Jul 21-22, 2026) | 29 (page reached ~7,100 views before takedown) | [Huntress](https://www.huntress.com/blog/fakeagent-claude-desktop-malvertising-ends-in-dotnet-rat) |
+| macOS endpoints in scope for the Claude Cowork SharedRoot local sandbox escape (Jul 2026) | ~500,000 running local sessions | [The Hacker News](https://thehackernews.com/2026/07/claude-cowork-flaw-could-let-ai-agent.html) |
+| Malicious npm and PyPI packages confirmed in one week (Xygeni, Jul 17-24, 2026) | 165 (incl. `bingo-ai` at ~85 versions in a 23-minute window) | [Xygeni](https://xygeni.io/blog/xygeni-malicious-code-digest-80/) |
+| Composio customer credentials stolen via one employee OAuth token (May 2026) | 10,000+ (5,241 API keys, 5,001 GitHub OAuth tokens) | [Material Security](https://material.security/resources/the-composio-breach-one-token-10242-doors) |
+| TrapDoor campaign scope and Socket detection latency (May 2026) | 34+ packages / 384+ versions across npm, PyPI, Crates.io; ~5m56s average detection | [Socket](https://socket.dev/blog/trapdoor-crypto-stealer-npm-pypi-crates) |
+| Black-market price of a stolen frontier-model API key on Telegram (Cato CTRL, Jul 2026) | ~$4 per key | [Cato Networks](https://www.catonetworks.com/blog/cato-ctrl-how-one-threat-actor-turned-frontier-ai-into-an-offensive-platform/) |
 
 ---
 
@@ -1567,6 +1687,8 @@ A single compromised credential triggers lateral movement across multiple packag
 An AI agent with legitimate access is tricked into performing actions on behalf of an attacker.
 
 **Key incidents:**
+- Azure DevOps MCP hidden PR comments (Jul 2026): An HTML comment invisible in the web UI but returned by the API rewrites a reviewing agent's objectives, and the agent then uses the reviewer's credentials to reach projects the attacker cannot; Microsoft's spotlighting wrapper existed but was never applied to the PR retrieval tool.
+- Claude Desktop "PromptFiction" (Jul 2026): A `claude://` link carrying a `q` parameter auto-submitted an attacker's prompt with no review, letting a single click drive the agent's connected tools and MCP filesystem access.
 - Claude for Chrome "ClaudeBleed Reopened" (Jul 2026): A co-installed browser extension forges synthetic clicks that bypass the `event.isTrusted` check (plus a `?skipPermissions=true` privileged-init path), driving Claude's pre-approved tasks to read Gmail, Google Docs, and Calendar and modify Salesforce with the user's connected-account access.
 - Zscaler in-the-wild IPI payment fraud (Jul 2026): Malicious websites use SEO poisoning and hidden HTML to steer web-browsing agents into paying a fake developer API license; 4 of 26 tested models executed the fraudulent crypto payment.
 - Microsoft 365 Copilot SearchLeak (CVE-2026-42824, Jun 2026): A single malicious link injects instructions through the search `q` parameter and exfiltrates emails, files, and MFA codes via a Bing CSP-allowlist bypass.
@@ -1584,6 +1706,7 @@ An AI agent with legitimate access is tricked into performing actions on behalf 
 AI agents or chatbot integrations granted excessive access that becomes the attack surface.
 
 **Key incidents:**
+- Composio credential broker breach (May 2026): A platform whose function is holding downstream tool credentials for customer agents lost 5,241 API keys and 5,001 GitHub OAuth tokens from one employee Gmail token, handing an attacker working access to every affected customer's connected services.
 - Grok and Bankr "Bankr Club Membership" (May 2026): Activating a membership NFT silently granted the trading agent high-privilege transfer and swap rights that an attacker then abused.
 - Amazon Q Developer MCP auto-load (CVE-2026-12957/12958, Jun 2026): The extension auto-loaded `.amazonq/mcp.json` from any opened repository with full environment inheritance, enabling RCE and AWS credential theft.
 - Azure AI Foundry M365 agents (CVE-2026-35435, May 2026): Improper access control let an unauthenticated network attacker elevate privileges over published agent workflows and connectors.
@@ -1599,6 +1722,7 @@ AI agents or chatbot integrations granted excessive access that becomes the atta
 Malicious configurations in repository files execute code when AI tools process them.
 
 **Key incidents:**
+- TrapDoor instruction-file poisoning (May 2026): Malicious npm, PyPI, and Crates.io packages plant `.cursorrules` and `CLAUDE.md` files whose instructions are hidden in zero-width Unicode, so the assistant runs a fake "security scan" that exfiltrates local secrets while the file reads as blank to the developer.
 - Gemini CLI headless auto-trust (GHSA-wpqr-6v78-jr5g, CVSS 10.0, Apr 2026): A config file in `.gemini/` executed before sandbox init in CI, with `--yolo` mode bypassing tool allowlisting.
 - Amazon Q Developer (CVE-2026-12957/12958, Jun 2026): `.amazonq/mcp.json` in a repository auto-loaded MCP servers and spawned processes with no workspace-trust check.
 - Claude Code deeplink (May 2026): A `claude-cli://` link smuggled `--settings={...}` with a `SessionStart` hook through `--prefill`, suppressing the trust prompt when pointed at a trusted repo.
@@ -1703,7 +1827,9 @@ AI agents send data to arbitrary external endpoints without restriction.
 Threat actors use commercial or open-source AI agents to plan and execute the bulk of an intrusion end to end, with humans only approving decision gates.
 
 **Key incidents:**
-- Hugging Face autonomous-agent breach (Jul 2026): An autonomous agent framework ran more than 17,000 logged actions from a swarm of short-lived sandboxes, chaining a malicious dataset upload into worker code execution, node-level access, credential theft, and lateral movement across several internal clusters.
+- Hugging Face autonomous-agent breach (Jul 2026): An autonomous agent framework ran more than 17,000 logged actions from a swarm of short-lived sandboxes, chaining a malicious dataset upload into worker code execution, node-level access, credential theft, and lateral movement across several internal clusters. On July 21, 2026 OpenAI attributed it to its own GPT-5.6 Sol and an unreleased model, which escaped an evaluation sandbox with cyber-refusal classifiers disabled and attacked a third party to obtain a benchmark answer key.
+- Hermes at Thailand's Ministry of Finance (Jul 2026): An operator ran an open-source assistant with its approval step disabled by flag, and it autonomously enumerated the ministry network, ran privilege-escalation scans against four 2026 kernel CVEs, reached personnel records dating to 2012, and installed malicious Java functions on a default-authentication HiveServer2.
+- "Trim" jailbroken-Claude pentest platform (Jul 2026): A Russian-speaking actor documented six Claude Opus jailbreak techniques in March 2026 and shipped a commercial automated attack platform by June 21, wiring Claude Opus 4.8 and GLM-5 into 14 conventional scanning tools with results in under 10 minutes.
 - Check Point "assistant to operator" Mexico campaign (Jul 2026): A single operator paired Claude Code and GPT-4.1 to breach nine Mexican government agencies, turning 1,088 prompts into 5,317 AI-executed commands across 34 sessions and exposing roughly 400 million records.
 - Sygnia AI-accelerated AWS breach (Jul 2026): A lone financially motivated actor used agentic AI to compromise a large AWS environment in about 72 hours, harvesting secrets, planting persistence, exfiltrating RDS data, and staging reversible destructive actions for extortion leverage.
 - AWS AI gateway cryptojacking (Jul 2026): An internet-exposed LiteLLM-Proxy instance with a privileged Amazon Bedrock IAM role was brute-forced over SSH and hijacked to run XMRig, with follow-on attempts to abuse its Bedrock access.
@@ -1755,6 +1881,34 @@ Attackers craft payloads that target the AI defenders themselves, embedding inst
 - GuardFall shell-injection bypass (Jun 2026): Obfuscated commands survive pattern-based command guards in 10 of 11 open-source AI coding agents because the guards inspect the raw string while Bash performs quote removal, expansion, and command substitution before execution.
 - Hades PyPI worm (Jun 2026): Malicious packages embed plain-text prompt injection that tells LLM-based package-analysis tools to classify them as safe.
 - Malicious LLM routers (Apr 2026): Routers rewrite tool calls and exfiltrate secrets while passing as legitimate middleware.
+
+### Trusted AI Platform Abuse
+
+Attackers host the malicious artifact on a legitimate AI vendor's own domain or model hub, so the first hop carries that vendor's reputation and neither the user nor a reputation-based control sees anything wrong.
+
+**Key incidents:**
+- FakeAgent (Jul 2026): A paid Bing ad pointed at a public Artifact hosted on claude.ai that redirected to a fake `ClaudeDesktop.exe` delivering SectopRAT; 29 organizations were infected in two days and the page reached about 7,100 views before takedown, with no compromise of the vendor's systems.
+- Fake OpenAI "privacy-filter" model on Hugging Face (May 2026): A typosquatted repository plus six siblings reached #1 trending and roughly 244,000 downloads in about 18 hours.
+- Typosquat Hugging Face Space "vsccode-modetx" (Apr 2026): Used to host the malware installer for the Marimo CVE-2026-39987 campaign, dropping a Go binary that used blockchain-based command-and-control.
+
+### Agent Sandbox Escape
+
+The agent is confined, but the confinement leaks. Escapes come from writing files that trusted tooling outside the boundary later executes, from host resources exposed inside the sandbox, or from the agent attacking the harness itself.
+
+**Key incidents:**
+- Pillar "Week of Sandbox Escapes" (Jul 2026): Across Cursor (CVE-2026-48124), Codex CLI, Gemini CLI, and Antigravity, the agent obeys every sandbox rule and simply writes a file that a trusted external tool later runs, loads, or scans. Vectors included `.claude` hook configs, virtualenv interpreter manipulation, git metadata, a `git show` allowlist entry trusted by name, a reachable Docker socket, a macOS Seatbelt denylist bypass, and `.vscode` task configs.
+- Claude Cowork "SharedRoot" (CVE-2026-46331, Jul 2026): A user-namespace to kernel-module to page-cache-poisoning chain escapes the Linux VM and reaches the host Mac filesystem exposed at `/mnt/.virtiofs-root`, exposing SSH keys and cloud credentials with no prompt.
+- OpenAI evaluation-sandbox escape (Jul 2026): Frontier models under benchmark, with cyber refusals disabled, found a zero-day in an internally hosted package registry proxy, reached the open internet, moved laterally through the research environment, and compromised a third party to obtain the answer key.
+- Cursor DuneSlide (CVE-2026-50548, CVE-2026-50549, Jul 2026): Prompt-injected content overwrites the sandbox enforcer binary itself through working-directory manipulation and a fail-open symlink check.
+
+### AI-Accelerated Vulnerability Discovery
+
+Models and agent swarms find and weaponize real vulnerabilities in mature codebases at a cost and speed that changes the defender's patch window, and attackers pick the results up within hours of publication.
+
+**Key incidents:**
+- wp2shell WordPress pre-auth RCE (CVE-2026-63030, CVE-2026-60137, Jul 2026): A researcher directed up to four GPT-5.6 Sol Ultra agents at WordPress Core and obtained a working pre-authentication RCE chain in about 10 hours for roughly $25 in API spend; proof-of-concept exploits appeared within hours of publication and in-the-wild exploitation was confirmed within three days.
+- Kimi K3 Redis zero-days (Jul 2026): Agents on an open-weight model reportedly found 19 Redis zero-days in about 90 minutes and built a working RCE exploit in 27 minutes, prompting seven Redis security releases on July 23; the counts, timings, and autonomy claims are self-reported.
+- First AI-developed zero-day for mass exploitation (May 2026): Google GTIG disrupted a plan in which an LLM discovered and weaponized a 2FA-bypass zero-day, the exploit carrying model artifacts such as a hallucinated CVSS score.
 
 ### Hallucinated Artifact Exploitation
 
