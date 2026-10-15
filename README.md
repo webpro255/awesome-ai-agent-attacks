@@ -74,6 +74,7 @@ This page lists incidents from the current quarter (October - December 2026). Ea
 - **Root Cause:** A CSRF-reachable local agent endpoint, and human approval enforced by whatever the client claims rather than on the server
 - **CVE:** CVE-2026-107295 (CVSS 7.6)
 - **Sources:** [GitHub Advisory](https://github.com/advisories/GHSA-h4xc-3qfq-jf93)
+- [SkillHawk](https://github.com/Berserk-hub150/skillhawk) - Zero-dependency static security scanner for Agent Skills, SKILL.md files, and MCP configurations; flags prompt injection, unsafe shell behavior, credential access, privilege escalation, and data-exfiltration patterns without executing the target.
 
 ### 2026-10-07 - ARTEX Agentic Pentest Tool and Claude Code Used to Breach South Korean Banks
 
