@@ -234,8 +234,8 @@ This page lists incidents from the current quarter (October - December 2026). Ea
 | MCP servers exposed, zero auth | 492 | [Trend Micro](https://www.trendmicro.com/en_us/research/26/c/teampcp-telnyx-attack-marks-a-shift-in-tactics.html) |
 | MCP servers with cmd injection flaws | 43% | [Invariant Labs](https://invariantlabs.ai/blog/mcp-security-notification-tool-poisoning-attacks) |
 | MCP servers with tool poisoning | 5.5% | [Invariant Labs](https://invariantlabs.ai/blog/mcp-security-notification-tool-poisoning-attacks) |
-| Malicious packages in registries (2025) | 512,847 (156% YoY increase) | [Sonatype](https://www.sonatype.com/state-of-the-software-supply-chain/2025) |
-| Forbes AI 50 with leaked secrets | 65% | [Wiz Research](https://www.wiz.io/blog/wiz-research-65-percent-of-ai-50-companies-leaked-secrets) |
+| Malicious packages in registries (2025) | 512,847 (156% YoY increase) | [Sonatype](https://www.sonatype.com/state-of-the-software-supply-chain/Introduction) |
+| Forbes AI 50 with leaked secrets | 65% | [Wiz Research](https://www.wiz.io/academy/ai-security/ai-cyberattacks) |
 | Orgs compromised via Salesloft Drift | 700+ | [Google Cloud Blog](https://cloud.google.com/blog/topics/threat-intelligence/data-theft-salesforce-instances-via-salesloft-drift) |
 | OpenClaw instances exposed (Feb 2026) | 135,000+ across 82 countries | [Kaspersky](https://www.kaspersky.com/blog/openclaw-vulnerabilities-exposed/55263/) |
 | Malicious skills on ClawHub | 1,184+ (~12% of registry) | [eSecurity Planet](https://www.esecurityplanet.com/threats/hundreds-of-malicious-skills-found-in-openclaws-clawhub/) |
