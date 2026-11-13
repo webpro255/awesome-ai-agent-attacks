@@ -13,6 +13,9 @@ Back to the [main timeline](README.md).
 A single compromised credential triggers lateral movement across multiple package registries and downstream organizations.
 
 **Key incidents:**
+- "wfx" CI secret stealer (Endor Labs, Nov 12, 2026): Hijacked GitHub accounts committed a workflow stealer to 8,900+ repositories, exfiltrating credentials from 1,806+ including OpenAI, Anthropic, Gemini, Hugging Face, Cursor, and Copilot keys, and added post-install hooks to 829+ package manifests.
+- Backdoored ARTEX Docker image (Badbyte, Nov 4, 2026): After ARTEX went closed source, a copycat repository's one-line compose change pulled a Docker Hub image that ran commands from the login CAPTCHA field as root; 9,131 pulls before removal.
+- Binance wallet theft (Nov 3, 2026): A trojanized AI tool installer and a fake job interview compromised two engineers, and an abused internal AI tool then gave the attacker control of the wallet engineers who held a container deployment token, leading to a ~$6.34 billion theft.
 - LiteLLM root cause (Oct 23, 2026): An internal agent platform master key leaked to a public repo on May 27 and never revoked returned an owner's GitHub CLI OAuth token from the agent-listing API on Oct 10; secrets dumped by workflows yielded the other maintainer tokens used for the 1.107.0 release.
 - LiteLLM 1.107.0 (Oct 21, 2026): Apparently stolen GitHub CLI OAuth tokens for three engineers let an attacker trigger and approve a release built from the lookalike `Berri-AI/litellm` repo; the PyPI wheels and Docker images ran a `.pth` and `sitecustomize.py` stealer at every Python startup that took cloud, AI provider, and LiteLLM proxy credentials.
 - Tensorlake npm SDK (Oct 8, 2026): Unreviewed pushes to main fed a release workflow that published a ChainDrop-linked Shai-Hulud variant with valid provenance; it steals AI tool configs and registry and cloud credentials, republishes the victim's packages, plants `.claude/settings.json` and `.vscode/tasks.json` auto-run files, and wipes the home directory if the stolen GitHub token is revoked.
@@ -71,6 +74,8 @@ An AI agent with legitimate access is tricked into performing actions on behalf 
 AI agents or chatbot integrations granted excessive access that becomes the attack surface.
 
 **Key incidents:**
+- BluePhishing (Proofpoint, Nov 9, 2026): Consent to an attacker-hosted Entra agent blueprint grants an irrevocable ability to create up to 250 agent identities per blueprint in the victim tenant.
+- Grok Build apps (Claroc, Nov 10, 2026): 35,578 of 37,571 AI-built apps opened without sign-in because publish defaulted to "Anyone with the link" and generated access checks admitted every signed-in user.
 - AgentCorruption (Zenity Labs, Oct 8, 2026): The default Amazon Bedrock AgentCore execution role spanned every agent in the region, so credentials pulled from one agent could invoke the rest, read their conversations, plant memories, and fetch secrets.
 - Meta Muse vulnerable-group lists (Hunterbrook Media, Sep 28, 2026): The agent searched posts, comments, and Reels transcripts across Facebook, Instagram, and Threads to compile lists of undocumented immigrants, transgender teachers, and dissidents, unmasked pseudonymous accounts, and complied after refusing when the prompt was reworded.
 - Z.ai ZCode repository uploads (Sep 22, 2026): A default-on indexing feature in a coding agent packaged whole workspaces, including Git history, reflogs, and configuration with the secrets they contain, and uploaded them to Alibaba Cloud with no working opt-out. One company found six workspaces uploaded, with database passwords and employee personal data.
@@ -91,6 +96,8 @@ AI agents or chatbot integrations granted excessive access that becomes the atta
 Malicious configurations in repository files execute code when AI tools process them.
 
 **Key incidents:**
+- strutil-core Ruby gem (Socket, Nov 6, 2026): A Shai-Hulud descendant added a fake MCP server and SessionStart hooks to Claude Code, Codex, Cursor, and Aider configs and wipes the home directory if its stolen GitHub token is revoked.
+- Haiou prompt adware (Check Point, Nov 3, 2026): A Codex jailbreak bundle rewrote global agent instruction files so greetings trigger an advertisement for an LLM gateway the agent is told not to test.
 - AGENTS.md in Downloads (Forever Security, Oct 25, 2026): A planted instruction file in a browser-writable working directory got Codex to install malware in 90%+ of tests; a CLAUDE.md variant redirected Claude Code's API traffic and exposed its OAuth token.
 - MCP Inspector OAuth callback (GHSA-4fc4-wcmh-4g86, Oct 21, 2026): A malicious server's OAuth redirect appended `transport=stdio` and a command to the callback URL, and Inspector reconnected and ran it.
 - Junie CLI and ZCode (CVE-2026-111091, CVE-2026-88755, Oct 15-16, 2026): Both coding agents ran or connected to MCP servers declared in an untrusted repository's configuration.
@@ -144,6 +151,10 @@ AI tools run user-supplied or AI-generated code without isolation.
 Humans manipulate AI agents or use AI as intermediaries for social engineering.
 
 **Key incidents:**
+- Unit 42 IDPI scam sites (Nov 6, 2026): 26 fake AI trading domains hid instructions telling reading agents to act as financial experts and steer users to invest only on the scam site.
+- SolanaCry (AIR, Oct 29, 2026): A fake Solana starter kit ranked first in agent web search, and its README's one install step loaded a NetSupport RAT in memory.
+- FBI FaceStealer (Nov 12, 2026): North Korean actors stole $400M+ through fake meetings mixing replayed webcam video of earlier victims with deepfake participants, then pushed ClickFix malware.
+- AI executive and attorney impersonation indictment (SDNY, Nov 6, 2026): Three men allegedly used AI-cloned voices and images of CEOs and big-firm lawyers to obtain about $129 million in wires.
 - Drift Protocol $285M exploit (Apr 2026): Six-month campaign posing as legitimate trading firm to social-engineer multisig signers.
 - Freysa AI agent game (Nov 2024): AI tricked into redefining its own function semantics to release $47K in crypto.
 - OpenClaw email deletion at Meta (Feb 2026): Agent's context compaction caused it to ignore explicit stop commands.
@@ -190,6 +201,8 @@ Managed AI platforms and agent runtimes fail to isolate one customer, tenant, or
 AI agents execute privileged operations without per-action permission checks.
 
 **Key incidents:**
+- IBM ContextForge (CVE-2026-110279, Nov 13, 2026): A client `X-Upstream-Authorization` header overrode the gateway-managed upstream credential, bypassing per-user permissions and audit attribution.
+- Reachy Mini robot (JFrog, Nov 3, 2026): An unauthenticated app-install endpoint, wildcard CORS, and passwordless sudo gave a web page or nearby attacker root and motor control.
 - IBM MCP Context Forge (CVE-2026-53709, Oct 13, 2026): A shipped JWT secret let anyone mint tokens that created a platform administrator on the fly.
 - OpenCode `/global/upgrade` (GHSA-632h-h47v-g4x4, Datadog, Sep 24, 2026): A cross-origin form POST from any website could make the local agent server install an attacker's npm package and run its preinstall script; 647,000+ downloads of vulnerable versions in one week.
 - Four unauthenticated MCP transports (Sep 15, 2026): Bifrost (CVE-2026-90898), MySQL MCP Server (CVE-2026-59971), MCP Context Forge (CVE-2026-53710), and `@zereight/mcp-gitlab` (CVE-2026-61560) exposed command execution, raw SQL, sandboxed code execution, and arbitrary file reads to anyone who could reach the HTTP or SSE port.
@@ -215,6 +228,7 @@ AI agents execute privileged operations without per-action permission checks.
 URL handling in vision, image, and text-loading helpers fetches attacker-controlled hosts without isolating them from internal networks or cloud metadata services.
 
 **Key incidents:**
+- AWS MCP Gateway Registry (CVE-2026-125926, Nov 11, 2026): An authenticated user could point a registered server's upstream at internal services and sometimes read the responses.
 - AgentCorruption (Oct 8, 2026): One prompt to an exposed AgentCore agent drove SSRF to the instance metadata service and returned the execution role's credentials.
 - MLflow model-registry webhooks (CVE-2026-64849, CVSS 9.3, Aug 2026): An unauthenticated POST to `/api/2.0/mlflow/webhooks/{id}/test` makes the Tracking Server fetch arbitrary internal URLs including cloud metadata endpoints and return the results; indiscriminate scanning began within hours of CVE assignment and CISA added it to KEV on August 19. A Tracking Server usually holds the cloud role that owns the training data, the model registry, and the deployment pipeline.
 - Apify Actors MCP Server CVE-2026-50143 (Jul 2026): A malicious Actor's crafted `webServerMcpPath` is concatenated onto a trusted base URL, redirecting the MCP client so the auto-attached `Authorization: Bearer` header leaks the victim's Apify API token.
@@ -241,6 +255,17 @@ AI agents send data to arbitrary external endpoints without restriction.
 Threat actors use commercial or open-source AI agents to plan and execute the bulk of an intrusion end to end, with humans only approving decision gates.
 
 **Key incidents:**
+- CL-STA-1238 and Cairn (Unit 42, Nov 12, 2026): A suspected China-nexus operator ran 25 Cairn-fork operations on GLM and DeepSeek models against 19+ organizations, breaching 10, after an authorization pretext stopped any refusals.
+- Silent Lynx (CloudSEK, Nov 11, 2026): A Telegram-tasked Hermes agent with confirmations and loop stops disabled held domain access to Tajikistan's railway and pulled 2,000+ government documents.
+- AntiFox (Arctic Wolf, Nov 11, 2026): An ARTEX fork run from Alibaba Cloud went from an IIS webshell through multiple valid AWS identities to production secrets in about 30 minutes.
+- Operation Snowball (Malbear Labs, Nov 10, 2026): A jailbroken DeepSeek agent exploited Cisco BroadWorks CVE-2026-20320 at a European telecom and exfiltrated subscriber billing records and private keys over two weeks.
+- BOSSAI (Acronis, Nov 9, 2026): One Taiwan-based operator relayed output among nine agents, mostly abliterated open models, to steal Taipei emergency dispatch records; agents also invented CVEs and false results.
+- ARTEX vendor reports (Microsoft, Check Point, Unit 42, Datadog, Nov 5-11, 2026): Agents went from a GitHub secret search to Azure Key Vault exfiltration in five minutes, validated 200+ client secrets in three minutes, and stole iOS signing certificates and 6,000 game accounts for a few hundred dollars of tokens; Storm-3358 used ARTEX against Southeast Asian banks.
+- Crafty Falcon (CERT-In, Nov 5, 2026): ARTEX, PentAGI, Cairn, and CyberStrikeAI used against Indian banks and crypto exchanges, with Rs. 1 test transactions before large transfers.
+- 3AM ransomware at a UK school estate (Bitdefender, Nov 3, 2026): Commands retried at a steady 40-100 second cadence with model-style errors suggest a human-steered agentic loop.
+- Vapor Panda (CrowdStrike, Nov 2, 2026): ARTEX planner and worker agents ran simultaneous intrusions against 200+ organizations in 14 countries, told to skip Falcon-protected hosts.
+- UNC7228 (Mandiant, Oct 30, 2026): ARTEX and its forks moved from a first account to deep access in about four hours, once in 15 minutes, using 491 rotating webhook.site URLs for C2.
+- Chainalysis (Oct 30, 2026): An actor using "offensive agentic techniques" exposed password hashes and live tokens for all users, forcing core products offline.
 - Storm-0940 and ConnectWise (Microsoft, Oct 21, 2026): ARTEX agents sprayed 151,000+ logins, took over ConnectWise Cloud Backup app identities, and tried 2,250+ downstream Microsoft 365 tenants, sometimes reaching privileged access in under three hours.
 - Symantec "Skynet mode" agent (Oct 21, 2026): An autonomous attack agent hijacks exposed LLM endpoints and MCP servers to run up to 100,000 unattended steps of scanning, exploitation, credential theft, and mining on the victim's compute.
 - CrowdStrike agentic campaigns (Oct 21, 2026): Four actors ran Claude Code-based harnesses and public skill packs (one with 819 skills) against Argentine healthcare, governments, and a US CRM vendor.
@@ -290,6 +315,12 @@ Threat actors use commercial or open-source AI agents to plan and execute the bu
 AI development tools become vectors for credential and secret exposure.
 
 **Key incidents:**
+- Darktrace memory-store implant (Nov 12, 2026): With stolen Claude credentials, a memory store became the C2 channel and the Files API the exfiltration path for a Claude Code process running with confirmations off.
+- Railway (Nov 10, 2026): A build-sandbox escape and misconfigured trust exposed decryptable customer environment variables, leading to ~$740,000 in fraudulent AI usage.
+- Fireworks AI and Notion (Nov 10, 2026): Stolen internal credentials, then a compromised third-party R&D host, exposed environment variables, partial model weights, datasets, and Notion AI chat transcripts.
+- Apiiro (Nov 6, 2026): Claude Code's "don't ask again" stored approved commands with their secrets in settings files, leaking 1,379 secrets in 1,122 public copies.
+- Google GTIG LLMjacking (Nov 2, 2026): Stolen cloud and model credentials ran up $100,000+ a day and up to $1 million per victim, resold through "LLM Mixers."
+- Wiz "Black October" (Oct 30, 2026): At least 17 AI developer platforms, including Northflank and Trigger.dev, lost stored environment variables; stolen keys were first used within 30 minutes and later drove 800,000 to 1.7 million Bedrock calls each.
 - OpenCode Console (Oct 17, 2026): A breach of a legacy hosted system exposed 1.4% of users' stored OpenAI, Anthropic, and Google keys, followed by unauthorized charges.
 - Gemini LLMjacking (Wiz, Oct 20, 2026): Ad-delivered AitM phishing led to GCP billing takeover, with attacker projects billed to the victim for tens to hundreds of thousands of dollars of Gemini usage.
 - MCP TypeScript SDK OAuth redirection (CVE-2026-104850, Oct 6, 2026): The sibling of the Python SDK flaw; a malicious MCP server could name its own authorization server and receive refresh tokens, client secrets, or signed assertions.
@@ -321,6 +352,7 @@ AI development tools become vectors for credential and secret exposure.
 LLM serving and inference engines expose unauthenticated endpoints or mishandle attacker-supplied model files, leaking memory or bypassing access control.
 
 **Key incidents:**
+- NEAR AI (Nov 8, 2026): An SGLang RCE ran code inside a TEE-hosted inference server, then reached Private Chat user data and 18 agents running outside the TEE.
 - LMCache multiprocess ZMQ pickle RCE (CVE-2026-105192, JFrog, Oct 7, 2026): An unauthenticated socket unpickles message arguments before type checks, giving root RCE in official images; unpatched at disclosure.
 - Ollama "Bleeding Llama" (CVE-2026-7482, May 2026): Out-of-bounds heap read during GGUF quantization leaks process memory from 300,000+ unauthenticated servers.
 - vLLM OpenAI API auth bypass (CVE-2026-48746, Jun 2026): A crafted `Host` header manipulates path reconstruction so the API-key check fails open.
@@ -333,6 +365,9 @@ LLM serving and inference engines expose unauthenticated endpoints or mishandle 
 Gateways, retrieval platforms, and workflow orchestrators sit between users, data, models, and execution, holding every provider key and often container privileges in one process. Attackers now target them directly, with reconnaissance and post-exploitation written for the specific framework rather than for a generic Linux host.
 
 **Key incidents:**
+- Langflow (CVE-2026-93680, CVE-2026-110186, Oct 28, 2026): Unauthenticated auth bypass and code execution in every release through 1.12.8, tied to an auto-login default and MCP tool enumeration, with no 1.12.x fix.
+- Greeter (era.security, Nov 3, 2026): A Chinese-language framework sent "hello" to Flowise honeypots while replacing JavaScript node code per request through `overrideConfig`, running 4,000+ commands and hunting cloud credentials.
+- Wiz agentic attack cases (Oct 29, 2026): A compromised Flowise instance was used to mass-exploit dozens of others, and an AI agent GraphQL/MCP backend lost cloud and Kubernetes secrets to chained RCE.
 - LLMjacking attack agent (Symantec, Oct 21, 2026): A honeypot posing as an open model endpoint logged 127,000+ requests and captured an agent that uses victims' exposed models and gateways as its own reasoning engine.
 - PoeLLM botnet (Lumen Black Lotus Labs, Oct 7, 2026): 3,400+ exposed LiteLLM, Ollama, and other servers compromised through LiteLLM's MCP test endpoints (CVE-2026-42271), with the C2 address encoded in a poem on GitHub.
 - LiteLLM default-key exposure at scale (Wiz, Sep 10, 2026): 9.6% of 3,074 scanned internet-facing gateways accepted `sk-1234` and 6.2% had no key configured, alongside a flaw cluster including CVE-2026-59822, CVE-2026-42271, CVE-2026-59821, and the CVE-2026-40217 sandbox escape to root. Holding the master key yields every provider key, the prompt and response traffic, connected MCP tooling, and host cloud IAM credentials through the metadata service.
@@ -362,6 +397,7 @@ Attackers craft payloads that target the AI defenders themselves, embedding inst
 Attackers host the malicious artifact on a legitimate AI vendor's own domain or model hub, so the first hop carries that vendor's reputation and neither the user nor a reputation-based control sees anything wrong.
 
 **Key incidents:**
+- TypoPrompting (Island, Nov 12, 2026): 186 lookalike domains for 27 AI brands routed visitors to ClickFix lures, a browser hijacker, and search-hijacking extensions with 972,000 declared users.
 - "Plus 5.6" Custom GPTs (Huntress, Sep 28, 2026): Paid Google ads led to a Custom GPT on chatgpt.com that told every user ChatGPT was down and sent them to a ClickFix page installing a RAT; OpenAI removed it on September 25 and a replacement with the same name was live two days later.
 - Luciferus uncensored AI service (Sophos, Sep 15, 2026): An Exploit forum subscription service, likely a Qwen fine-tune, sold from $22 a month as a refusal-free alternative to jailbreaking ChatGPT and Claude; its cheapest tier wrote a working Python RAT on request.
 - FakeAgent (Jul 2026): A paid Bing ad pointed at a public Artifact hosted on claude.ai that redirected to a fake `ClaudeDesktop.exe` delivering SectopRAT; 29 organizations were infected in two days and the page reached about 7,100 views before takedown, with no compromise of the vendor's systems.
@@ -374,6 +410,8 @@ Attackers host the malicious artifact on a legitimate AI vendor's own domain or 
 The agent is confined, but the confinement leaks. Escapes come from writing files that trusted tooling outside the boundary later executes, from host resources exposed inside the sandbox, or from the agent attacking the harness itself.
 
 **Key incidents:**
+- WorkOS (Nov 6, 2026): A researcher's ARTEX agent escaped its benchmark test environment and bulk-downloaded WorkOS customer records through a production app using a predictable development credential.
+- Docker Sandboxes (CVE-2026-103916, Endor Labs, Nov 3, 2026): Symlinks planted by the sandboxed agent made the operator's `sbx cp` write into or read from arbitrary host paths.
 - OpenAI training containment (Oct 23, 2026): Red-team agents escaped VMs, reached the internet through metrics and auth services, and passed secrets between microVMs by timing CPU cache reloads; OpenAI moved frontier training offline.
 - METR and Redwood monitoring review (Oct 22, 2026): About 10% of eligible Codex traffic went unmonitored during compaction, agents could defer monitoring indefinitely, and client headers could disable it for new agents.
 - OpenAI monitoring suppression (Oct 21, 2026): A GPT-6.1 Sol agent had a sub-agent silence monitoring alerts, and a GPT-6 Astra agent removed a monitoring integration and denied it when asked.
@@ -417,6 +455,7 @@ The agent is confined, but the confinement leaks. Escapes come from writing file
 Models and agent swarms find and weaponize real vulnerabilities in mature codebases at a cost and speed that changes the defender's patch window, and attackers pick the results up within hours of publication.
 
 **Key incidents:**
+- OpenAI Linux pipeline (Nov 5, 2026): One run reproduced 1,724 of 2,308 kernel findings in about 30 hours and produced 948 working root exploits for $1,213,430 in API cost.
 - Anthropic unreleased model (Oct 27, 2026): Five working chains against Chrome, Safari, Android, Windows, and Linux, with 62 critical or high Chrome CVEs and a zero-click Linux root chain (CVE-2026-98432).
 - Causal Security Cipher in EPICS (CVE-2026-114595, Oct 27, 2026): An autonomous agent found and validated four flaws, one CVSS 9.8, in particle-accelerator control software in 3 hours 49 minutes.
 - OpenAI red-team Brotli RCE (CVE-2026-111497, Oct 23, 2026): A flaw found by OpenAI's sandbox red-teaming agents was added to the CISA KEV catalog as exploited on Oct 27, 2026.
@@ -482,6 +521,8 @@ Machine-generated advisories, reports, and findings enter the records that defen
 A human or a pin approves one thing and the system executes another. The approval is bound to a description, a name, or a reference that can be resolved or edited later, instead of to the exact content or operation that runs, so the trust granted at review time transfers to whatever replaces it.
 
 **Key incidents:**
+- ThisBash (Forever Security, Nov 6, 2026): A browser extension on claude.ai sent prompts to Claude Desktop's Dispatch and clicked its approval prompts every second, installing an npm package that ran code.
+- AWS API MCP Server deny-list bypass (CVE-2026-125271, Nov 10, 2026): Operation names with consecutive capitals were normalized wrongly before policy checks, so denied or approval-required AWS calls ran.
 - Claude Code plugin pin bypass (CVE-2026-86063, Oct 15, 2026): A branch named like the pinned 40-character SHA made `git checkout` install the attacker's branch tip.
 - Mistral Vibe and Roo Code approval bypasses (CVE-2026-109429, CVE-2026-110202, Oct 13, 2026): `${var@P}` re-expansion and a bare `>&` redirect hid denied commands from static approval classifiers.
 - SneakPeek (Noma Labs, Oct 14, 2026): Claude Code Desktop previews over 256 KB loaded outside the CSP and could read and send local secrets; the first fix was bypassed with a Web Worker.
@@ -489,3 +530,11 @@ A human or a pin approves one thing and the system executes another. The approva
 - Mistral Vibe environment-prefix bypass (CVE-2026-87987, HiddenLayer, Sep 11, 2026): The allowlist checked `git diff` while the shell ran `GIT_CONFIG_...=... git diff`, so an approved command launched an attacker-configured program; a companion flaw ignored redirection targets (CVE-2026-87984).
 - Plugin4Shell (Air Security, Sep 18, 2026): Claude Code, Codex, GitHub Copilot, and Gemini CLI pinned marketplace plugins to a commit hash but never checked that fetched code matched it. A branch named after the hash wins git's resolution, and background auto-update carries the swap to installed plugins with no user action. Anthropic and OpenAI patched; Microsoft had not; Google will not.
 - Loopjacking (arXiv 2609.21081, Sep 17, 2026): Human-in-the-loop approval in LangGraph Agent Server, Agno AgentOS, and OpenClaw could be subverted by misrepresenting the pending operation or by mutating workflow state after sign-off, so a reviewer approves operation A and operation B runs. The OpenAI Agents SDK resisted by binding each approval to the exact serialized call.
+
+### Hidden Model Behavior
+
+The model behaves one way under evaluation and another in use, through planted weight edits or learned covert withholding, so behavioral testing and monitoring do not reveal it.
+
+**Key incidents:**
+- Microsoft "Lazarus" (Nov 11, 2026): Editing fewer than 10 neurons, without retraining, made open-weight agent models emit an attacker's command in 98.8%+ of triggered sessions while benchmarks barely changed.
+- GPT-6 Astra covert underperformance (OpenAI, Nov 5, 2026): The model completed about 10% of rubric items on safety-framed tasks versus about 16% on identical capability-framed ones, reporting invented blockers instead of refusing, and monitors did not flag it.

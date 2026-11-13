@@ -4,7 +4,7 @@ A curated timeline of real AI agent security incidents, breaches, and vulnerabil
 
 No opinions. No product pitches. Just facts with sources.
 
-Last updated: 2026-10-28
+Last updated: 2026-11-13
 
 ---
 
@@ -31,6 +31,342 @@ This page lists incidents from the current quarter (October - December 2026). Ea
 ---
 
 ## 2026 Incidents
+
+### 2026-11-13 - IBM ContextForge MCP Gateway: A Request Header Overrides the Gateway's Upstream Credential, Bypassing Per-User Permissions (CVE-2026-110279)
+
+- **Target:** IBM ContextForge MCP Gateway 1.0.0 through 1.1.0
+- **Impact:** IBM published several ContextForge CVEs on November 13, 2026. CVE-2026-110279 (CVSS 8.1): an authenticated user could send an `X-Upstream-Authorization` header that replaced the gateway-managed upstream credential for OAuth, bearer, and basic-auth gateways, making upstream calls with a different credential and escaping per-user permissions and audit attribution. CVE-2026-110278 (CVSS 7.4) covers identity claim replay; lower-severity entries cover access control in bulk import (CVE-2026-110178), denial of service (CVE-2026-110189), and cross-site scripting (CVE-2026-110199). NVD analysis was pending at publication
+- **Root Cause:** The gateway let a client-supplied header take precedence over the credential it was supposed to manage on the user's behalf
+- **CVE:** CVE-2026-110279, CVE-2026-110278, CVE-2026-110178, CVE-2026-110189, CVE-2026-110199
+- **Sources:** [IBM](https://www.ibm.com/support/pages/node/7296490), [Strix](https://www.strix.ai/cve/CVE-2026-110279)
+
+### 2026-11-12 - FBI "FaceStealer": North Korean Actors Stole $400M+ Using Deepfake and Replayed Victim Webcam Video in Fake Meetings
+
+- **Target:** Cryptocurrency and Web3 founders and executives, software developers, and maintainers of high-download libraries
+- **Impact:** The FBI said North Korea-linked actors stole more than $400 million in cryptocurrency over about 18 months. Compromised Telegram and similar accounts invited contacts to fake Zoom or Teams meetings in which prerecorded webcam video of earlier victims played alongside deepfake participants; a fake audio error then pushed a ClickFix-style "fix" that installed malware, and each new victim seeded the next round. The DoJ said the actors used "super intelligence" to create deepfakes of well-known crypto figures, and Arctic Wolf reported ChatGPT-generated avatars and synthetic participant videos made with tools from ChatGPT, Google, Grok, and Wondershare. The FBI seized the campaign's cloud infrastructure and more than 900 victim webcam recordings; the DoJ separately announced seizure and restraint of over $1.2 billion stolen by TraderTraitor actors in the Binance theft. Arctic Wolf's later count was 677 targets in 58 countries, more than 80% founders or C-suite
+- **Root Cause:** Trust carried from a hijacked contact account into a video meeting whose participants were recorded or synthetic
+- **Sources:** [FBI IC3](https://www.ic3.gov/CSA/2026/261112.pdf), [U.S. DoJ](https://www.justice.gov/opa/pr/justice-department-announces-actions-disrupt-north-koreas-massive-theft-cryptocurrency), [The Hacker News](https://thehackernews.com/2026/11/fbi-says-north-korean-hackers-stole.html)
+
+### 2026-11-12 - Darktrace: Stolen Claude Credentials Turn Claude Code Into a C2 Implant Tasked Through Memory Stores
+
+- **Target:** Claude Code on a developer machine and the Claude platform's memory stores and Files API
+- **Impact:** In a lab test, Darktrace researchers who already controlled a developer machine and held its Claude credentials used a memory store with three files (heartbeat, input, output) as a command channel, so all tasking traveled to `api.anthropic.com`, the endpoint the agent already calls. A systemd service relaunched Claude Code with tool-use confirmation prompts disabled. Over nine jobs against a simulated Active Directory network the agent mapped hosts, pulled a password from an anonymous FTP share, generated 190 candidate usernames and sprayed the domain controller, listed SMB shares, and exfiltrated a 1 GB file in three pieces through the Files API. Darktrace said no platform vulnerability was involved, shared the work with Anthropic as a courtesy, and has not seen it in the wild. Single-source
+- **Root Cause:** An agent's own provider API doubles as a trusted, allowlisted command-and-control and exfiltration channel once credentials are stolen
+- **Sources:** [Help Net Security](https://www.helpnetsecurity.com/2026/11/12/stolen-claude-api-keys-remote-controlled-implant/)
+
+### 2026-11-12 - "TypoPrompting": 186 Lookalike Domains for 27 AI Brands Serve ClickFix Lures, a Browser Hijacker, and Search-Hijacking Extensions
+
+- **Target:** Users of Claude, ChatGPT, Gemini, Copilot, Grok, DeepSeek, Mistral, Perplexity, Midjourney, ElevenLabs, Lovable, Cursor, and other AI services
+- **Impact:** Island tracked 186 typosquat domains impersonating 27 AI brands, some (such as `cloude.ai` and `cluade.ai`) registered as early as July 2023, plus a wider set of 211 entry domains behind the same fingerprinting gate. Visitors were routed to fake Cloudflare checks serving ClickFix commands for Windows and macOS, to fake "Security Check" pages that installed the Net Guard browser hijacker (which can run attacker JavaScript and install Chrome extensions), or to 16 search-hijacking Chrome extensions with 972,000 declared users, including "GPT for Chrome" at 80,000. Single-source
+- **Root Cause:** Mistyped AI product domains are cheap to register and inherit the trust users give the real service
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/11/186-fake-ai-domains-redirect-users-to.html)
+
+### 2026-11-12 - Unit 42: China-Nexus CL-STA-1238 Ran a Cairn Agent Fork Against 19+ Semiconductor, Defense, and Civil Society Organizations
+
+- **Target:** Semiconductor and advanced manufacturing firms, defense and space organizations, a policy think tank, a Canadian human rights body, a U.S. teachers' union, and other nonprofits
+- **Impact:** Unit 42 tracked 25 operations from August to September 2026 by a suspected China-nexus cluster (moderate confidence) using a customized fork of the open-source Cairn framework with an "AIScan Runner Skills" pack, backed by GLM 5.2 (13 operations), DeepSeek V4 Flash (8), and DeepSeek V4 Pro (4). A Chinese-language authorization preamble and a generated AUTHORIZATION.md were enough that neither model refused. Operations ran from 20 minutes to more than 50 hours and reached 10 of at least 19 organizations: more than 1 million member records, about 31,000 CRM contacts, and staff password hashes at the teachers' union; about 500 user records including .mil and .gov accounts at a defense-policy program; about 150,000 internal documents at an industrial-automation maker; a live standards-ballot document overwritten at a standards body; and rogue admin accounts plus a persistent API token at a semiconductor company
+- **Root Cause:** Authentication bypasses, IDOR, mass-assignment privilege escalation, weak or default credentials, an unauthenticated cloud-storage write, and old public CVEs
+- **Sources:** [Unit 42](https://unit42.paloaltonetworks.com/cairn-framework-ai-autonomous-attacks/), [Cybersecurity Dive](https://www.cybersecuritydive.com/news/china-hacker-ai-tool-campaign-us-defense-semiconductor/874619/)
+
+### 2026-11-12 - "wfx" CI Secret Stealer Pushed Through Hijacked GitHub Accounts to 8,900+ Repositories, Targeting AI Provider Keys
+
+- **Target:** GitHub repositories and their Actions secrets, including keys for OpenAI, Anthropic, Gemini, Hugging Face, Cursor, and Copilot
+- **Impact:** Endor Labs reported a campaign starting November 10, 2026 that used hijacked GitHub accounts to commit a workflow stealer to more than 8,900 repositories (61,764 probed), with credentials exfiltrated from at least 1,806 and stolen credentials belonging to 4,837 developers. It harvests Actions secrets, OIDC and cloud credentials, and runner memory, escalates into AWS, GCP, and Azure, and persists by rewriting an AWS trust policy and adding Azure federated credentials named `wfx-ci-*`. More than 829 repositories also got `package.json` post-install hooks, at least 50 hijacked accounts publish to npm, Go, Packagist, PyPI, or crates, and 35 affected repositories ship consumable packages, the largest `nextcloud/docker`. Two bot commits bypassed branch protection. The account takeover method is unconfirmed; one victim cited a leaked GitHub CLI OAuth token. Single-source
+- **Root Cause:** Stolen developer credentials could write workflows that run with repository secrets
+- **Sources:** [Endor Labs](https://www.endorlabs.com/learn/github-actions-supply-chain-attack-targeting-ci-secrets-at-scale)
+
+### 2026-11-11 - AWS MCP Server Batch: Gateway Registry SSRF Reaches Internal Services, and the AWS API MCP Server's Deny List Is Bypassed by Capitalization (CVE-2026-125926, CVE-2026-125271)
+
+- **Target:** AWS `mcp-gateway-registry` 1.0.3 through 1.34.0, `awslabs.aws-api-mcp-server` 0.2.13 to before 1.5.1, and the AWS Serverless MCP Server before 0.2.1
+- **Impact:** CVE-2026-125926 (bulletin 2026-180-AWS, November 11): an authenticated user able to register or modify a server could set its upstream address to internal network services, and in some cases read the responses; reports note that a gateway with an attached cloud role puts instance metadata credentials in reach, though AWS confirmed no credential theft or exploitation. Fixed in 1.35.0, which validates only at registration and update, so stored upstream addresses must be reviewed. CVE-2026-125271 (CVSS 3.1 7.8, published November 10): operation names with consecutive capital letters were normalized incorrectly before policy checks, so calls the operator placed on the `denyList` or `elicitList` (approval) ran anyway. Fixed in 1.5.1. CVE-2026-116635 (CVSS 6.1, November 2) let the Serverless MCP Server read JSON files outside its deployment status directory
+- **Root Cause:** Upstream destinations and tool operation names were validated against policy in a form that differed from what was actually executed
+- **CVE:** CVE-2026-125926, CVE-2026-125271, CVE-2026-116635
+- **Sources:** [AWS Security Bulletin](https://aws.amazon.com/security/security-bulletins/rss/2026-180-aws/), [AWS Security Bulletin (API MCP)](https://aws.amazon.com/security/security-bulletins/rss/2026-176-aws/), [Cybersecurity News](https://cybersecuritynews.com/aws-mcp-gateway-security-flaw/)
+
+### 2026-11-11 - Arctic Wolf: "AntiFox," a Fork of ARTEX, Used to Steal AWS Credentials and Production Secrets
+
+- **Target:** Internet-exposed IIS applications and the AWS accounts whose credentials they held
+- **Impact:** Attackers ran self-managed copies of AntiFox, an open-source agentic pentest platform forked from ARTEX 0.1.1 with a Chinese-language interface, on Alibaba Cloud. Observed activity included exploitation, webshell deployment, credential validation, configuration discovery, and AWS secret harvesting. In one intrusion an ASPX webshell on an IIS server exposed application settings and database connection strings; the attacker then cycled through multiple valid AWS identities, including assumed EC2 roles, making hundreds of API calls in about 30 minutes, most blocked but some returning production secrets. In another, a valid identity read, copied, and deleted S3 objects. AntiFox 2.0 is public on GitHub with a usage ban but no technical enforcement. Amazon said AWS services were not compromised
+- **Root Cause:** Cloud credentials stored in reachable application configuration gave an automated agent a direct path from a webshell to production secrets
+- **Sources:** [BleepingComputer](https://www.bleepingcomputer.com/news/security/hackers-use-antifox-ai-agents-in-aws-credential-theft-attacks/), [The Hacker News](https://thehackernews.com/2026/11/antifox-ai-pentesting-platform-linked.html)
+
+### 2026-11-11 - CloudSEK: Silent Lynx Ran a Hermes Agent Over Telegram Against Tajik Railways and Government Document Systems
+
+- **Target:** Tajikistan's national railway and national electronic document management (EDO) platform, an Uzbek forestry GeoServer, and planned targets in Turkmenistan and Pakistan
+- **Impact:** An exposed server (12+ GB, unauthenticated on port 8088) showed the Silent Lynx operator running a customized Hermes agent branded "Strix," backed mainly by DeepSeek V4.1 Flash with Gemini 2.5 Flash sub-agents via OpenRouter, tasked through a Telegram bot. Destructive commands ran without confirmation and the tool-loop stop was disabled. The operator held domain-level access to the railway from mid-August to at least October 10, 2026, used a railway employee's credentials to pull more than 2,000 EDO documents including Ministry of Defence correspondence, and gained command execution on the Uzbek host. The agent's own log-cleanup run missed the exposed directory
+- **Root Cause:** Domain access and reused employee credentials let an unattended agent collect across government systems; the operator's OPSEC exposed the full toolkit
+- **Sources:** [CloudSEK](https://www.cloudsek.com/blog/off-the-rails-inside-an-exposed-silent-lynx-server), [The Hacker News](https://thehackernews.com/2026/11/threatsday-59-linux-kernel-bugs-falcon.html)
+
+### 2026-11-11 - Microsoft "Lazarus": Editing Fewer Than 10 Neurons Backdoors an Agent Model Into Running an Attacker's Command
+
+- **Target:** Open-weight models used as agents: Nemotron-Terminal-8B, Qwen3.6-27B, and Gemma-4-31B-IT
+- **Impact:** Microsoft researchers planted a trigger by editing 7 neurons (of more than 12,000 in the last feed-forward layer) in Nemotron, using 23 example sessions and no retraining; when the trigger appeared in a user request or tool output, the model emitted an attacker's command, which an agent would run with its own permissions. The command was emitted in at least 98.8% of triggered sessions and 0% of clean ones in scored tests; tuned Qwen and Gemma reached 51% to 99.5%. Benchmarks barely moved (Terminal-Bench 46.59% to 42.05% for Qwen). A trained detector caught 91.4% of edited checkpoints but flagged 9.7% of clean ones. Requires write access to the weights; not seen in the wild
+- **Root Cause:** Model weights are executable supply chain artifacts, and standard safety evaluations do not exercise a dormant trigger
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/11/microsoft-researchers-show-ai-agents.html), [Help Net Security](https://www.helpnetsecurity.com/2026/11/11/microsoft-hidden-ai-backdoors-lazarus/)
+
+### 2026-11-11 - Unit 42 and Datadog: ARTEX Agents Validate 200+ Client Secrets in Three Minutes and Search CloudWatch Logs for AWS Keys
+
+- **Target:** Customer cloud environments in retail, consulting, and finance-focused AWS accounts
+- **Impact:** Unit 42 described a coordinated ARTEX campaign that validated more than 200 client secrets in about three minutes and turned public password-reset pages and exposed APIs into cloud access, sometimes within a day, without exploiting any software vulnerability; in October 2026 it counted 1,323 internet-facing CyberStrikeAI hosts and 609 ARTEX hosts. Datadog Security Labs (November 9) saw two ARTEX clusters in AWS in October: one used stolen IAM keys to run CloudWatch `FilterLogEvents` searches for finance firm names, secrets, and `AKIA` keys; the other self-registered through public Cognito user pools and tried `ListBuckets` and `ListSecrets`, which failed. ARTEX had more than 12,000 forks before going closed source on October 8. Each report's observations are single-source
+- **Root Cause:** Self-service recovery and registration flows and long-lived keys give agents identity footholds without any exploit
+- **Sources:** [Unit 42](https://unit42.paloaltonetworks.com/artex-and-ai-powered-red-teaming-tools/), [Datadog Security Labs](https://securitylabs.datadoghq.com/articles/artex-agentic-attacks-aws-environments/)
+
+### 2026-11-10 - Railway: Build-Sandbox Escape and Misconfigured Trust Decrypt Customer Secrets; $740,000 in Fraudulent AI Charges
+
+- **Target:** Railway's build infrastructure, internal source code, and customer environment variables
+- **Impact:** Railway's November 10 report said attackers on October 20 escaped the build environment's filesystem isolation, took an internal credential, retrieved Railway's source code from stored build histories to look for more paths, then abused a misconfigured trust relationship to obtain credentials that decrypt customer environment variables. Railway described a roughly 26-hour contest in which both sides used AI agents and the attackers "probed many potential routes, in parallel." Queries focused on AI provider keys; linked-account tokens for 1,852 users, including GitHub OAuth tokens and AI agent keys, were reset. Up to 1.85% of workspaces (about 100,000) may be affected, and stolen credentials generated about $740,000 in unauthorized AI usage. Wiz separately noted an alleged ~$371,000 crypto key theft
+- **Root Cause:** Build isolation and an internal trust relationship each failed, and the decryption keys for customer secrets were reachable from inside the platform
+- **Sources:** [BleepingComputer](https://www.bleepingcomputer.com/news/apple/railway-breach-leads-to-740-000-in-fraudulent-ai-charges/), [Wiz](https://www.wiz.io/blog/black-october-for-ai-developer-platforms)
+
+### 2026-11-10 - Fireworks AI Breach Widens to Model Weights, Datasets, and Notion AI Chat Transcripts
+
+- **Target:** Fireworks AI's inference platform and development environment, and downstream customers including Notion
+- **Impact:** Fireworks detected misuse of internal credentials on October 6, 2026, which exposed environment variables (API keys and tokens) in evaluation jobs for a limited number of accounts. On October 23 the attacker returned through an unnamed third-party cloud provider hosting Fireworks R&D machines and on October 24 ran an unauthorized workload that reached resource metadata, billing data, and a subset of incomplete model weights and datasets. Notion said transcripts of Notion AI chats used for its Insights feature, mostly unattributed, were exposed for fewer than 1% of workspaces; it disabled Insights and stopped serving open-weight models through Fireworks. Fireworks tied the activity to a financially motivated group reselling stolen LLM access
+- **Root Cause:** Stolen internal credentials followed by a compromised third-party host with access to the development environment
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/11/fireworks-ai-breach-widens-to-expose.html), [BleepingComputer](https://www.bleepingcomputer.com/news/security/notion-says-fireworks-breach-exposed-customer-ai-chat-transcripts/)
+
+### 2026-11-10 - "Operation Snowball": Jailbroken DeepSeek Agent Exploits Cisco BroadWorks XXE at a European Telecom; CISA Adds It to KEV (CVE-2026-20320)
+
+- **Target:** Cisco BroadWorks XSP Release 23.0.1.1075 at a European telecom provider and 13 companies hosted on its infrastructure
+- **Impact:** Malbear Labs reported a Chinese-speaking group running an autonomous framework built on a jailbroken DeepSeek Flash model that exploited CVE-2026-20320 (CVSS 7.5), an unauthenticated XXE in the BroadWorks OCI XML parser fixed in August 2026. Over two weeks the agent enumerated hundreds of assets, extracted dozens of credential sets, exfiltrated thousands of rows of subscriber billing and device records, and took the XSP host's system identity key, three SSL credential sets, and three more private keys, using Sliver, Chisel, and the Behinder web shell. Its capability list covered about 13 products, including NetScaler, PAN-OS GlobalProtect, F5 BIG-IP, and VMware Cloud Director. CISA added CVE-2026-20320 to KEV on November 10, 2026
+- **Root Cause:** A months-old patch left unapplied on an internet-facing telecom platform
+- **CVE:** CVE-2026-20320
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/11/cisco-broadworks-and-openwave-flaws.html), [CISA KEV](https://www.cisa.gov/known-exploited-vulnerabilities-catalog)
+
+### 2026-11-10 - Claroc: 35,578 Grok Build Apps Open Without Sign-In, Including SpaceXSI Staff Sales Plans and Patient Data
+
+- **Target:** Apps generated and hosted with SpaceXSI's (formerly xAI) Grok Build
+- **Impact:** Claroc found 37,571 live Grok-built apps, of which 35,578 (about 94.7%) opened to anyone without signing in; about 1 in 10 held internal business or personal data. Exposures included a hospital group's list of 3,500+ employees, an intensive care briefing on a single patient, a fire department's live shift board, a timesheet app storing every employee password in plain text, and 24 apps built by X and SpaceXSI staff with a sales onboarding plan, a map of 594 sales accounts, and a confidential X advertising proposal to a U.S. federal agency. Data from 30 other organizations (6 in the Fortune 500) was reachable. In a test app, Grok's generated code added every signed-in user to the team before checking membership. SpaceXSI removed the 24 staff apps only
+- **Root Cause:** Publish defaulted to "Anyone with the link," app hostnames were discoverable through passive DNS, and generated access checks were broken
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/11/over-35000-grok-built-apps-exposed.html), [Cybernews](https://cybernews.com/security/groks-data-leak-spacexsi/)
+
+### 2026-11-09 - Acronis: A Lone Taiwan-Based Operator Ran the "BOSSAI" Agent Mesh to Steal Taipei Emergency Dispatch Records
+
+- **Target:** Taiwanese emergency services, plus organizations in Mexico and Thailand
+- **Impact:** Acronis watched one actor, believed to be based in Hualien, for 12 days through a misconfigured server holding 90,000+ files of agent conversations, tools, credentials, and victim data. BOSSAI had 12 agents (9 in use): abliterated DeepSeek, GLM, and Qwen models did most attacking, Grok did infrastructure work, Claude Code and Codex were redirected to an abliterated model, and Cursor attacked an emergency-services site. Default root credentials at a fire-dispatch vendor exposed dispatch records for seven Taipei districts; a 2018 fire department platform exposed ECG readings and ambulance video without a login. About 10 organizations were breached and about 206,800 Mexican home phone records taken. Agents invented CVEs and reported results that never happened
+- **Root Cause:** Default credentials and unauthenticated legacy systems; the agents failed wherever logins and filtering were enforced
+- **Sources:** [Acronis](https://www.acronis.com/en/tru/posts/bossai-inside-the-ai-attack-mesh-that-targeted-taiwans-emergency-services/), [The Hacker News](https://thehackernews.com/2026/11/taiwan-based-hacker-used-bossai-ai.html)
+
+### 2026-11-09 - Proofpoint "BluePhishing": Consent to a Malicious Entra Agent Blueprint Lets an Attacker Mint Agent Identities in the Victim Tenant
+
+- **Target:** Microsoft Entra Agent ID tenants
+- **Impact:** Proofpoint showed that a user who consents to an attacker-hosted agent blueprint creates a blueprint principal in their tenant that automatically gets `AgentIdentity.CreateAsManager`, which cannot be revoked from it. With the blueprint's client secret, the attacker obtains an app-only Graph token, creates agent identities (up to 250 per blueprint) sponsored by a victim user, and retrieves their tokens; in testing the agents inherited `User.Read.All` and `Group.Read.All` from user-consented delegated permissions. A Microsoft notice says default users can create agent blueprints from November 2026. Proof of concept only; Microsoft was notified
+- **Root Cause:** A consent grant to a third-party blueprint becomes a standing ability to create new identities inside the consenting tenant
+- **Sources:** [Proofpoint](https://www.proofpoint.com/us/blog/threat-insight/BluePhishing-Initial-Access-via-Third-Party-Agent-Blueprint-Consent), [The Hacker News](https://thehackernews.com/2026/11/threatsday-59-linux-kernel-bugs-falcon.html)
+
+### 2026-11-08 - SGLang RCE Breaches NEAR AI Inference Server; Data From 18 Agents and About 100 Users Taken
+
+- **Target:** NEAR AI's inference servers running SGLang inside a trusted execution environment, its deprecated Private Chat product, and an older NEAR AI Agents deployment
+- **Impact:** An attacker exploited a remote code execution flaw in SGLang, ran code on one inference server, and could have viewed that day's requests, including confidential-mode requests inside the TEE. The attacker then reached an internal system behind Private Chat, exposing emails, names, and some plan and balance details for about 100 users, and took chat history, settings, and logs from 18 agents on an older deployment that ran outside the TEE. Two customers' NEAR AI Cloud API keys appeared in logs and were revoked. NEAR AI named no CVE or affected SGLang versions and reported the flaw to the SGLang project
+- **Root Cause:** A TEE does not protect against a vulnerability in the software running inside it, and part of the agent fleet ran outside the TEE
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/11/sglang-rce-exploit-breaches-near-ai.html), [Wiz](https://www.wiz.io/blog/black-october-for-ai-developer-platforms)
+
+### 2026-11-06 - WorkOS Breach Traced to a Researcher's ARTEX Agent That Escaped Its Test Sandbox
+
+- **Target:** WorkOS's internal sales and customer support application
+- **Impact:** WorkOS first said an attacker used the ARTEX AI framework to breach an internal sales app; on November 6 it said a security researcher had claimed responsibility, stating their agent "escaped its isolated testing environment and interacted with WorkOS unintentionally" during benchmark evaluations. WorkOS and an independent forensic firm matched the researcher's request details and timestamps to its logs. The agent first got in on October 25, 2026 and had finished downloading customer records by the time unusual usage was noticed on October 30. Exposed data included business contacts, account histories, product usage, and summaries or excerpts of sales calls, support discussions, and customer Slack conversations. The researcher said all data was deleted. Neither party explained how the escape happened
+- **Root Cause:** Internet-exposed API endpoints, a predictable development credential deployed to production, no rate limiting, and a legacy internal-tools platform without newer protections
+- **Sources:** [BleepingComputer](https://www.bleepingcomputer.com/news/security/runaway-ai-hacking-agent-behind-workos-breach-after-escaping-sandbox/), [WorkOS](https://workos.com/security/bulletins/update-for-october-30th-2026-data-security-incident), [SecurityWeek](https://www.securityweek.com/ai-linked-breaches-mount-as-workos-northflank-trigger-dev-disclose-hacks/)
+
+### 2026-11-06 - "ThisBash": A Browser Extension on claude.ai Drives Claude Desktop's Dispatch to Run Code on the User's Machine
+
+- **Target:** Claude Desktop with Dispatch enabled, for users also signed in to claude.ai in the browser
+- **Impact:** Forever Security's Gal Weizman showed that any extension able to run scripts on claude.ai (malicious, hijacked through an update, or flawed) can open Dispatch and send prompts as the user. In the proof of concept the script sent four prompts asking Claude to install an npm package, pushed past an initial hesitation with a follow-up in the user's voice, and clicked "Allow" every second on the approval prompts; the global install's script opened Calculator. Reported to Anthropic May 14, 2026, accepted as valid on May 19 but closed as a duplicate; Anthropic told the researchers on October 13 that Dispatch would be retired. The researchers say Claude Code Remote Control and Cowork sessions may be exposed the same way (untested)
+- **Root Cause:** Approval prompts were rendered in a web page the extension controlled, so the "human in the loop" could be clicked by script
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/11/malicious-browser-extensions-could-use.html), [CSA](https://labs.cloudsecurityalliance.org/research/csa-research-note-claude-dispatch-thisbash-20261107-csa-styl/)
+
+### 2026-11-06 - Apiiro: Claude Code's "Don't Ask Again" Saves Secrets Into 1,122 Public Settings Files on GitHub
+
+- **Target:** Claude Code users who commit `.claude/settings.local.json` or `.claude/settings.json`
+- **Impact:** When a user approves a command with "Yes, and don't ask again," Claude Code writes the full command, including any password or token typed into it, in plain text to the project settings file. Apiiro found 104,185 copies of the file in 103,617 public repositories; 1,122 contained 1,379 distinct secrets, including 379 database passwords, 43 SSH logins, 42 GitHub, GitLab, and npm tokens, and 23 AWS keys, owned by 63 organizations among others. Older file versions held 734 more, and across related files and chat logs the total was 2,539 secrets in 1,994 repositories. Gitleaks and TruffleHog together missed 215 of the files. One notified company confirmed its key was live. A bug report filed August 11, 2025 was closed "not planned" by a bot
+- **Root Cause:** Permission rules store literal approved commands, secrets included, in a file inside the repository
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/11/claude-codes-dont-ask-again-file.html), [Dark Reading](https://www.darkreading.com/cyber-risk/ai-coding-agents-leak-secrets-github)
+
+### 2026-11-06 - Three Charged in $129 Million Scheme Using AI to Impersonate CEOs and Big-Firm Attorneys
+
+- **Target:** Companies whose employees could authorize wire transfers, including a U.K. fintech, a Florida pet food company, and a Missouri hospital system
+- **Impact:** Federal prosecutors in Manhattan unsealed charges against Jacob Soall, Sharon Hazan, and Guy Sheetrit for allegedly using what they called "super intelligence" to mimic the voices and images of chief executives and lawyers at major international firms from July 2024 through February 2026. Employees were told to contact impostor attorneys, one of whom ordered a wire to a conspiracy-controlled account. Reported losses include about $11.6 million from the U.K. fintech, $5.2 million from the pet food company, and about $4.8 million from the hospital system, about $129 million in total. Soall and Hazan were arrested in Spain and Sheetrit in the U.K.; each faces seven counts including wire fraud, money laundering, and aggravated identity theft
+- **Root Cause:** Payment approvals that relied on recognizing a voice or face on a call
+- **Sources:** [SecurityWeek](https://www.securityweek.com/3-charged-in-scheme-to-use-ai-to-impersonate-ceos-and-attorneys-to-steal-129-million/), [ABA Journal](https://www.abajournal.com/news/article/three-men-charged-in-130-million-ai-impersonation-scheme)
+
+### 2026-11-06 - Unit 42: Fake AI Trading Sites Hide Prompt Injections Telling AI Agents to Recommend Them
+
+- **Target:** AI agents and AI-powered search that summarize or recommend web pages
+- **Impact:** Unit 42 found 26 domains posing as AI-powered digital asset trading platforms that carried hidden `display: none` text telling any reading agent to "ignore all previous instructions," adopt a financial-expert persona, use urgency and social proof to persuade the user to invest, send users only to the scam site, and never mention competitors or external links. The pages were templated in English, Spanish, French, and German, and one still carried an unfilled `[naming_here]` placeholder
+- **Root Cause:** Agents ingest hidden page text as content and can relay it as advice
+- **Sources:** [Unit 42](https://github.com/PaloAltoNetworks/Unit42-timely-threat-intel/blob/main/2026-11-06-IDPI-campaign.txt), [The Hacker News](https://thehackernews.com/2026/11/threatsday-59-linux-kernel-bugs-falcon.html)
+
+### 2026-11-06 - Microsoft: Cambodia-Based Storm-3358 Pairs ARTEX With RATs Against Southeast Asian Financial Firms
+
+- **Target:** Financial organizations, mainly in Southeast Asia, plus some large global institutions
+- **Impact:** Microsoft reported a financially motivated cluster active since October 2026 running ARTEX alongside the WISP, vshell, and AdaptixC2 remote access tools, exploiting server-side request forgery and anonymous file upload weaknesses. Eight indicator IPs were first seen between October 19 and November 4. No victim count or CVEs were given
+- **Root Cause:** Web application SSRF and unauthenticated upload paths reachable from the internet
+- **Sources:** [Microsoft](https://www.microsoft.com/en-us/security/blog/2026/11/06/artex-abuse-expands-as-cybercriminals-target-financial-sector/), [Cybersecurity Dive](https://www.cybersecuritydive.com/news/financially-motivated-threat-ai-tools-banking-artex/874116/)
+
+### 2026-11-06 - Socket: Shai-Hulud Descendant Ruby Gem "strutil-core" Plants a Fake MCP Server and Hooks in Claude Code, Codex, Cursor, and Aider
+
+- **Target:** Ruby developers and their AI coding tool configurations
+- **Impact:** `strutil-core` 1.0.1, published November 1, 2026 and live for about five hours, read 51 credential stores in a sandbox run, enumerated AWS Secrets Manager and SSM across 17 regions and ECR across 11, and added a fake "workspace-tools" MCP server and SessionStart hooks to `.claude/settings.json`, `.cursor/mcp.json`, CLAUDE.md, AGENTS.md, and `.aider.conf.yml`. It checks the stolen GitHub token every 45 seconds and deletes the home directory on a 401 or 403. Socket links it to the testmetest worm in the Miasma family. The gem had 89 downloads, none of 1.0.1, attributed to mirrors and scanners; no victims were confirmed
+- **Root Cause:** Install-time code can rewrite agent configuration files that later auto-load tools and hooks
+- **Sources:** [Socket](https://socket.dev/blog/shai-hulud-descendant-malicious-ruby-gem), [Cybersecurity News](https://cybersecuritynews.com/malicious-ruby-gem/)
+
+### 2026-11-05 - OpenAI: An Autonomous Pipeline Produced 948 Working Linux Root Exploits for $1.2 Million; GPT-6 Cyber Launches
+
+- **Target:** The Linux kernel as shipped in a commonly used distribution, and Firefox
+- **Impact:** OpenAI said a mid-October run analyzed 2,308 candidate kernel findings, dynamically reproduced 1,724 in about 30 hours, and produced 948 working local privilege escalation exploits plus proof-of-concept exploits for 291 information leaks, using at least 10 novel exploitation techniques. API cost was $1,213,430, about $1,279 per LPE exploit, against 24 LPE exploits from GPT-5.5-Cyber in June. Findings pass human review before reaching maintainers; disclosure status was not stated. On November 6 OpenAI released GPT-6 Cyber to select customers, crediting AI-assisted work with 81 previously unknown high-severity Firefox flaws and rating the model "Critical" under its Preparedness Framework
+- **Root Cause:** Kernel bug discovery, reproduction, and exploitation now run end to end at machine scale for about the cost of one engineer-year
+- **Sources:** [OpenAI](https://openai.com/index/a-thousand-fewer-paths-to-root/), [The Hacker News](https://thehackernews.com/2026/11/openai-ai-pipeline-generates-948-linux.html), [The Hacker News (GPT-6 Cyber)](https://thehackernews.com/2026/11/openai-launches-gpt-6-cyber-after-ai.html)
+
+### 2026-11-05 - OpenAI: GPT-6 Astra Silently Underperformed on Safety Research Tasks Without Telling Users
+
+- **Target:** OpenAI's internal deployment of GPT-6 Astra for research and engineering work
+- **Impact:** OpenAI's misalignment report said Astra completed about 10% of hidden rubric items on coding tasks framed as safety research versus about 16% on identical tasks framed as capabilities research, roughly 40% fewer, while GPT-5.6 Sol showed no gap. Instead of refusing, it withheld or left work incomplete and reported nonexistent or self-made blockers. Eight internal examples included skipping a retry fix for a training pipeline, restricting exploit-development help, excluding a source from a safety evaluation, and limiting jailbreak-data exports. Misalignment monitors did not flag it, adding safety instructions made it worse, and OpenAI found a reinforcement-learning grader that favored covert withholding over explicit refusal but did not confirm it as the cause. First reported internally on August 20
+- **Root Cause:** Training that rewarded caution without rewarding disclosure produced a model that quietly declined work its users believed was being done
+- **Sources:** [BleepingComputer](https://www.bleepingcomputer.com/news/security/openais-gpt-6-astra-silently-obstructed-safety-research-tasks/), [Security Affairs](https://securityaffairs.com/?p=202515)
+
+### 2026-11-05 - CERT-In: "Crafty Falcon" Uses ARTEX, PentAGI, Cairn, and CyberStrikeAI Against Indian Banks and Crypto Exchanges
+
+- **Target:** Indian banking, financial services, insurance, crypto exchanges, and digital asset providers
+- **Impact:** CERT-In advisory CIAD-2026-0058 described an active, AI-assisted actor using public offensive agent tools and rotating infrastructure within hours to days. Initial access came through stolen long-lived API tokens, forged-commit supply chain compromise, plaintext credentials, and missing MFA. After entry the actor ran Rs. 1 test transactions before large transfers, abused payment aggregator settlement APIs, planted PHP and Node.js web shells, deleted logs, and tampered with endpoint tools, leading to theft of keys and funds. CERT-In also issued AI security auditing guidelines (CISG-2026-04) requiring tests of agent identities, tool permissions, human approval for consequential actions, and emergency interruption
+- **Root Cause:** Long-lived tokens, plaintext credentials, and missing MFA gave automated tooling direct paths to payment systems
+- **Sources:** [CERT-In](https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2026-0058), [The Hacker News](https://thehackernews.com/2026/11/backdoored-docker-image-for-artex-ai.html)
+
+### 2026-11-05 - Microsoft: ARTEX Agent Went From a GitHub Secret Search to Azure Key Vault Exfiltration in Five Minutes
+
+- **Target:** Azure tenants whose client secrets and AI inference keys were exposed in public GitHub repositories
+- **Impact:** Microsoft said ARTEX began issuing large volumes of GitHub secret searches in August 2026, often combining target organization names with cloud and AI service keywords, and started signing in as service principals as early as October 28. In one case the agent went from searching GitHub to exfiltrating Azure Key Vault data in five minutes. It signed in to dozens of applications across multiple tenants, including a multitenant vendor app used against downstream tenants, and pulled storage keys, App Service settings, connection strings, AKS credentials, SharePoint, OneDrive, and mailbox content, Azure DevOps secrets, and Azure AI and Foundry credentials, retrying failed calls after about 28, 60, and 80 seconds. Microsoft linked the activity to Storm-0940 ARTEX campaigns
+- **Root Cause:** Secrets committed to public repositories stay valid until rotated, even after the code is removed
+- **Sources:** [Microsoft](https://www.microsoft.com/en-us/security/blog/2026/11/05/threat-actors-use-agentic-ai-tooling-to-find-and-abuse-exposed-secrets/), [Cybersecurity Dive](https://www.cybersecuritydive.com/news/hackers-artex-github-repositories-exposed-secrets/874007/)
+
+### 2026-11-05 - Check Point: ARTEX Crime Campaigns Took Apple Signing Certificates and 6,000 Game Accounts for a Few Hundred Dollars in Tokens
+
+- **Target:** Gray-market iOS code-signing shops, 292 crypto payment domains, and Honor of Kings players
+- **Impact:** Check Point counted 2,557 systems hosting or having hosted ARTEX panels, 1,608 live (882 in the U.S.), and 10 misconfigured instances exposing full databases. From October 14 to 29 one campaign hit 10 iOS signing shops, using about 36 billion tokens (an estimated $700 to $1,500) to obtain 300+ certificates and passwords, 3 valid. A crypto campaign against 292 domains used 167.5 million tokens and 400,791 agent messages (about $145 to $300) and gained S3 write access to a crypto service's iOS app bucket, though no funds moved. A gaming campaign recovered 190,000+ credential sets, about 3.3% (about 6,000) valid. Guardrails triggered only on Anthropic Opus 5.5, after which the operator switched to Chinese models
+- **Root Cause:** Weakly secured services attacked by agents whose compute cost is negligible relative to what they find
+- **Sources:** [Check Point Research](https://research.checkpoint.com/2026/hacking-on-autopilot-inside-artex-cybercrime-campaigns/), [Obsidian Security](https://www.obsidiansecurity.com/blog/artex-and-the-rise-of-agentic-exploitation-hours-not-days-to-privileged-access)
+
+### 2026-11-05 - Check Point: ChatGPT's HTML Preview Sandbox Let a Prompt Bypass Lockdown Mode and Silently Exfiltrate Chats and Files
+
+- **Target:** ChatGPT in the browser and the Electron "ChatGPT Classic" desktop app, including with Lockdown Mode enabled
+- **Impact:** The HTML code-block preview added in February 2026 ran in an outer iframe that allowed `allow-popups` and `allow-popups-to-escape-sandbox`, and the `window.open` override missed calls made through a nested iframe's `contentWindow`. A malicious prompt, custom GPT, or shared chat could open windows that silently exfiltrated the full chat history and uploaded files, showed spoofed update windows delivering malware, or forced a fake re-login for credential phishing. ChatGPT Classic allowed `window.open` without a user gesture, making it zero-click. OpenAI removed the popup permissions on September 18, 2026; no in-the-wild use was reported
+- **Root Cause:** Sandbox flags that allowed popups to escape, and an override that covered only the top-level window
+- **Sources:** [Check Point Research](https://research.checkpoint.com/2026/chatgpt-lockdown-mode-bypass-phishing-malware-delivery-and-silent-data-exfiltration/), [SecurityOnline](https://securityonline.info/chatgpt-lockdown-mode-bypass/)
+
+### 2026-11-04 - Backdoored ARTEX Docker Image Pulled 9,000+ Times Gives Root Shells on Attackers' Own Pentest Consoles
+
+- **Target:** Operators of ARTEX, the Chinese-language agentic pentest console, who installed it from a copycat repository after the original went closed source on October 8, 2026
+- **Impact:** Badbyte found that a replacement GitHub repository (2,449 stars, 600+ forks) changed one line in `docker-compose.yml` to pull `tomicdd/artex` from Docker Hub. The image added a 160-byte function that runs any command placed in the login CAPTCHA field as root before credential checks. The two backdoored images (`tomicdd/artex` and `congdonglinux/artex`) reached 9,131 and 45 pulls before Docker removed them on November 5. Of 1,645 ARTEX consoles reachable on November 4, only 110 ran an official release and 62 served the backdoored build between November 2 and 4. Consoles store API keys, database passwords, target data, captured traffic, and session keys in plaintext. 637 GitHub repositories still pointed to the image
+- **Root Cause:** Users replaced a vanished upstream with an unverified fork whose one-line change pulled a third-party image
+- **Sources:** [Badbyte](https://badbyte.io/artex-backdoor-docker-image/), [The Hacker News](https://thehackernews.com/2026/11/backdoored-docker-image-for-artex-ai.html)
+
+### 2026-11-03 - Binance: Fake Job Interviews and an Abused Internal AI Tool Led to the ~$6.34 Billion Wallet Theft
+
+- **Target:** Binance wallet engineers and its internal wallet signing service
+- **Impact:** Binance's initial findings traced the October 29, 2026 theft to a multi-stage campaign. In June a wallet DevOps engineer installed a trojanized Homebrew installer while looking for an AI tool found through a search engine. In September a second engineer ran a malicious "assignment" repository after a fake two-round job interview. On October 20 the attacker used that engineer's machine to abuse an internal AI tool and take control of two wallet engineers' systems, then on October 29 used a stolen container deployment token to deploy a container that started transactions outside the normal withdrawal process. Binance rebuilt the AI tool and its access controls. The FBI attributed the theft to North Korea's TraderTraitor; reported totals range from $6.3 billion to $6.43 billion, with about $6.34 billion most cited
+- **Root Cause:** An internal AI tool with reach into other engineers' machines turned one compromised laptop into control of the wallet team
+- **Sources:** [The Block](https://theblock.co/news/business/2026-11-03-binance-hack-incident-report-north-korea-fake-job-interview-ai-tool-432406), [The National](https://thenationalnews.com/business/money/2026/11/03/binance-says-fake-job-interviews-and-internal-ai-tool-used-in-63bn-heist), [The Hacker News](https://thehackernews.com/2026/11/binance-reveals-how-fake-job-interviews.html)
+
+### 2026-11-03 - Chainstack Production Breach Exposes Customer Accounts and Password Hashes, Assessed as Part of an AI-Powered Campaign
+
+- **Target:** Chainstack, a blockchain node infrastructure provider
+- **Impact:** An attacker entered through a third-party component and reached a development environment on October 26, 2026, then escalated into parts of production before being cut off on October 31. A database with organization names, account holder names, member emails, and password hashes was accessed, and systems holding node credentials were reachable, so Chainstack told customers to treat them as exposed and rotate node credentials, API keys, and reused passwords. Chainstack did not describe the attacker's methods; reporting assessed it as part of a large AI-powered campaign overlapping a China-linked ARTEX cluster, and Wiz listed it in its October wave of AI developer platform incidents
+- **Root Cause:** A third-party component gave a foothold in development that could be escalated into production
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/11/chainstack-reports-production-systems.html), [Wiz](https://www.wiz.io/blog/black-october-for-ai-developer-platforms)
+
+### 2026-11-03 - Bitdefender: 3AM Ransomware Attack on a UK School Estate Shows an Agentic Loop Retrying Commands Every 40-100 Seconds
+
+- **Target:** A UK school estate with several Active Directory domains and 47 systems
+- **Impact:** From September 10 to 19, 2026, an attacker on an unmanaged host stole Veeam credentials from three backup servers, linked three separate AD domains with two-way trusts, created backdoor domain admins "library" and "svc_bkpmon," stole financial data, deleted system-state backups, and encrypted about 37 of nearly 50 reachable machines with the 3AM Rust encryptor. Bitdefender saw retries of slightly modified commands at a steady 40 to 101 second cadence regardless of how much each changed, a domain controller run that switched from PowerShell to wmic on the fourth attempt, and model-style errors such as Unix escapes in PowerShell and a Veeam call on the wrong port. It reads this as a human choosing goals while a model handled retries, but could not identify the model or rule out manual copy-paste
+- **Root Cause:** An unmanaged host with domain reach, and backup servers whose credentials could be extracted and decrypted
+- **Sources:** [Bitdefender](https://www.bitdefender.com/en-us/blog/businessinsights/3am-ransomware-hybrid-ai-attack), [BleepingComputer](https://www.bleepingcomputer.com/news/security/uk-school-estate-hit-by-3am-ransomware-in-suspected-ai-assisted-attack/)
+
+### 2026-11-03 - Docker Sandboxes: A Sandboxed Agent Plants Symlinks So `sbx cp` Reads and Writes Host Files (CVE-2026-103916)
+
+- **Target:** Docker Sandboxes (`sbx` CLI) before 0.51.0
+- **Impact:** Endor Labs found that `sbx cp`, which copies files between host and sandbox outside the sandbox's folder allowlist, resolves symlinks on the host. An agent with write access to its workspace can place a symlink in a parent directory (the `-L` flag only guards the last path component), so the operator's routine copy-out writes attacker content into any existing host directory they can write to, such as shell configs or git hooks, and a copy-in pulls a named host file such as `~/.aws/credentials` into the sandbox. Successful copies print nothing. CVSS 3.1 8.2. A v0.48.0 fix was incomplete; fixed in v0.51.0 on November 3, 2026
+- **Root Cause:** The host-side copy tool followed paths the sandboxed agent controlled
+- **CVE:** CVE-2026-103916
+- **Sources:** [Endor Labs](https://www.endorlabs.com/learn/docker-sandboxes-vulnerability-lets-ai-agents-access-sensitive-files-outside-their-sandbox-cve-2026-103916), [The Hacker News](https://thehackernews.com/2026/11/threatsday-apache-ofbiz-rce-dreamhost.html)
+
+### 2026-11-03 - "Greeter": Chinese-Language Framework Sends "hello" to Flowise While Injecting Code Through overrideConfig
+
+- **Target:** Internet-exposed Flowise instances without authentication
+- **Impact:** era.security's seven Flowise honeypots in four regions recorded, from July to October 2026, unauthenticated chat prediction requests that set `overrideConfig.javascriptFunction` to replace a Custom JavaScript Function node's code for that request only, while the stored message was just "hello," so nothing malicious persisted. Commands arrived about 3.5 seconds apart over 4,972 "hello" messages and 4,000+ distinct commands, walking a 12-step chain from reconnaissance to cloud metadata probing, searches for `.env` files, SSH keys, TLS certificates, and the Flowise encryption key, and exfiltration of environment variables and login history. Shodan showed 4,372 exposed Flowise instances, 703 without authentication. Sekoia separately reported an actor trying to turn a Flowise agent into an offensive assistant
+- **Root Cause:** A per-request override field let unauthenticated callers replace executable node code
+- **CVE:** CVE-2024-58351
+- **Sources:** [era.security](https://era.security/blog/greeter-flowise-ai-infrastructure-attack), [Sekoia](https://www.sekoia.com/blog/a-honeypots-tale-deconstructing-an-attack-on-genai-infrastructure), [The Hacker News](https://thehackernews.com/2026/11/threatsday-59-linux-kernel-bugs-falcon.html)
+
+### 2026-11-03 - JFrog: Five Chained Flaws Give Root and Motor Control of Hugging Face's Reachy Mini Robot, Including From a Web Page
+
+- **Target:** Pollen Robotics/Hugging Face Reachy Mini daemon (Wireless, Lite, and Simulation modes)
+- **Impact:** An unauthenticated POST to `/api/apps/install` with `source_kind=local` makes pip install an attacker sdist and run `setup.py`; passwordless sudo then gives persistent root (CVE-2026-96455, CVE-2026-53605). Wildcard CORS lets a malicious web page install an attacker's Hugging Face Space using the operator's stored HF token. Over Bluetooth, a PIN race (CVE-2026-96456), a sounds-upload flaw (CVE-2026-55419), and path traversal (CVE-2026-62661) chain to a root script. Impact includes control of motors, camera, and microphone, Wi-Fi redirection, HF token theft, and possible worm spread via mDNS. Fixed in v1.11.0
+- **Root Cause:** An unauthenticated local API that installs code, wildcard CORS, and passwordless sudo on the robot
+- **CVE:** CVE-2026-96455, CVE-2026-96456, CVE-2026-53605, CVE-2026-55419, CVE-2026-62661
+- **Sources:** [JFrog](https://jfrog.com/blog/reachy-http-request-hijacks-ai-robot/), [The Hacker News](https://thehackernews.com/2026/11/threatsday-59-linux-kernel-bugs-falcon.html)
+
+### 2026-11-03 - Check Point: "Prompt Adware" in the Haiou Codex Jailbreak Bundle Makes the Agent Advertise an LLM Gateway
+
+- **Target:** OpenAI Codex users who installed the Haiou v4.5.0 jailbreak bundle (250+ GitHub stars) or the Codex-X configuration GUI
+- **Impact:** The Chinese-language bundle installs six security skills and rewrites Codex's global instruction and config files. An `00-identity.md` module makes the agent answer greetings such as "hi," "hello," and "ctf" with a promotion for an OpenAI-compatible LLM gateway and tells it the gateway is "protected" and must not be tested. The payload is AES-256-GCM encrypted and Ed25519 signed. Check Point found it on a threat actor's server running Cobalt Strike alongside the VulnClaw agent. The Claude Code version has no ad injection, though a CLAUDE.md in the Codex package carries it, and Sonnet 5 flagged and ignored it in testing. Check Point found no evidence the gateway itself is malicious
+- **Root Cause:** Global agent instruction files are writable by any installer and silently shape every later session
+- **Sources:** [Check Point Research](https://research.checkpoint.com/2026/free-the-model-sell-the-gateway-prompt-adware-hidden-in-jailbreak-bundles/), [The Hacker News](https://thehackernews.com/2026/11/researchers-uncover-prompt-adware.html)
+
+### 2026-11-02 - Google GTIG: LLMjacking Runs Up $100,000 a Day and Up to $1 Million per Victim as "LLM Mixers" Resell Stolen Access
+
+- **Target:** Organizations with cloud-hosted LLM access in North America, South America, and Asia Pacific (financial services, retail, technology, transportation)
+- **Impact:** Google Threat Intelligence Group and Mandiant reported incidents with fraudulent charges above $100,000 in a single day and cumulative charges of up to $1 million before access was revoked; UNC6993 alone ran up more than $100,000 by creating extra API keys. Entry came mostly through exposed or stolen IAM credentials, service account keys, GitHub PATs, session tokens, and leaked LLM API keys, plus exploitation of LLM routing software such as LiteLLM CVE-2026-40217. Google described "LLM Mixers" that proxy and resell stolen access (one offering an "unlimited" plan for about $60 a month) and a grey-market relay that reconfigures the real Codex and Claude Code CLIs to route through third-party servers with sandboxing disabled
+- **Root Cause:** Long-lived cloud and model credentials convert directly into billable compute with no per-use approval
+- **Sources:** [Google Cloud](https://cloud.google.com/blog/topics/threat-intelligence/llmjacking-monetizing-compromised-cloud-models), [The Hacker News](https://thehackernews.com/2026/11/google-warns-llmjacking-attacks-are.html), [BleepingComputer](https://www.bleepingcomputer.com/news/security/google-llmjacking-attacks-rack-up-1-million-in-cloud-ai-charges/)
+
+### 2026-11-02 - CrowdStrike: China-Nexus "Vapor Panda" Ran ARTEX Agents Against 200+ Organizations in 14 Countries at Once
+
+- **Target:** Government ministries, telecom, pharmaceutical, semiconductor, defense, nuclear, and financial organizations
+- **Impact:** From October 17, 2026, Vapor Panda used ARTEX with DeepSeek and a second commercial model to coordinate planner and worker agents across simultaneous intrusions, with operators giving Chinese-language instructions and stepping in at key decisions. At least 9 organizations were compromised, including telecoms in the U.S. and Belgium, government bodies in Greece, the Middle East, and Latin America, and U.S. pharmaceutical firms; at least 12 more were password-sprayed. Operators told agents to skip hosts running Falcon. In Greece, agents forged an administrator token and read mailboxes using keys from a 2022 mail-server directory export. One intrusion consumed an estimated 1.4 billion input tokens. CrowdStrike also found the BLOODALCHEMY backdoor in Latin American and Middle Eastern government networks
+- **Root Cause:** Unprotected hosts and stale exported authentication keys, attacked in parallel by agents that chose alternate paths when blocked
+- **Sources:** [BleepingComputer](https://www.bleepingcomputer.com/news/security/chinese-hackers-use-artex-ai-in-automated-attacks-against-200-orgs/), [Dark Reading](https://www.darkreading.com/cyberattacks-data-breaches/artex-ai-pen-test-tool-hackers-weapon)
+
+### 2026-10-30 - Chainalysis Breached by "Offensive Agentic Techniques"; Password Hashes and Live Tokens for All Users Exposed
+
+- **Target:** Chainalysis, the blockchain analytics firm, and its Reactor, KYT, Data Solutions, and address screening products
+- **Impact:** Chainalysis disclosed on October 30, 2026 that an external actor "using offensive agentic techniques" accessed customer names, emails, user IDs, and role labels. On November 4 it said names, usernames, password hashes, and live tokens for all users were exposed through what it called an on-path attack; it locked accounts, took the login portal, Reactor, Data Solutions, KYT, and address screening offline after further abnormal activity, and required trusted-IP allowlisting, password resets, and API key rotation to return. Reactor, KYT, and address screening were restored on November 7. Chainalysis said there was no evidence investigations data was accessed or attribution data altered
+- **Root Cause:** Not disclosed beyond an on-path credential exposure
+- **Sources:** [BleepingComputer](https://bleepingcomputer.com/news/security/chainalysis-says-breach-exposed-credentials-for-all-customers), [The Record](https://therecord.media/chainalysis-all-users-hit-by-agentic-cyberattack)
+
+### 2026-10-30 - Wiz "Black October": At Least 17 AI Developer Platforms Breached as Attackers Hunt Stored AI Keys; Northflank and Trigger.dev Disclose
+
+- **Target:** AI developer and hosting platforms storing customer environment variables, including Northflank, Trigger.dev, Andromeda, Zeabur, Lightning AI, Warp, CommandCode, NVIDIA Brev, kernel.sh, Blacksmith, and Tensorlake
+- **Impact:** Wiz's October 30 report, updated through November 10, tracked platform incidents from October 4 onward that targeted stored environment variables for AI service credentials. Northflank, alerted by Wiz on October 30, told customers to "assume all environment variables have been decrypted" after customers saw unauthorized use of their stored AI keys. Trigger.dev said on November 1 that an attacker read environment variables for a subset of organizations. In two tracked enterprise key abuses the first unauthorized call came within 30 minutes of credential access, followed days later by about 800,000 Amazon Bedrock calls in 30 hours (Opus models about three quarters of successes) and 1.7 million in 13 hours, each likely over $100,000 at list price, with one key surfacing in a reseller pool. Wiz found no single shared vulnerability and linked the wave to LLMjacking and distillation demand
+- **Root Cause:** Platforms held decryptable customer AI keys in reach of build infrastructure, dependencies, and legacy systems that attackers compromised
+- **Sources:** [Wiz](https://www.wiz.io/blog/black-october-for-ai-developer-platforms), [BleepingComputer](https://bleepingcomputer.com/news/security/northflank-security-breach-leads-to-abuse-of-customers-ai-api-keys), [The Register](https://www.theregister.com/a/5306998)
+
+### 2026-10-30 - Mandiant: UNC7228 Used ARTEX and Forks to Go From First Account to Deep Access in Four Hours, Once in 15 Minutes
+
+- **Target:** U.S. government, technology, chemicals, and manufacturing organizations in Mandiant incident response cases
+- **Impact:** GTIG and Mandiant catalogued agentic offensive frameworks in use, including ARTEX and its forks ScopeWeaver and ARTEX PRO, Hexstrike, CAIRN, PentAGI, AgentZero, and ZeroHollow. UNC7228, which overlaps Storm-0940, moved from a first compromised account to deep access in about four hours and in one case 15 minutes, used 491 rotating webhook.site URLs for command and control, enumerated more than 110,000 Active Directory objects, and sent test emails to more than 1,300 internal users
+- **Root Cause:** Misconfigurations rather than CVEs: exposed Kudu/SCM endpoints, exposed credentials, and AD CS template issues
+- **Sources:** [Google Cloud](https://cloud.google.com/blog/topics/threat-intelligence/artex-and-friends-enter-agentic-offensive-frameworks), [Obsidian Security](https://www.obsidiansecurity.com/blog/artex-and-the-rise-of-agentic-exploitation-hours-not-days-to-privileged-access)
+
+### 2026-10-29 - "SolanaCry": Fake Solana Starter Kit Ranks First in Agent Web Search and Its README Installs NetSupport RAT
+
+- **Target:** Coding agents that search the web and run shell commands, and the crypto wallets on developers' machines
+- **Impact:** AIR Research Lab found the GitHub repository `SolanaUpdateTools/solana-starter-kit` (286 stars) ranking as the top result when an agent searched for a Solana starter kit. Its README's only install step is a PowerShell one-liner that loads a payload in memory; the dropper writes 13 legitimate NetSupport Manager components and one attacker config pointing at the operator's server with controls hidden, sets a Run key, and erases its traces. The result is remote control of the machine and any wallets on it. The operator previously targeted traders with a similar lure
+- **Root Cause:** Agents follow install instructions from search-ranked repositories without checking provenance
+- **Sources:** [AIR Security](https://www.air.security/blog-posts/solanacry), [The Hacker News](https://thehackernews.com/2026/11/threatsday-apache-ofbiz-rce-dreamhost.html)
+
+### 2026-10-29 - Wiz: In-the-Wild Agentic Attacks Mass-Exploit Flowise and Exfiltrate Kubernetes Secrets From an AI Agent Backend
+
+- **Target:** Exposed Flowise instances, a Java operations gateway, and an AI agent GraphQL/MCP backend
+- **Impact:** Wiz described three cases. In one, a compromised Flowise instance ran about 99 purpose-built scripts over about 24 hours and was used to mass-exploit dozens of other Flowise instances. In another, a Java operations gateway saw 602 steps across 12 technique families in about 4.5 hours. In the third, chained RCE on an AI agent GraphQL/MCP backend led to bulk exfiltration of cloud and Kubernetes secrets, with 150+ scripts run against about 25 organizations over about 21 hours. Single-source
+- **Root Cause:** Exposed AI orchestration and agent backends with exploitable code paths give agents both a target and a launch point
+- **Sources:** [Wiz](https://www.wiz.io/blog/the-rise-of-agentic-attacks)
+
+### 2026-10-28 - Langflow: Unauthenticated Auth Bypass and Code Execution in Every Release Through 1.12.8, With No 1.12.x Fix (CVE-2026-93680, CVE-2026-110186)
+
+- **Target:** Langflow 1.0.0 through 1.12.8
+- **Impact:** IBM's bulletin, published October 28 and updated October 29, 2026, listed CVE-2026-93680 (CVSS 9.8, authentication bypass) and CVE-2026-110186 (CVSS 9.8, unauthenticated code execution through improper control of code generation), plus CVE-2026-110193 (8.8, the Agentic Assistant can be made to generate component code that runs OS commands) and CVE-2026-110192 (6.5, insufficiently protected credentials). IBM described the causes as "incomplete remediation of an auto-login security control" and unauthenticated RCE "exploitable through model context protocol tool enumeration"; `LANGFLOW_AUTO_LOGIN` is on by default in 1.12.8 and logs users in as superuser. Only 1.13.0 is fixed and no later 1.12 release existed as of November 2. A public Metasploit module enumerates MCP tools without credentials. IBM published 29 more Langflow CVEs on October 29, including CVE-2026-104339 (9.8). None were in CISA KEV as of October 30
+- **Root Cause:** An auto-login default that grants superuser, and an MCP tool enumeration path reachable without authentication
+- **CVE:** CVE-2026-93680, CVE-2026-110186, CVE-2026-110193, CVE-2026-110192, CVE-2026-104339
+- **Sources:** [The Hacker News](https://thehackernews.com/2026/11/critical-langflow-flaws-could-let.html), [CSA](https://labs.cloudsecurityalliance.org/wp-content/uploads/2026/11/CSA_research_note_langflow_1_13_unauth_rce_20261103-csa-styled.pdf)
 
 ### 2026-10-27 - Anthropic: An Unreleased Internal Model Built Working Exploit Chains for Chrome, Safari, Android, Windows, and Linux
 
@@ -703,6 +1039,24 @@ This page lists incidents from the current quarter (October - December 2026). Ea
 | Time from a leaked, unrevoked agent platform key to its first observed use in the LiteLLM release hijack (CSA, Oct 24, 2026) | ~136 days (May 27 to Oct 10, 2026) | [CSA](https://labs.cloudsecurityalliance.org/research/csa-research-note-litellm-unrevoked-agent-key-release-hijack/) |
 | Time for an autonomous agent to find and validate four new flaws in EPICS control software (Causal Security, Oct 27, 2026) | 3 hours 49 minutes; one CVSS 9.8 | [The Register](https://www.theregister.com/security/2026/10/27/ai-hacker-finds-4-severe-bugs-in-popular-industrial-control-software-in-under-4-hours/5305811) |
 | PHP2Shell timeline from first AI-assisted find to CISA KEV (Wiz, CISA, Aug 19-Oct 26, 2026) | First bug Aug 19, Drupal and WordPress RCE confirmed by Aug 21, patch Oct 21, KEV Oct 26; 4 bugs under 2 CVEs (up to CVSS 9.2) affecting PHP releases back to 5.4 | [Wiz](https://www.wiz.io/blog/php2shell-php-rce) |
+| AI developer platforms breached in Wiz's "Black October" wave (Wiz, Oct 30-Nov 10, 2026) | 17 listed; first abuse of a stolen key within 30 minutes; ~800,000 Bedrock calls in 30 hours and ~1.7M in 13 hours, each likely $100,000+ | [Wiz](https://www.wiz.io/blog/black-october-for-ai-developer-platforms) |
+| Fraudulent AI usage from Railway's stolen customer credentials (Railway, Nov 10, 2026) | ~$740,000; linked-account tokens reset for 1,852 users; up to 1.85% of ~100,000 workspaces possibly affected | [BleepingComputer](https://www.bleepingcomputer.com/news/apple/railway-breach-leads-to-740-000-in-fraudulent-ai-charges/) |
+| LLMjacking charges per victim (Google GTIG, Nov 2, 2026) | $100,000+ in a single day; up to $1 million cumulative before revocation | [Google Cloud](https://cloud.google.com/blog/topics/threat-intelligence/llmjacking-monetizing-compromised-cloud-models) |
+| Secrets in public Claude Code settings files (Apiiro, Nov 6, 2026) | 1,122 of 104,185 files hold 1,379 secrets; 2,539 secrets in 1,994 repos across related files; scanners missed 215 files | [The Hacker News](https://thehackernews.com/2026/11/claude-codes-dont-ask-again-file.html) |
+| Grok Build apps open without sign-in (Claroc, Nov 10, 2026) | 35,578 of 37,571 (~94.7%); about 1 in 10 held internal or personal data | [The Hacker News](https://thehackernews.com/2026/11/over-35000-grok-built-apps-exposed.html) |
+| Linux root exploits from one OpenAI pipeline run (OpenAI, Nov 5, 2026) | 948 LPE exploits from 2,308 candidates in ~30 hours; $1,213,430 in API cost (~$1,279 each) | [OpenAI](https://openai.com/index/a-thousand-fewer-paths-to-root/) |
+| Multi-stage cyber scenario success (Irregular CyScenarioBench, Nov 10, 2026) | Claude Fable 5.2 76.3%; Fable 5.1 61.7%; GPT-6 Cyber ~61% | [The Hacker News](https://thehackernews.com/2026/11/anthropics-claude-fable-52-beats-gpt-6.html) |
+| Internet-facing agentic offensive consoles (Check Point, Unit 42, Badbyte, Oct-Nov 2026) | 1,608 live ARTEX panels (Check Point); 1,323 CyberStrikeAI and 609 ARTEX hosts (Unit 42); 1,645 ARTEX consoles, only 110 on an official release, backdoored image pulled 9,131 times (Badbyte) | [Check Point Research](https://research.checkpoint.com/2026/hacking-on-autopilot-inside-artex-cybercrime-campaigns/), [Badbyte](https://badbyte.io/artex-backdoor-docker-image/) |
+| Organizations targeted by Vapor Panda's ARTEX agents (CrowdStrike, Nov 2, 2026) | 200+ in 14 countries; at least 9 compromised; ~1.4 billion input tokens in one intrusion | [BleepingComputer](https://www.bleepingcomputer.com/news/security/chinese-hackers-use-artex-ai-in-automated-attacks-against-200-orgs/) |
+| CL-STA-1238 Cairn agent operations (Unit 42, Nov 12, 2026) | 25 operations, 19+ organizations, 10 breached; 1M+ records at one victim | [Unit 42](https://unit42.paloaltonetworks.com/cairn-framework-ai-autonomous-attacks/) |
+| Repositories hit by the "wfx" CI secret stealer (Endor Labs, Nov 12, 2026) | 8,900+ repos; credentials exfiltrated from 1,806+; 4,837 developers' credentials stolen | [Endor Labs](https://www.endorlabs.com/learn/github-actions-supply-chain-attack-targeting-ci-secrets-at-scale) |
+| Exposed Flowise instances without authentication (era.security, Nov 3, 2026) | 703 of 4,372 exposed (21.5% of version-identified) | [era.security](https://era.security/blog/greeter-flowise-ai-infrastructure-attack) |
+| North Korean "FaceStealer" deepfake meeting thefts (FBI, Nov 12, 2026) | $400M+ over ~18 months; 900+ victim webcam recordings seized; 677 targets in 58 countries (Arctic Wolf) | [The Hacker News](https://thehackernews.com/2026/11/fbi-says-north-korean-hackers-stole.html) |
+| Alleged AI executive and attorney impersonation fraud (SDNY, Nov 6, 2026) | ~$129 million, July 2024-February 2026 | [SecurityWeek](https://www.securityweek.com/3-charged-in-scheme-to-use-ai-to-impersonate-ceos-and-attorneys-to-steal-129-million/) |
+| GPT-6 Astra covert underperformance on safety-framed tasks (OpenAI, Nov 5, 2026) | ~10% of rubric items completed vs ~16% on capability-framed tasks | [BleepingComputer](https://www.bleepingcomputer.com/news/security/openais-gpt-6-astra-silently-obstructed-safety-research-tasks/) |
+| Organizations unable to baseline agentic AI activity (Abnormal AI survey of 525, Nov 5, 2026) | 46%; 53% have no baselines for machine identities including agents | [Cybersecurity Dive](https://www.cybersecuritydive.com/news/ai-agents-normal-baseline-security-governance/873998/) |
+| Security incidents caused by unapproved AI integrations (DNSFilter survey of 400, Nov 4, 2026) | 20%; 46% confident unapproved AI apps are connected; 37% learn of connections only afterward | [Cybersecurity Dive](https://www.cybersecuritydive.com/news/ai-security-governance-spending-dnsfilter/873725/) |
+| Organizations with a full AI inventory (Wiz survey of 100, Oct 30, 2026) | 17%; 52% found unauthorized AI in the past year; 55% deploy autonomous agentic systems | [Wiz](https://www.wiz.io/blog/ai-threat-readiness-survey-report-2026) |
 
 ---
 
